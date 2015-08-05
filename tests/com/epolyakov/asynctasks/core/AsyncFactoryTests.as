@@ -30,7 +30,7 @@ package com.epolyakov.asynctasks.core
 		[Test]
 		public function Async_ShouldResultReturn():void
 		{
-			var factory:IAsyncFactory = Async(testTask);
+			var factory:IAsyncFactory = async1(testTask);
 
 			given(testTask.execute(any(), any())).will(
 					useArgument(1).method("onReturn").andCallWithArgs(testOutput, testTask) as Answer);
@@ -44,7 +44,7 @@ package com.epolyakov.asynctasks.core
 		[Test]
 		public function Async_ShouldResultThrow():void
 		{
-			var factory:IAsyncFactory = Async(testTask);
+			var factory:IAsyncFactory = async1(testTask);
 
 			given(testTask.execute(any(), any())).will(
 					useArgument(1).method("onThrow").andCallWithArgs(testOutput, testTask) as Answer);
@@ -58,7 +58,7 @@ package com.epolyakov.asynctasks.core
 		[Test]
 		public function Async_ShouldReturn():void
 		{
-			var factory:IAsyncFactory = Async(testTask);
+			var factory:IAsyncFactory = async1(testTask);
 
 			given(testTask.execute(any(), any())).will(
 					useArgument(1).method("onReturn").andCallWithArgs(testOutput, testTask) as Answer);
@@ -71,7 +71,7 @@ package com.epolyakov.asynctasks.core
 		[Test(expects="Error")]
 		public function Async_ShouldThrow():void
 		{
-			var factory:IAsyncFactory = Async(testTask);
+			var factory:IAsyncFactory = async1(testTask);
 
 			given(testTask.execute(any(), any())).will(
 					useArgument(1).method("Throw").andCallWithArgs(new Error(), testTask) as Answer);
@@ -84,7 +84,7 @@ package com.epolyakov.asynctasks.core
 		[Test]
 		public function Async_ShouldSetIAsync():void
 		{
-			var factory:AsyncFactory = Async(testTask) as AsyncFactory;
+			var factory:AsyncFactory = async1(testTask) as AsyncFactory;
 			assertNotNull(factory);
 			assertEquals(factory.task, testTask);
 		}
@@ -95,7 +95,7 @@ package com.epolyakov.asynctasks.core
 			var func:Function = function ():void
 			{
 			};
-			var factory:AsyncFactory = Async(func) as AsyncFactory;
+			var factory:AsyncFactory = async1(func) as AsyncFactory;
 
 			assertNotNull(factory);
 			assertTrue(factory.task is Func);
@@ -105,7 +105,7 @@ package com.epolyakov.asynctasks.core
 		[Test]
 		public function Async_ShouldSetData():void
 		{
-			var factory:AsyncFactory = Async(testInput) as AsyncFactory;
+			var factory:AsyncFactory = async1(testInput) as AsyncFactory;
 
 			assertNotNull(factory);
 			assertTrue(factory.task is Data);
@@ -115,7 +115,7 @@ package com.epolyakov.asynctasks.core
 		[Test]
 		public function Async_ShouldSetNull():void
 		{
-			var factory:AsyncFactory = Async(null) as AsyncFactory;
+			var factory:AsyncFactory = async1(null) as AsyncFactory;
 
 			assertNotNull(factory);
 			assertTrue(factory.task is Data);
@@ -128,7 +128,7 @@ package com.epolyakov.asynctasks.core
 			var func:Function = function ():void
 			{
 			};
-			var factory:AsyncFactory = Async(null)
+			var factory:AsyncFactory = async1(null)
 							.Next(testTask)
 							.Next(func)
 							.Next(testInput) as AsyncFactory;
@@ -152,7 +152,7 @@ package com.epolyakov.asynctasks.core
 			var func:Function = function ():void
 			{
 			};
-			var factory:AsyncFactory = Async(null)
+			var factory:AsyncFactory = async1(null)
 							.Concurrent(testTask)
 							.Concurrent(func)
 							.Concurrent(testInput) as AsyncFactory;
