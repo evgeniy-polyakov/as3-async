@@ -5,10 +5,10 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface IBaseFactory extends IAsync
 	{
-		function Next(task:Object):IAsyncFactory;
+		function next(task:Object):IAsyncFactory;
 
-		function Catch(value:Object):ICatchFactory;
+		function ifThrows(value:Object):ICatchFactory;
 
-		function Case(value:Object):ICaseFactory;
+		function ifReturns(value:Object):ICaseFactory;
 	}
 }

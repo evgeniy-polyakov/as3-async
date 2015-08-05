@@ -129,9 +129,9 @@ package com.epolyakov.asynctasks.core
 			{
 			};
 			var factory:AsyncFactory = async(null)
-							.Next(testTask)
-							.Next(func)
-							.Next(testInput) as AsyncFactory;
+							.next(testTask)
+							.next(func)
+							.next(testInput) as AsyncFactory;
 
 			assertNotNull(factory);
 			assertTrue(factory.task is Sequence);

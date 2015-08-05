@@ -5,8 +5,8 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface ICaseFactory
 	{
-		function Case(value:Object):ICaseFactory;
+		function ifReturns(value:Object):ICaseFactory;
 
-		function Then(task:Object):IThenFactory;
+		function then(task:Object):IThenFactory;
 	}
 }

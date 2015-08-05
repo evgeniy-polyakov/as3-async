@@ -47,7 +47,7 @@ package com.epolyakov.asynctasks.core
 			return _task;
 		}
 
-		public function Next(task:Object):IAsyncFactory
+		public function next(task:Object):IAsyncFactory
 		{
 			if (!(_task is Sequence))
 			{
@@ -67,7 +67,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function Catch(value:Object):ICatchFactory
+		public function ifThrows(value:Object):ICatchFactory
 		{
 			if (!(_task is Try))
 			{
@@ -77,7 +77,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function Case(value:Object):ICaseFactory
+		public function ifReturns(value:Object):ICaseFactory
 		{
 			if (_task is Switch)
 			{
@@ -96,7 +96,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function Then(task:Object):IThenFactory
+		public function then(task:Object):IThenFactory
 		{
 			if (_task is Try)
 			{
@@ -113,7 +113,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function Else(task:Object):IBaseFactory
+		public function otherwise(task:Object):IBaseFactory
 		{
 			if (_task is Try)
 			{

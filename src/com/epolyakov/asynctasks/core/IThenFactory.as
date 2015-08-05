@@ -5,6 +5,6 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface IThenFactory extends IBaseFactory
 	{
-		function Else(task:Object):IBaseFactory;
+		function otherwise(task:Object):IBaseFactory;
 	}
 }

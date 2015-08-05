@@ -5,8 +5,8 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface ICatchFactory
 	{
-		function Catch(value:Object):ICatchFactory;
+		function ifThrows(value:Object):ICatchFactory;
 
-		function Then(task:Object):IThenFactory;
+		function then(task:Object):IThenFactory;
 	}
 }
