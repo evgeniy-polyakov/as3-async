@@ -28,7 +28,7 @@ package com.epolyakov.asynctasks.core
 		public var testOutput:Object = {};
 
 		[Test]
-		public function Async_ShouldResultReturn():void
+		public function async_shouldResultReturn():void
 		{
 			var factory:IAsyncFactory = async(testTask);
 
@@ -42,7 +42,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test]
-		public function Async_ShouldResultThrow():void
+		public function async_shouldResultThrow():void
 		{
 			var factory:IAsyncFactory = async(testTask);
 
@@ -56,7 +56,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test]
-		public function Async_ShouldReturn():void
+		public function async_shouldReturn():void
 		{
 			var factory:IAsyncFactory = async(testTask);
 
@@ -69,7 +69,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test(expects="Error")]
-		public function Async_ShouldThrow():void
+		public function async_shouldThrow():void
 		{
 			var factory:IAsyncFactory = async(testTask);
 
@@ -82,7 +82,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test]
-		public function Async_ShouldSetIAsync():void
+		public function async_shouldSetIAsync():void
 		{
 			var factory:AsyncFactory = async(testTask) as AsyncFactory;
 			assertNotNull(factory);
@@ -90,7 +90,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test]
-		public function Async_ShouldSetFunction():void
+		public function async_shouldSetFunction():void
 		{
 			var func:Function = function ():void
 			{
@@ -103,7 +103,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test]
-		public function Async_ShouldSetData():void
+		public function async_shouldSetData():void
 		{
 			var factory:AsyncFactory = async(testInput) as AsyncFactory;
 
@@ -113,7 +113,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test]
-		public function Async_ShouldSetNull():void
+		public function async_shouldSetNull():void
 		{
 			var factory:AsyncFactory = async(null) as AsyncFactory;
 
@@ -123,7 +123,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test]
-		public function Next_ShouldCreateSequence():void
+		public function next_shouldCreateSequence():void
 		{
 			var func:Function = function ():void
 			{
@@ -147,7 +147,7 @@ package com.epolyakov.asynctasks.core
 		}
 
 		[Test]
-		public function Concurrent_ShouldCreateConcurrence():void
+		public function concurrent_shouldCreateConcurrence():void
 		{
 			var func:Function = function ():void
 			{
