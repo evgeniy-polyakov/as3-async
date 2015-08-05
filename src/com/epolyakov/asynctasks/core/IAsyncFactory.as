@@ -5,6 +5,6 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface IAsyncFactory extends IBaseFactory
 	{
-		function Concurrent(task:Object):IAsyncFactory;
+		function concurrent(task:Object):IAsyncFactory;
 	}
 }

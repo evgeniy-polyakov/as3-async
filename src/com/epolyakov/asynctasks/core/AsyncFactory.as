@@ -57,7 +57,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function Concurrent(task:Object):IAsyncFactory
+		public function concurrent(task:Object):IAsyncFactory
 		{
 			if (!(_task is Concurrence))
 			{
