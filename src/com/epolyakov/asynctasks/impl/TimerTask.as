@@ -18,7 +18,7 @@ package com.epolyakov.asynctasks.impl
 			_delay = delay;
 		}
 
-		override protected function execute():void
+		override protected function doExecute():void
 		{
 			if (_delay > 0)
 			{
@@ -30,7 +30,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function interrupt():void
+		override protected function doInterrupt():void
 		{
 			clearTimeout(_timeoutId);
 		}

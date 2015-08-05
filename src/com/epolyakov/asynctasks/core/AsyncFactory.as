@@ -130,7 +130,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function Await(data:Object = null, result:IResult = null):void
+		public function execute(data:Object = null, result:IResult = null):void
 		{
 			if (!_active)
 			{
@@ -138,16 +138,16 @@ package com.epolyakov.asynctasks.core
 				{
 					_active = true;
 					_result = result;
-					_task.Await(data, this);
+					_task.execute(data, this);
 				}
 				else if (result)
 				{
-					result.Return(data, this);
+					result.onReturn(data, this);
 				}
 			}
 		}
 
-		public function Break():void
+		public function interrupt():void
 		{
 			if (_active)
 			{
@@ -156,11 +156,11 @@ package com.epolyakov.asynctasks.core
 
 				var task:IAsync = _task;
 				_task = null;
-				task.Break();
+				task.interrupt();
 			}
 		}
 
-		public function Return(value:Object, target:IAsync):void
+		public function onReturn(value:Object, target:IAsync):void
 		{
 			if (_active && target == _task)
 			{
@@ -170,12 +170,12 @@ package com.epolyakov.asynctasks.core
 				{
 					var result:IResult = _result;
 					_result = null;
-					result.Return(value, this);
+					result.onReturn(value, this);
 				}
 			}
 		}
 
-		public function Throw(error:Object, target:IAsync):void
+		public function onThrow(error:Object, target:IAsync):void
 		{
 			if (_active && target == _task)
 			{
@@ -185,7 +185,7 @@ package com.epolyakov.asynctasks.core
 				{
 					var result:IResult = _result;
 					_result = null;
-					result.Throw(error, this);
+					result.onThrow(error, this);
 				}
 				else
 				{

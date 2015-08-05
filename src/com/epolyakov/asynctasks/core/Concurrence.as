@@ -27,7 +27,7 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		public function Await(data:Object = null, result:IResult = null):void
+		public function execute(data:Object = null, result:IResult = null):void
 		{
 			if (!_active)
 			{
@@ -38,17 +38,17 @@ package com.epolyakov.asynctasks.core
 					var tasks:Vector.<IAsync> = _tasks.slice();
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
 					{
-						tasks[i].Await(data, this);
+						tasks[i].execute(data, this);
 					}
 				}
 				else if (result)
 				{
-					result.Return(data, this);
+					result.onReturn(data, this);
 				}
 			}
 		}
 
-		public function Break():void
+		public function interrupt():void
 		{
 			if (_active)
 			{
@@ -60,13 +60,13 @@ package com.epolyakov.asynctasks.core
 					_tasks = null;
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
 					{
-						tasks[i].Break();
+						tasks[i].interrupt();
 					}
 				}
 			}
 		}
 
-		public function Return(value:Object, target:IAsync):void
+		public function onReturn(value:Object, target:IAsync):void
 		{
 			if (_active && _tasks && _tasks.length > 0)
 			{
@@ -83,13 +83,13 @@ package com.epolyakov.asynctasks.core
 					{
 						var result:IResult = _result;
 						_result = null;
-						result.Return(value, this);
+						result.onReturn(value, this);
 					}
 				}
 			}
 		}
 
-		public function Throw(error:Object, target:IAsync):void
+		public function onThrow(error:Object, target:IAsync):void
 		{
 			if (_active && _tasks && _tasks.length > 0 && _tasks.indexOf(target) >= 0)
 			{
@@ -99,7 +99,7 @@ package com.epolyakov.asynctasks.core
 				{
 					var async:IResult = _result;
 					_result = null;
-					async.Throw(error, this);
+					async.onThrow(error, this);
 				}
 				else
 				{

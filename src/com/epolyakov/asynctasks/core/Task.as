@@ -28,7 +28,7 @@ package com.epolyakov.asynctasks.core
 		/**
 		 * @inheritDoc
 		 */
-		final public function Await(data:Object = null, result:IResult = null):void
+		final public function execute(data:Object = null, result:IResult = null):void
 		{
 			if (!_active)
 			{
@@ -37,7 +37,7 @@ package com.epolyakov.asynctasks.core
 				_data = data;
 				if (_target == null)
 				{
-					execute();
+					doExecute();
 				}
 			}
 		}
@@ -45,7 +45,7 @@ package com.epolyakov.asynctasks.core
 		/**
 		 * @inheritDoc
 		 */
-		final public function Break():void
+		final public function interrupt():void
 		{
 			if (_active)
 			{
@@ -54,7 +54,7 @@ package com.epolyakov.asynctasks.core
 				_data = null;
 				if (_target == null)
 				{
-					interrupt();
+					doInterrupt();
 				}
 			}
 		}
@@ -69,7 +69,7 @@ package com.epolyakov.asynctasks.core
 					var result:IResult = _result;
 					_result = null;
 					_data = null;
-					result.Return(value, _target != null ? _target : this);
+					result.onReturn(value, _target != null ? _target : this);
 				}
 			}
 		}
@@ -84,7 +84,7 @@ package com.epolyakov.asynctasks.core
 					var result:IResult = _result;
 					_result = null;
 					_data = null;
-					result.Throw(error, _target != null ? _target : this);
+					result.onThrow(error, _target != null ? _target : this);
 				}
 				else
 				{
@@ -93,12 +93,12 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		protected function execute():void
+		protected function doExecute():void
 		{
 		}
 
 
-		protected function interrupt():void
+		protected function doInterrupt():void
 		{
 		}
 	}

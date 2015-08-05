@@ -46,7 +46,7 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		public function Await(data:Object = null, result:IResult = null):void
+		public function execute(data:Object = null, result:IResult = null):void
 		{
 			if (_state == IDLE)
 			{
@@ -54,16 +54,16 @@ package com.epolyakov.asynctasks.core
 				{
 					_state = TRY;
 					_result = result;
-					_tryTask.Await(data, this);
+					_tryTask.execute(data, this);
 				}
 				else if (result)
 				{
-					result.Return(data, this);
+					result.onReturn(data, this);
 				}
 			}
 		}
 
-		public function Break():void
+		public function interrupt():void
 		{
 			if (_state >= TRY && _state <= DEFAULT)
 			{
@@ -83,12 +83,12 @@ package com.epolyakov.asynctasks.core
 				_result = null;
 				if (task)
 				{
-					task.Break();
+					task.interrupt();
 				}
 			}
 		}
 
-		public function Return(value:Object, target:IAsync):void
+		public function onReturn(value:Object, target:IAsync):void
 		{
 			var complete:Boolean = false;
 			if (_state == TRY && target == _tryTask)
@@ -98,7 +98,7 @@ package com.epolyakov.asynctasks.core
 				if (_default)
 				{
 					_state = DEFAULT;
-					_default.Await(value, this);
+					_default.execute(value, this);
 				}
 				else
 				{
@@ -118,11 +118,11 @@ package com.epolyakov.asynctasks.core
 			{
 				var result:IResult = _result;
 				_result = null;
-				result.Return(value, this);
+				result.onReturn(value, this);
 			}
 		}
 
-		public function Throw(error:Object, target:IAsync):void
+		public function onThrow(error:Object, target:IAsync):void
 		{
 			var complete:Boolean = false;
 			if (_state == TRY && target == _tryTask)
@@ -140,7 +140,7 @@ package com.epolyakov.asynctasks.core
 				if (_default)
 				{
 					_state = CATCH;
-					_default.Await(error, this);
+					_default.execute(error, this);
 				}
 				else
 				{
@@ -160,7 +160,7 @@ package com.epolyakov.asynctasks.core
 			{
 				var result:IResult = _result;
 				_result = null;
-				result.Throw(error, this);
+				result.onThrow(error, this);
 			}
 		}
 	}

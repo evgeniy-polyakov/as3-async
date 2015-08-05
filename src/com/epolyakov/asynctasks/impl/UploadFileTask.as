@@ -41,7 +41,7 @@ package com.epolyakov.asynctasks.impl
 			_waitForServerData = waitForServerData;
 		}
 
-		override protected function execute():void
+		override protected function doExecute():void
 		{
 			_file = data as FileReference;
 			if (!_file)
@@ -70,7 +70,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function interrupt():void
+		override protected function doInterrupt():void
 		{
 			removeEventHandlers();
 			try

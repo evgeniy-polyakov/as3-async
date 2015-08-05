@@ -17,15 +17,15 @@ package com.epolyakov.asynctasks.core
 			return _value;
 		}
 
-		public function Await(data:Object = null, result:IResult = null):void
+		public function execute(data:Object = null, result:IResult = null):void
 		{
 			if (result)
 			{
-				result.Return(_value, this);
+				result.onReturn(_value, this);
 			}
 		}
 
-		public function Break():void
+		public function interrupt():void
 		{
 		}
 	}

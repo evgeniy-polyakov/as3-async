@@ -32,7 +32,7 @@ package com.epolyakov.asynctasks.impl
 			_format = format;
 		}
 
-		override protected function execute():void
+		override protected function doExecute():void
 		{
 			_loader = new URLLoader();
 			_loader.dataFormat = _format;
@@ -60,7 +60,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function interrupt():void
+		override protected function doInterrupt():void
 		{
 			removeEventHandlers();
 			try

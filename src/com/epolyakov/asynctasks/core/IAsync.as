@@ -5,8 +5,8 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface IAsync
 	{
-		function Await(data:Object = null, result:IResult = null):void;
+		function execute(data:Object = null, result:IResult = null):void;
 
-		function Break():void;
+		function interrupt():void;
 	}
 }

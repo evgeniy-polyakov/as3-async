@@ -32,7 +32,7 @@ package com.epolyakov.asynctasks.impl
 			_defaultFileName = defaultFileName;
 		}
 
-		override protected function execute():void
+		override protected function doExecute():void
 		{
 			_file = new FileReference();
 
@@ -57,7 +57,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function interrupt():void
+		override protected function doInterrupt():void
 		{
 			removeEventHandlers();
 			try

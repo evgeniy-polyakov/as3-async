@@ -32,13 +32,13 @@ package com.epolyakov.asynctasks.core
 		{
 			var factory:IAsyncFactory = Async(testTask);
 
-			given(testTask.Await(any(), any())).will(
-					useArgument(1).method("Return").andCallWithArgs(testOutput, testTask) as Answer);
+			given(testTask.execute(any(), any())).will(
+					useArgument(1).method("onReturn").andCallWithArgs(testOutput, testTask) as Answer);
 
-			factory.Await(testInput, testResult);
+			factory.execute(testInput, testResult);
 
-			inOrder().verify().that(testTask.Await(eq(testInput), eq(factory)));
-			inOrder().verify().that(testResult.Return(eq(testOutput), eq(factory)));
+			inOrder().verify().that(testTask.execute(eq(testInput), eq(factory)));
+			inOrder().verify().that(testResult.onReturn(eq(testOutput), eq(factory)));
 		}
 
 		[Test]
@@ -46,13 +46,13 @@ package com.epolyakov.asynctasks.core
 		{
 			var factory:IAsyncFactory = Async(testTask);
 
-			given(testTask.Await(any(), any())).will(
-					useArgument(1).method("Throw").andCallWithArgs(testOutput, testTask) as Answer);
+			given(testTask.execute(any(), any())).will(
+					useArgument(1).method("onThrow").andCallWithArgs(testOutput, testTask) as Answer);
 
-			factory.Await(testInput, testResult);
+			factory.execute(testInput, testResult);
 
-			inOrder().verify().that(testTask.Await(eq(testInput), eq(factory)));
-			inOrder().verify().that(testResult.Throw(eq(testOutput), eq(factory)));
+			inOrder().verify().that(testTask.execute(eq(testInput), eq(factory)));
+			inOrder().verify().that(testResult.onThrow(eq(testOutput), eq(factory)));
 		}
 
 		[Test]
@@ -60,12 +60,12 @@ package com.epolyakov.asynctasks.core
 		{
 			var factory:IAsyncFactory = Async(testTask);
 
-			given(testTask.Await(any(), any())).will(
-					useArgument(1).method("Return").andCallWithArgs(testOutput, testTask) as Answer);
+			given(testTask.execute(any(), any())).will(
+					useArgument(1).method("onReturn").andCallWithArgs(testOutput, testTask) as Answer);
 
-			factory.Await(testInput);
+			factory.execute(testInput);
 
-			verify().that(testTask.Await(eq(testInput), eq(factory)));
+			verify().that(testTask.execute(eq(testInput), eq(factory)));
 		}
 
 		[Test(expects="Error")]
@@ -73,12 +73,12 @@ package com.epolyakov.asynctasks.core
 		{
 			var factory:IAsyncFactory = Async(testTask);
 
-			given(testTask.Await(any(), any())).will(
+			given(testTask.execute(any(), any())).will(
 					useArgument(1).method("Throw").andCallWithArgs(new Error(), testTask) as Answer);
 
-			factory.Await(testInput);
+			factory.execute(testInput);
 
-			verify().that(testTask.Await(eq(testInput), eq(factory)));
+			verify().that(testTask.execute(eq(testInput), eq(factory)));
 		}
 
 		[Test]

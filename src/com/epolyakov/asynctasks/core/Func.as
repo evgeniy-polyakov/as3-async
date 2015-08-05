@@ -19,7 +19,7 @@ package com.epolyakov.asynctasks.core
 			return _func;
 		}
 
-		public function Await(data:Object = null, result:IResult = null):void
+		public function execute(data:Object = null, result:IResult = null):void
 		{
 			var value:*;
 			try
@@ -37,7 +37,7 @@ package com.epolyakov.asynctasks.core
 			{
 				if (result)
 				{
-					result.Throw(error, this);
+					result.onThrow(error, this);
 				}
 				else
 				{
@@ -49,29 +49,29 @@ package com.epolyakov.asynctasks.core
 			{
 				_task = value;
 				_result = result;
-				_task.Await(data, this);
+				_task.execute(data, this);
 			}
 			else if (value === undefined && result)
 			{
-				result.Return(data, this);
+				result.onReturn(data, this);
 			}
 			else if (result)
 			{
-				result.Return(value, this);
+				result.onReturn(value, this);
 			}
 		}
 
-		public function Break():void
+		public function interrupt():void
 		{
 			if (_task)
 			{
 				var task:IAsync = _task;
 				_task = null;
-				task.Break();
+				task.interrupt();
 			}
 		}
 
-		public function Return(value:Object, target:IAsync):void
+		public function onReturn(value:Object, target:IAsync):void
 		{
 			if (target == _task)
 			{
@@ -80,12 +80,12 @@ package com.epolyakov.asynctasks.core
 				{
 					var result:IResult = _result;
 					_result = null;
-					result.Return(value, this);
+					result.onReturn(value, this);
 				}
 			}
 		}
 
-		public function Throw(error:Object, target:IAsync):void
+		public function onThrow(error:Object, target:IAsync):void
 		{
 			if (target == _task)
 			{
@@ -94,7 +94,7 @@ package com.epolyakov.asynctasks.core
 				{
 					var result:IResult = _result;
 					_result = null;
-					result.Throw(error, this);
+					result.onThrow(error, this);
 				}
 				else
 				{

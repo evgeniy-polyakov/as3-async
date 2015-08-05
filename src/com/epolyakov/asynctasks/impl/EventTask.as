@@ -26,7 +26,7 @@ package com.epolyakov.asynctasks.impl
 			_useWeakReference = useWeakReference;
 		}
 
-		override protected function execute():void
+		override protected function doExecute():void
 		{
 			if (_dispatcher)
 			{
@@ -34,7 +34,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function interrupt():void
+		override protected function doInterrupt():void
 		{
 			if (_dispatcher)
 			{
