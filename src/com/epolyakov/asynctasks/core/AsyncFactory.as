@@ -5,7 +5,7 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class AsyncFactory implements IAsyncFactory, ICatchFactory, ICaseFactory, IThenFactory, IResult
+	internal class AsyncFactory implements IAsyncFactory, IAsyncThrowFactory, IAsyncReturnFactory, IAsyncOtherwiseFactory, IResult
 	{
 		private var _task:IAsync;
 		private var _active:Boolean;
@@ -67,7 +67,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function ifThrows(value:Object):ICatchFactory
+		public function ifThrows(value:Object):IAsyncThrowFactory
 		{
 			if (!(_task is Try))
 			{
@@ -77,7 +77,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function ifReturns(value:Object):ICaseFactory
+		public function ifReturns(value:Object):IAsyncReturnFactory
 		{
 			if (_task is Switch)
 			{
@@ -96,7 +96,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function then(task:Object):IThenFactory
+		public function then(task:Object):IAsyncOtherwiseFactory
 		{
 			if (_task is Try)
 			{
@@ -113,7 +113,7 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function otherwise(task:Object):IBaseFactory
+		public function otherwise(task:Object):IAsyncSequenceFactory
 		{
 			if (_task is Try)
 			{
