@@ -32,7 +32,7 @@ package com.epolyakov.asynctasks.impl
 			_format = format;
 		}
 
-		override protected function doExecute():void
+		override protected function onExecute():void
 		{
 			_loader = new URLLoader();
 			_loader.dataFormat = _format;
@@ -56,11 +56,11 @@ package com.epolyakov.asynctasks.impl
 			{
 				removeEventHandlers();
 				_loader = null;
-				Throw(error);
+				onThrow(error);
 			}
 		}
 
-		override protected function doInterrupt():void
+		override protected function onInterrupt():void
 		{
 			removeEventHandlers();
 			try
@@ -98,14 +98,14 @@ package com.epolyakov.asynctasks.impl
 			removeEventHandlers();
 			var loader:URLLoader = _loader;
 			_loader = null;
-			Return(loader);
+			onReturn(loader);
 		}
 
 		private function errorEventHandler(event:Event):void
 		{
 			removeEventHandlers();
 			_loader = null;
-			Throw(event);
+			onThrow(event);
 		}
 	}
 }

@@ -41,12 +41,12 @@ package com.epolyakov.asynctasks.impl
 			_waitForServerData = waitForServerData;
 		}
 
-		override protected function doExecute():void
+		override protected function onExecute():void
 		{
 			_file = data as FileReference;
 			if (!_file)
 			{
-				Throw(new ArgumentError("UploadFileTask expects a FileReference object, got " + data + "."));
+				onThrow(new ArgumentError("UploadFileTask expects a FileReference object, got " + data + "."));
 				return;
 			}
 			var request:URLRequest;
@@ -66,11 +66,11 @@ package com.epolyakov.asynctasks.impl
 			catch (error:Error)
 			{
 				removeEventHandlers();
-				Throw(error);
+				onThrow(error);
 			}
 		}
 
-		override protected function doInterrupt():void
+		override protected function onInterrupt():void
 		{
 			removeEventHandlers();
 			try
@@ -116,21 +116,21 @@ package com.epolyakov.asynctasks.impl
 			removeEventHandlers();
 			var file:FileReference = _file;
 			_file = null;
-			Return(file);
+			onReturn(file);
 		}
 
 		private function completeEventDataHandler(event:DataEvent):void
 		{
 			removeEventHandlers();
 			_file = null;
-			Return(event.data);
+			onReturn(event.data);
 		}
 
 		private function errorEventHandler(event:Event):void
 		{
 			removeEventHandlers();
 			_file = null;
-			Throw(event);
+			onThrow(event);
 		}
 	}
 }

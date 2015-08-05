@@ -37,7 +37,7 @@ package com.epolyakov.asynctasks.core
 				_data = data;
 				if (_target == null)
 				{
-					doExecute();
+					onExecute();
 				}
 			}
 		}
@@ -54,12 +54,12 @@ package com.epolyakov.asynctasks.core
 				_data = null;
 				if (_target == null)
 				{
-					doInterrupt();
+					onInterrupt();
 				}
 			}
 		}
 
-		final public function Return(value:Object):void
+		final public function onReturn(value:Object):void
 		{
 			if (_active)
 			{
@@ -74,7 +74,7 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		final public function Throw(error:Object):void
+		final public function onThrow(error:Object):void
 		{
 			if (_active)
 			{
@@ -93,12 +93,12 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		protected function doExecute():void
+		protected function onExecute():void
 		{
 		}
 
 
-		protected function doInterrupt():void
+		protected function onInterrupt():void
 		{
 		}
 	}

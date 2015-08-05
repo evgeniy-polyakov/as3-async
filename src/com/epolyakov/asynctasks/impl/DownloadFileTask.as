@@ -32,7 +32,7 @@ package com.epolyakov.asynctasks.impl
 			_defaultFileName = defaultFileName;
 		}
 
-		override protected function doExecute():void
+		override protected function onExecute():void
 		{
 			_file = new FileReference();
 
@@ -53,11 +53,11 @@ package com.epolyakov.asynctasks.impl
 			catch (error:Error)
 			{
 				removeEventHandlers();
-				Throw(error);
+				onThrow(error);
 			}
 		}
 
-		override protected function doInterrupt():void
+		override protected function onInterrupt():void
 		{
 			removeEventHandlers();
 			try
@@ -97,14 +97,14 @@ package com.epolyakov.asynctasks.impl
 			removeEventHandlers();
 			var file:FileReference = _file;
 			_file = null;
-			Return(file);
+			onReturn(file);
 		}
 
 		private function errorEventHandler(event:Event):void
 		{
 			removeEventHandlers();
 			_file = null;
-			Throw(event);
+			onThrow(event);
 		}
 	}
 }

@@ -18,7 +18,7 @@ package com.epolyakov.asynctasks.impl
 			_delay = delay;
 		}
 
-		override protected function doExecute():void
+		override protected function onExecute():void
 		{
 			if (_delay > 0)
 			{
@@ -26,11 +26,11 @@ package com.epolyakov.asynctasks.impl
 			}
 			else
 			{
-				Return(data);
+				onReturn(data);
 			}
 		}
 
-		override protected function doInterrupt():void
+		override protected function onInterrupt():void
 		{
 			clearTimeout(_timeoutId);
 		}
@@ -38,7 +38,7 @@ package com.epolyakov.asynctasks.impl
 		private function onTimeout():void
 		{
 			clearTimeout(_timeoutId);
-			Return(data);
+			onReturn(data);
 		}
 	}
 }

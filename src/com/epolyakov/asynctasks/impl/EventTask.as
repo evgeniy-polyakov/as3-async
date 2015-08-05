@@ -26,7 +26,7 @@ package com.epolyakov.asynctasks.impl
 			_useWeakReference = useWeakReference;
 		}
 
-		override protected function doExecute():void
+		override protected function onExecute():void
 		{
 			if (_dispatcher)
 			{
@@ -34,7 +34,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function doInterrupt():void
+		override protected function onInterrupt():void
 		{
 			if (_dispatcher)
 			{
@@ -45,7 +45,7 @@ package com.epolyakov.asynctasks.impl
 		private function eventHandler(event:Event):void
 		{
 			_dispatcher.removeEventListener(_type, eventHandler, _useCapture);
-			Return(event);
+			onReturn(event);
 		}
 	}
 }

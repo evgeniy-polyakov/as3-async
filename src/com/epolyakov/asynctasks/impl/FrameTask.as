@@ -20,7 +20,7 @@ package com.epolyakov.asynctasks.impl
 			_delay = delay;
 		}
 
-		override protected function doExecute():void
+		override protected function onExecute():void
 		{
 			if (_dispatcher == null)
 			{
@@ -33,11 +33,11 @@ package com.epolyakov.asynctasks.impl
 			}
 			else
 			{
-				Return(data);
+				onReturn(data);
 			}
 		}
 
-		override protected function doInterrupt():void
+		override protected function onInterrupt():void
 		{
 			_dispatcher.removeEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
 		}
@@ -48,7 +48,7 @@ package com.epolyakov.asynctasks.impl
 			if (_current <= 0)
 			{
 				_dispatcher.removeEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
-				Return(data);
+				onReturn(data);
 			}
 		}
 	}

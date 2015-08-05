@@ -35,7 +35,7 @@ package com.epolyakov.asynctasks.impl
 			_context = context;
 		}
 
-		override protected function doExecute():void
+		override protected function onExecute():void
 		{
 			_loader = new Loader();
 			addEventHandlers();
@@ -72,11 +72,11 @@ package com.epolyakov.asynctasks.impl
 			catch (error:Error)
 			{
 				removeEventHandlers();
-				Throw(error);
+				onThrow(error);
 			}
 		}
 
-		override protected function doInterrupt():void
+		override protected function onInterrupt():void
 		{
 			removeEventHandlers();
 			try
@@ -116,14 +116,14 @@ package com.epolyakov.asynctasks.impl
 			removeEventHandlers();
 			var loader:Loader = _loader;
 			_loader = null;
-			Return(loader);
+			onReturn(loader);
 		}
 
 		private function errorEventHandler(event:Event):void
 		{
 			removeEventHandlers();
 			_loader = null;
-			Throw(event);
+			onThrow(event);
 		}
 	}
 }
