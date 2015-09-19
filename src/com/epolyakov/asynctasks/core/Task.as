@@ -12,7 +12,13 @@ package com.epolyakov.asynctasks.core
 
 		public function Task(target:IAsync = null)
 		{
-			_target = target;
+			if (target)
+			{
+				_target = async(target)
+						.ifThrows()
+						.then(onThrow)
+						.otherwise(onReturn);
+			}
 		}
 
 		final public function get active():Boolean
@@ -39,6 +45,10 @@ package com.epolyakov.asynctasks.core
 				{
 					onExecute();
 				}
+				else
+				{
+					_target.execute(data);
+				}
 			}
 		}
 
@@ -56,25 +66,14 @@ package com.epolyakov.asynctasks.core
 				{
 					onInterrupt();
 				}
-			}
-		}
-
-		final public function onReturn(value:Object):void
-		{
-			if (_active)
-			{
-				_active = false;
-				if (_result)
+				else
 				{
-					var result:IResult = _result;
-					_result = null;
-					_data = null;
-					result.onReturn(value, _target != null ? _target : this);
+					_target.interrupt();
 				}
 			}
 		}
 
-		final public function onThrow(error:Object):void
+		final protected function onReturn(value:Object):void
 		{
 			if (_active)
 			{
@@ -84,7 +83,22 @@ package com.epolyakov.asynctasks.core
 					var result:IResult = _result;
 					_result = null;
 					_data = null;
-					result.onThrow(error, _target != null ? _target : this);
+					result.onReturn(value, this);
+				}
+			}
+		}
+
+		final protected function onThrow(error:Object):void
+		{
+			if (_active)
+			{
+				_active = false;
+				if (_result)
+				{
+					var result:IResult = _result;
+					_result = null;
+					_data = null;
+					result.onThrow(error, this);
 				}
 				else
 				{
