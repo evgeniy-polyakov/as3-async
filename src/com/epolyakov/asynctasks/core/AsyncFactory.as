@@ -27,7 +27,7 @@ package com.epolyakov.asynctasks.core
 			return new Data(value);
 		}
 
-		protected static function getCase(value:Object, nullIsAny:Boolean):Case
+		protected static function getCase(value:Object):Case
 		{
 			if (value is Class)
 			{
@@ -37,11 +37,16 @@ package com.epolyakov.asynctasks.core
 			{
 				return new CaseFunc(value as Function);
 			}
-			if (value == null && nullIsAny)
+			return new CaseEqual(value);
+		}
+
+		protected static function getCatch(value:Object):Case
+		{
+			if (value == null)
 			{
 				return new CaseAny();
 			}
-			return new CaseEqual(value);
+			return getCase(value);
 		}
 
 //		internal function get task():IAsync
@@ -81,9 +86,9 @@ package com.epolyakov.asynctasks.core
 //
 //		public function ifReturns(value:Object):IAsyncReturnFactory
 //		{
-//			if (_task is Switch)
+//			if (_task is Choice)
 //			{
-//				Switch(_task).addCase(getCase(value, false));
+//				Choice(_task).addCase(getCase(value, false));
 //			}
 //			else
 //			{
@@ -91,7 +96,7 @@ package com.epolyakov.asynctasks.core
 //				{
 //					_task = new Sequence(_task);
 //				}
-//				var task:Switch = new Switch();
+//				var task:Choice = new Choice();
 //				task.addCase(getCase(value, false));
 //				Sequence(_task).add(task);
 //			}
@@ -104,9 +109,9 @@ package com.epolyakov.asynctasks.core
 //			{
 //				Try(_task).addTask(getTask(task));
 //			}
-//			else if (_task is Switch)
+//			else if (_task is Choice)
 //			{
-//				Switch(_task).addTask(getTask(task));
+//				Choice(_task).addTask(getTask(task));
 //			}
 //			else
 //			{
@@ -121,9 +126,9 @@ package com.epolyakov.asynctasks.core
 //			{
 //				Try(_task).setDefault(getTask(task));
 //			}
-//			else if (_task is Switch)
+//			else if (_task is Choice)
 //			{
-//				Switch(_task).setDefault(getTask(task));
+//				Choice(_task).setDefault(getTask(task));
 //			}
 //			else
 //			{

@@ -3,7 +3,7 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Sequence extends AsyncFactory implements IAsync, IResult, IAsyncFactory
+	internal class Sequence extends AsyncFactory implements IAsync, IResult, IAsyncFactory, IAsyncThrowFactory, IAsyncReturnFactory, IAsyncOtherwiseFactory
 	{
 		private var _tasks:Vector.<IAsync>;
 		private var _active:Boolean;
@@ -55,7 +55,11 @@ package com.epolyakov.asynctasks.core
 		{
 			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
 			{
-				_tasks.shift();
+				do {
+					_tasks.shift();
+				}
+				while (_tasks.length > 0 && _tasks[0] is Catch);
+
 				if (_tasks.length > 0)
 				{
 					_tasks[0].execute(value, this);
@@ -78,17 +82,29 @@ package com.epolyakov.asynctasks.core
 		{
 			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
 			{
-				_active = false;
-				_tasks = null;
-				if (_result)
+				do {
+					_tasks.shift();
+				}
+				while (_tasks.length > 0 && !(_tasks[0] is Catch));
+
+				if (_tasks.length > 0)
 				{
-					var result:IResult = _result;
-					_result = null;
-					result.onThrow(error, this);
+					_tasks[0].execute(error, this);
 				}
 				else
 				{
-					throw error;
+					_active = false;
+					_tasks = null;
+					if (_result)
+					{
+						var result:IResult = _result;
+						_result = null;
+						result.onThrow(error, this);
+					}
+					else
+					{
+						throw error;
+					}
 				}
 			}
 		}
@@ -118,11 +134,61 @@ package com.epolyakov.asynctasks.core
 
 		public function ifThrows(value:Object = null):IAsyncThrowFactory
 		{
-			return null;
+			if (!_active && _tasks && _tasks.length > 0)
+			{
+				var n:int = _tasks.length - 1;
+				if (_tasks[n] is Catch)
+				{
+					Catch(_tasks[n]).addCase(getCatch(value));
+				}
+				else
+				{
+					_tasks.push(new Catch(getCatch(value)));
+				}
+			}
+			return this;
 		}
 
 		public function ifReturns(value:Object):IAsyncReturnFactory
 		{
+			if (!_active && _tasks && _tasks.length > 0)
+			{
+				var n:int = _tasks.length - 1;
+				if (_tasks[n] is Switch)
+				{
+					Switch(_tasks[n]).addCase(getCatch(value));
+				}
+				else
+				{
+					_tasks.push(new Switch(getCatch(value)));
+				}
+			}
+			return this;
+		}
+
+		public function then(task:Object):IAsyncOtherwiseFactory
+		{
+			if (!_active && _tasks && _tasks.length > 0)
+			{
+				var n:int = _tasks.length - 1;
+				if (_tasks[n] is Choice)
+				{
+					Choice(_tasks[n]).addTask(getTask(task));
+				}
+			}
+			return this;
+		}
+
+		public function otherwise(task:Object):IAsyncSequenceFactory
+		{
+			if (!_active && _tasks && _tasks.length > 0)
+			{
+				var n:int = _tasks.length - 1;
+				if (_tasks[n] is Choice)
+				{
+					Choice(_tasks[n]).setDefault(getTask(task));
+				}
+			}
 			return null;
 		}
 	}
