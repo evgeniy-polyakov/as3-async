@@ -3,28 +3,20 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Concurrence implements IAsync, IResult
+	internal class Concurrency implements IAsync, IResult
 	{
 		private var _tasks:Vector.<IAsync>;
 		private var _active:Boolean;
 		private var _result:IResult;
 
-		public function Concurrence(task:IAsync)
+		public function Concurrency(task:IAsync)
 		{
 			_tasks = new <IAsync>[task];
 		}
 
-		public function get tasks():Vector.<IAsync>
+		internal function get tasks():Vector.<IAsync>
 		{
 			return _tasks;
-		}
-
-		public function add(task:IAsync):void
-		{
-			if (!_active && _tasks && _tasks.indexOf(task) < 0)
-			{
-				_tasks.push(task);
-			}
 		}
 
 		public function execute(data:Object = null, result:IResult = null):void
@@ -105,6 +97,14 @@ package com.epolyakov.asynctasks.core
 				{
 					throw error;
 				}
+			}
+		}
+
+		internal function add(task:IAsync):void
+		{
+			if (!_active && _tasks && _tasks.indexOf(task) < 0)
+			{
+				_tasks.push(task);
 			}
 		}
 	}

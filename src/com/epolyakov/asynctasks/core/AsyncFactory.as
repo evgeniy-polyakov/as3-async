@@ -1,22 +1,20 @@
 package com.epolyakov.asynctasks.core
 {
-	import flash.errors.IllegalOperationError;
-
 	/**
 	 * @author epolyakov
 	 */
-	internal class AsyncFactory implements IAsyncFactory, IAsyncThrowFactory, IAsyncReturnFactory, IAsyncOtherwiseFactory, IResult
+	internal class AsyncFactory
 	{
-		private var _task:IAsync;
-		private var _active:Boolean;
-		private var _result:IResult;
+//		private var _task:IAsync;
+//		private var _active:Boolean;
+//		private var _result:IResult;
+//
+//		public function AsyncFactory(task:Object)
+//		{
+//			_task = getTask(task);
+//		}
 
-		public function AsyncFactory(task:Object)
-		{
-			_task = getTask(task);
-		}
-
-		private static function getTask(value:Object):IAsync
+		protected static function getTask(value:Object):IAsync
 		{
 			if (value is IAsync)
 			{
@@ -29,7 +27,7 @@ package com.epolyakov.asynctasks.core
 			return new Data(value);
 		}
 
-		private static function getCase(value:Object, nullIsAny:Boolean):Case
+		protected static function getCase(value:Object, nullIsAny:Boolean):Case
 		{
 			if (value is Class)
 			{
@@ -46,156 +44,156 @@ package com.epolyakov.asynctasks.core
 			return new CaseEqual(value);
 		}
 
-		internal function get task():IAsync
-		{
-			return _task;
-		}
-
-		public function next(task:Object):IAsyncFactory
-		{
-			if (!(_task is Sequence))
-			{
-				_task = new Sequence(_task);
-			}
-			Sequence(_task).add(getTask(task));
-			return this;
-		}
-
-		public function concurrent(task:Object):IAsyncFactory
-		{
-			if (!(_task is Concurrence))
-			{
-				_task = new Concurrence(_task);
-			}
-			Concurrence(_task).add(getTask(task));
-			return this;
-		}
-
-		public function ifThrows(value:Object = null):IAsyncThrowFactory
-		{
-			if (!(_task is Try))
-			{
-				_task = new Try(_task);
-			}
-			Try(_task).addCase(getCase(value, true));
-			return this;
-		}
-
-		public function ifReturns(value:Object):IAsyncReturnFactory
-		{
-			if (_task is Switch)
-			{
-				Switch(_task).addCase(getCase(value, false));
-			}
-			else
-			{
-				if (!(_task is Sequence))
-				{
-					_task = new Sequence(_task);
-				}
-				var task:Switch = new Switch();
-				task.addCase(getCase(value, false));
-				Sequence(_task).add(task);
-			}
-			return this;
-		}
-
-		public function then(task:Object):IAsyncOtherwiseFactory
-		{
-			if (_task is Try)
-			{
-				Try(_task).addTask(getTask(task));
-			}
-			else if (_task is Switch)
-			{
-				Switch(_task).addTask(getTask(task));
-			}
-			else
-			{
-				throw new IllegalOperationError("Invalid context for method Then.");
-			}
-			return this;
-		}
-
-		public function otherwise(task:Object):IAsyncSequenceFactory
-		{
-			if (_task is Try)
-			{
-				Try(_task).setDefault(getTask(task));
-			}
-			else if (_task is Switch)
-			{
-				Switch(_task).setDefault(getTask(task));
-			}
-			else
-			{
-				throw new IllegalOperationError("Invalid context for method Else.");
-			}
-			return this;
-		}
-
-		public function execute(data:Object = null, result:IResult = null):void
-		{
-			if (!_active)
-			{
-				if (_task)
-				{
-					_active = true;
-					_result = result;
-					_task.execute(data, this);
-				}
-				else if (result)
-				{
-					result.onReturn(data, this);
-				}
-			}
-		}
-
-		public function interrupt():void
-		{
-			if (_active)
-			{
-				_active = false;
-				_result = null;
-
-				var task:IAsync = _task;
-				_task = null;
-				task.interrupt();
-			}
-		}
-
-		public function onReturn(value:Object, target:IAsync):void
-		{
-			if (_active && target == _task)
-			{
-				_active = false;
-				_task = null;
-				if (_result)
-				{
-					var result:IResult = _result;
-					_result = null;
-					result.onReturn(value, this);
-				}
-			}
-		}
-
-		public function onThrow(error:Object, target:IAsync):void
-		{
-			if (_active && target == _task)
-			{
-				_active = false;
-				_task = null;
-				if (_result)
-				{
-					var result:IResult = _result;
-					_result = null;
-					result.onThrow(error, this);
-				}
-				else
-				{
-					throw error;
-				}
-			}
-		}
+//		internal function get task():IAsync
+//		{
+//			return _task;
+//		}
+//
+//		public function next(task:Object):IAsyncFactory
+//		{
+//			if (!(_task is Sequence))
+//			{
+//				_task = new Sequence(_task);
+//			}
+//			Sequence(_task).add(getTask(task));
+//			return this;
+//		}
+//
+//		public function concurrent(task:Object):IAsyncFactory
+//		{
+//			if (!(_task is Concurrency))
+//			{
+//				_task = new Concurrency(_task);
+//			}
+//			Concurrency(_task).add(getTask(task));
+//			return this;
+//		}
+//
+//		public function ifThrows(value:Object = null):IAsyncThrowFactory
+//		{
+//			if (!(_task is Try))
+//			{
+//				_task = new Try(_task);
+//			}
+//			Try(_task).addCase(getCase(value, true));
+//			return this;
+//		}
+//
+//		public function ifReturns(value:Object):IAsyncReturnFactory
+//		{
+//			if (_task is Switch)
+//			{
+//				Switch(_task).addCase(getCase(value, false));
+//			}
+//			else
+//			{
+//				if (!(_task is Sequence))
+//				{
+//					_task = new Sequence(_task);
+//				}
+//				var task:Switch = new Switch();
+//				task.addCase(getCase(value, false));
+//				Sequence(_task).add(task);
+//			}
+//			return this;
+//		}
+//
+//		public function then(task:Object):IAsyncOtherwiseFactory
+//		{
+//			if (_task is Try)
+//			{
+//				Try(_task).addTask(getTask(task));
+//			}
+//			else if (_task is Switch)
+//			{
+//				Switch(_task).addTask(getTask(task));
+//			}
+//			else
+//			{
+//				throw new IllegalOperationError("Invalid context for method Then.");
+//			}
+//			return this;
+//		}
+//
+//		public function otherwise(task:Object):IAsyncSequenceFactory
+//		{
+//			if (_task is Try)
+//			{
+//				Try(_task).setDefault(getTask(task));
+//			}
+//			else if (_task is Switch)
+//			{
+//				Switch(_task).setDefault(getTask(task));
+//			}
+//			else
+//			{
+//				throw new IllegalOperationError("Invalid context for method Else.");
+//			}
+//			return this;
+//		}
+//
+//		public function execute(data:Object = null, result:IResult = null):void
+//		{
+//			if (!_active)
+//			{
+//				if (_task)
+//				{
+//					_active = true;
+//					_result = result;
+//					_task.execute(data, this);
+//				}
+//				else if (result)
+//				{
+//					result.onReturn(data, this);
+//				}
+//			}
+//		}
+//
+//		public function interrupt():void
+//		{
+//			if (_active)
+//			{
+//				_active = false;
+//				_result = null;
+//
+//				var task:IAsync = _task;
+//				_task = null;
+//				task.interrupt();
+//			}
+//		}
+//
+//		public function onReturn(value:Object, target:IAsync):void
+//		{
+//			if (_active && target == _task)
+//			{
+//				_active = false;
+//				_task = null;
+//				if (_result)
+//				{
+//					var result:IResult = _result;
+//					_result = null;
+//					result.onReturn(value, this);
+//				}
+//			}
+//		}
+//
+//		public function onThrow(error:Object, target:IAsync):void
+//		{
+//			if (_active && target == _task)
+//			{
+//				_active = false;
+//				_task = null;
+//				if (_result)
+//				{
+//					var result:IResult = _result;
+//					_result = null;
+//					result.onThrow(error, this);
+//				}
+//				else
+//				{
+//					throw error;
+//				}
+//			}
+//		}
 	}
 }

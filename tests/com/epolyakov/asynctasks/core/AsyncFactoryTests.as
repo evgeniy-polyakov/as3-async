@@ -158,16 +158,16 @@ package com.epolyakov.asynctasks.core
 							.concurrent(testInput) as AsyncFactory;
 
 			assertNotNull(factory);
-			assertTrue(factory.task is Concurrence);
-			assertNotNull(Concurrence(factory.task).tasks);
-			assertEquals(Concurrence(factory.task).tasks.length, 4);
-			assertTrue(Concurrence(factory.task).tasks[0] is Data);
-			assertNull(Data(Concurrence(factory.task).tasks[0]).value);
-			assertEquals(Concurrence(factory.task).tasks[1], testTask);
-			assertTrue(Concurrence(factory.task).tasks[2] is Func);
-			assertEquals(Func(Concurrence(factory.task).tasks[2]).func, func);
-			assertTrue(Concurrence(factory.task).tasks[3] is Data);
-			assertTrue(Data(Concurrence(factory.task).tasks[3]), testInput);
+			assertTrue(factory.task is Concurrency);
+			assertNotNull(Concurrency(factory.task).tasks);
+			assertEquals(Concurrency(factory.task).tasks.length, 4);
+			assertTrue(Concurrency(factory.task).tasks[0] is Data);
+			assertNull(Data(Concurrency(factory.task).tasks[0]).value);
+			assertEquals(Concurrency(factory.task).tasks[1], testTask);
+			assertTrue(Concurrency(factory.task).tasks[2] is Func);
+			assertEquals(Func(Concurrency(factory.task).tasks[2]).func, func);
+			assertTrue(Concurrency(factory.task).tasks[3] is Data);
+			assertTrue(Data(Concurrency(factory.task).tasks[3]), testInput);
 		}
 	}
 }

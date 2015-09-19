@@ -3,7 +3,7 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Sequence implements IAsync, IResult
+	internal class Sequence extends AsyncFactory implements IAsync, IResult, IAsyncFactory
 	{
 		private var _tasks:Vector.<IAsync>;
 		private var _active:Boolean;
@@ -14,17 +14,9 @@ package com.epolyakov.asynctasks.core
 			_tasks = new <IAsync>[task];
 		}
 
-		public function get tasks():Vector.<IAsync>
+		internal function get tasks():Vector.<IAsync>
 		{
 			return _tasks;
-		}
-
-		public function add(task:IAsync):void
-		{
-			if (!_active && _tasks)
-			{
-				_tasks.push(task);
-			}
 		}
 
 		public function execute(data:Object = null, result:IResult = null):void
@@ -99,6 +91,39 @@ package com.epolyakov.asynctasks.core
 					throw error;
 				}
 			}
+		}
+
+		public function next(task:Object):IAsyncFactory
+		{
+			if (!_active && _tasks)
+			{
+				_tasks.push(getTask(task));
+			}
+			return this;
+		}
+
+		public function concurrent(task:Object):IAsyncFactory
+		{
+			if (!_active && _tasks && _tasks.length > 0)
+			{
+				var n:int = _tasks.length - 1;
+				if (!(_tasks[n] is Concurrency))
+				{
+					_tasks[n] = new Concurrency(_tasks[n]);
+				}
+				Concurrency(_tasks[n]).add(getTask(task));
+			}
+			return this;
+		}
+
+		public function ifThrows(value:Object = null):IAsyncThrowFactory
+		{
+			return null;
+		}
+
+		public function ifReturns(value:Object):IAsyncReturnFactory
+		{
+			return null;
 		}
 	}
 }
