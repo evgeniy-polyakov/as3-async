@@ -5,6 +5,6 @@ package com.epolyakov.asynctasks.core
 	 */
 	public function async(task:Object):IAsyncFactory
 	{
-		return new AsyncFactory(task);
+		return new Sequence(task);
 	}
 }

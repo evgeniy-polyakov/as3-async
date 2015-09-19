@@ -3,15 +3,50 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Sequence extends AsyncFactory implements IAsync, IResult, IAsyncFactory, IAsyncThrowFactory, IAsyncReturnFactory, IAsyncOtherwiseFactory
+	internal class Sequence implements IAsync, IResult, IAsyncFactory, IAsyncThrowFactory, IAsyncReturnFactory, IAsyncOtherwiseFactory
 	{
 		private var _tasks:Vector.<IAsync>;
 		private var _active:Boolean;
 		private var _result:IResult;
 
-		public function Sequence(task:IAsync)
+		public function Sequence(task:Object)
 		{
-			_tasks = new <IAsync>[task];
+			_tasks = new <IAsync>[getTask(task)];
+		}
+
+		private static function getTask(value:Object):IAsync
+		{
+			if (value is IAsync)
+			{
+				return value as IAsync;
+			}
+			if (value is Function)
+			{
+				return new Func(value as Function);
+			}
+			return new Data(value);
+		}
+
+		private static function getCase(value:Object):Case
+		{
+			if (value is Class)
+			{
+				return new CaseClass(value as Class);
+			}
+			if (value is Function)
+			{
+				return new CaseFunc(value as Function);
+			}
+			return new CaseEqual(value);
+		}
+
+		private static function getCatch(value:Object):Case
+		{
+			if (value == null)
+			{
+				return new CaseAny();
+			}
+			return getCase(value);
 		}
 
 		internal function get tasks():Vector.<IAsync>
@@ -156,11 +191,11 @@ package com.epolyakov.asynctasks.core
 				var n:int = _tasks.length - 1;
 				if (_tasks[n] is Switch)
 				{
-					Switch(_tasks[n]).addCase(getCatch(value));
+					Switch(_tasks[n]).addCase(getCase(value));
 				}
 				else
 				{
-					_tasks.push(new Switch(getCatch(value)));
+					_tasks.push(new Switch(getCase(value)));
 				}
 			}
 			return this;
