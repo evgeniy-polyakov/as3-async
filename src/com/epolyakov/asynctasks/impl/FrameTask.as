@@ -39,7 +39,10 @@ package com.epolyakov.asynctasks.impl
 
 		override protected function onInterrupt():void
 		{
-			_dispatcher.removeEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
+			if (_dispatcher != null)
+			{
+				_dispatcher.removeEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
+			}
 		}
 
 		private function enterFrameEventHandler(event:Event):void
