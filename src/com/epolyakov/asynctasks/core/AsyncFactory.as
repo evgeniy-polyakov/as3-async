@@ -29,7 +29,7 @@ package com.epolyakov.asynctasks.core
 			return new Data(value);
 		}
 
-		private static function getCase(value:Object):Case
+		private static function getCase(value:Object, nullIsAny:Boolean):Case
 		{
 			if (value is Class)
 			{
@@ -38,6 +38,10 @@ package com.epolyakov.asynctasks.core
 			if (value is Function)
 			{
 				return new CaseFunc(value as Function);
+			}
+			if (value == null && nullIsAny)
+			{
+				return new CaseAny();
 			}
 			return new CaseEqual(value);
 		}
@@ -67,13 +71,13 @@ package com.epolyakov.asynctasks.core
 			return this;
 		}
 
-		public function ifThrows(value:Object):IAsyncThrowFactory
+		public function ifThrows(value:Object = null):IAsyncThrowFactory
 		{
 			if (!(_task is Try))
 			{
 				_task = new Try(_task);
 			}
-			Try(_task).addCase(getCase(value));
+			Try(_task).addCase(getCase(value, true));
 			return this;
 		}
 
@@ -81,7 +85,7 @@ package com.epolyakov.asynctasks.core
 		{
 			if (_task is Switch)
 			{
-				Switch(_task).addCase(getCase(value));
+				Switch(_task).addCase(getCase(value, false));
 			}
 			else
 			{
@@ -90,7 +94,7 @@ package com.epolyakov.asynctasks.core
 					_task = new Sequence(_task);
 				}
 				var task:Switch = new Switch();
-				task.addCase(getCase(value));
+				task.addCase(getCase(value, false));
 				Sequence(_task).add(task);
 			}
 			return this;

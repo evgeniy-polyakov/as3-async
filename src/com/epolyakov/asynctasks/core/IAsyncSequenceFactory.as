@@ -7,7 +7,7 @@ package com.epolyakov.asynctasks.core
 	{
 		function next(task:Object):IAsyncFactory;
 
-		function ifThrows(value:Object):IAsyncThrowFactory;
+		function ifThrows(value:Object = null):IAsyncThrowFactory;
 
 		function ifReturns(value:Object):IAsyncReturnFactory;
 	}
