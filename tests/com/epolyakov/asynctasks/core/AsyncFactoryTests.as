@@ -129,21 +129,21 @@ package com.epolyakov.asynctasks.core
 			{
 			};
 			var factory:AsyncFactory = async(null)
-							.next(testTask)
-							.next(func)
-							.next(testInput) as AsyncFactory;
+							.then(testTask)
+							.then(func)
+							.then(testInput) as AsyncFactory;
 
 			assertNotNull(factory);
-			assertTrue(factory.task is Sequence);
-			assertNotNull(Sequence(factory.task).tasks);
-			assertEquals(Sequence(factory.task).tasks.length, 4);
-			assertTrue(Sequence(factory.task).tasks[0] is Data);
-			assertNull(Data(Sequence(factory.task).tasks[0]).value);
-			assertEquals(Sequence(factory.task).tasks[1], testTask);
-			assertTrue(Sequence(factory.task).tasks[2] is Func);
-			assertEquals(Func(Sequence(factory.task).tasks[2]).func, func);
-			assertTrue(Sequence(factory.task).tasks[3] is Data);
-			assertTrue(Data(Sequence(factory.task).tasks[3]), testInput);
+			assertTrue(factory.task is AsyncFactory);
+			assertNotNull(AsyncFactory(factory.task).tasks);
+			assertEquals(AsyncFactory(factory.task).tasks.length, 4);
+			assertTrue(AsyncFactory(factory.task).tasks[0] is Data);
+			assertNull(Data(AsyncFactory(factory.task).tasks[0]).value);
+			assertEquals(AsyncFactory(factory.task).tasks[1], testTask);
+			assertTrue(AsyncFactory(factory.task).tasks[2] is Func);
+			assertEquals(Func(AsyncFactory(factory.task).tasks[2]).func, func);
+			assertTrue(AsyncFactory(factory.task).tasks[3] is Data);
+			assertTrue(Data(AsyncFactory(factory.task).tasks[3]), testInput);
 		}
 
 		[Test]
