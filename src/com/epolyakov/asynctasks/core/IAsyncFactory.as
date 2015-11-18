@@ -5,8 +5,6 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface IAsyncFactory extends IAsyncBaseFactory
 	{
-		function concurrent(task:Object):IAsyncFactory;
-
-		function fail(task:Object):IAsyncBaseFactory;
+		function and(task:Object, ...tasks):IAsyncFactory;
 	}
 }

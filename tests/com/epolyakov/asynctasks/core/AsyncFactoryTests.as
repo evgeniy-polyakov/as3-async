@@ -153,9 +153,9 @@ package com.epolyakov.asynctasks.core
 			{
 			};
 			var factory:AsyncFactory = async(null)
-							.concurrent(testTask)
-							.concurrent(func)
-							.concurrent(testInput) as AsyncFactory;
+							.and(testTask)
+							.and(func)
+							.and(testInput) as AsyncFactory;
 
 			assertNotNull(factory);
 			assertTrue(factory.task is Concurrency);

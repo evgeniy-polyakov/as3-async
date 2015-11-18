@@ -5,6 +5,8 @@ package com.epolyakov.asynctasks.core
 	 */
 	internal class AsyncFactory implements IAsync, IResult, IAsyncFactory
 	{
+		private static var _null:Null = new Null();
+
 		private var _tasks:Vector.<IAsync>;
 		private var _active:Boolean;
 		private var _result:IResult;
@@ -23,6 +25,10 @@ package com.epolyakov.asynctasks.core
 			if (value is Function)
 			{
 				return new Func(value as Function);
+			}
+			if (value == null)
+			{
+				return _null;
 			}
 			return new Data(value);
 		}
@@ -68,13 +74,12 @@ package com.epolyakov.asynctasks.core
 		{
 			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
 			{
-				do {
-					_tasks.shift();
-				}
-				while (_tasks.length > 0 && _tasks[0] is Catch);
-
+				_tasks.shift();
 				if (_tasks.length > 0)
 				{
+					if (_tasks[0] is Pair) {
+						_tasks[0] = Pair(_tasks[0]).success;
+					}
 					_tasks[0].execute(value, this);
 				}
 				else
@@ -98,10 +103,11 @@ package com.epolyakov.asynctasks.core
 				do {
 					_tasks.shift();
 				}
-				while (_tasks.length > 0 && !(_tasks[0] is Catch));
+				while (_tasks.length > 0 && !(_tasks[0] is Pair));
 
 				if (_tasks.length > 0)
 				{
+					_tasks[0] = Pair(_tasks[0]).failure;
 					_tasks[0].execute(error, this);
 				}
 				else
@@ -126,13 +132,19 @@ package com.epolyakov.asynctasks.core
 		{
 			if (!_active && _tasks)
 			{
-				// todo
-				_tasks.push(getTask(successTask));
+				if (failureTask == null)
+				{
+					_tasks.push(getTask(successTask));
+				}
+				else
+				{
+					_tasks.push(new Pair(getTask(successTask), getTask(failureTask)));
+				}
 			}
 			return this;
 		}
 
-		public function concurrent(task:Object):IAsyncFactory
+		public function and(task:Object, ...tasks):IAsyncFactory
 		{
 			if (!_active && _tasks && _tasks.length > 0)
 			{
@@ -142,17 +154,17 @@ package com.epolyakov.asynctasks.core
 					_tasks[n] = new Concurrency(_tasks[n]);
 				}
 				Concurrency(_tasks[n]).add(getTask(task));
+				for each (var t:Object in tasks)
+				{
+					Concurrency(_tasks[n]).add(getTask(t));
+				}
 			}
 			return this;
 		}
 
-		public function fail(failureTask:Object):IAsyncBaseFactory
+		public function fix(failureTask:Object):IAsyncBaseFactory
 		{
-			if (!_active && _tasks && _tasks.length > 0)
-			{
-				// todo
-			}
-			return this;
+			return then(null, failureTask);
 		}
 	}
 }

@@ -14,10 +14,7 @@ package com.epolyakov.asynctasks.core
 		{
 			if (target)
 			{
-				_target = async(target)
-						.ifThrows()
-						.then(onThrow)
-						.otherwise(onReturn);
+				_target = async(target).then(onReturn, onThrow);
 			}
 		}
 

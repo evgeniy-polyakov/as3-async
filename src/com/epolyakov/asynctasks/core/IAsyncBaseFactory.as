@@ -6,5 +6,7 @@ package com.epolyakov.asynctasks.core
 	public interface IAsyncBaseFactory extends IAsync
 	{
 		function then(successTask:Object, failureTask:Object = null):IAsyncFactory;
+
+		function fix(task:Object):IAsyncBaseFactory;
 	}
 }
