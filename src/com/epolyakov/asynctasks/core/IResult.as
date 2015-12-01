@@ -5,8 +5,8 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface IResult
 	{
-		function onReturn(value:Object, target:IAsync):void;
+		function onReturn(value:Object, target:IAwaitable):void;
 
-		function onThrow(error:Object, target:IAsync):void;
+		function onThrow(error:Object, target:IAwaitable):void;
 	}
 }
