@@ -14,7 +14,7 @@ package com.epolyakov.asynctasks.core
 			_func = func;
 		}
 
-		public function get func():Function
+		internal function get func():Function
 		{
 			return _func;
 		}

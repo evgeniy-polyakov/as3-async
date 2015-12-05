@@ -5,13 +5,13 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class AsyncSequence implements IAsync, IResult
+	internal class Sequence implements IAsync, IResult
 	{
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
 
-		public function AsyncSequence(task:Object)
+		public function Sequence(task:Object)
 		{
 			_tasks = new <ITask>[getTask(task)];
 		}
@@ -36,6 +36,16 @@ package com.epolyakov.asynctasks.core
 		internal function get tasks():Vector.<ITask>
 		{
 			return _tasks;
+		}
+
+		internal function get result():IResult
+		{
+			return _result;
+		}
+
+		internal function get active():Boolean
+		{
+			return _active;
 		}
 
 		public function await(args:Object = null, result:IResult = null):void
@@ -149,11 +159,11 @@ package com.epolyakov.asynctasks.core
 			if (!_active && _tasks && _tasks.length > 0)
 			{
 				var n:int = _tasks.length - 1;
-				if (!(_tasks[n] is Conjuction))
+				if (!(_tasks[n] is Conjunction))
 				{
-					_tasks[n] = new Conjuction(_tasks[n]);
+					_tasks[n] = new Conjunction(_tasks[n]);
 				}
-				Conjuction(_tasks[n]).add(getTask(task));
+				Conjunction(_tasks[n]).add(getTask(task));
 			}
 			return this;
 		}
@@ -163,11 +173,11 @@ package com.epolyakov.asynctasks.core
 			if (!_active && _tasks && _tasks.length > 0)
 			{
 				var n:int = _tasks.length - 1;
-				if (!(_tasks[n] is Disjuction))
+				if (!(_tasks[n] is Disjunction))
 				{
-					_tasks[n] = new Disjuction(_tasks[n]);
+					_tasks[n] = new Disjunction(_tasks[n]);
 				}
-				Disjuction(_tasks[n]).add(getTask(task));
+				Disjunction(_tasks[n]).add(getTask(task));
 			}
 			return this;
 		}

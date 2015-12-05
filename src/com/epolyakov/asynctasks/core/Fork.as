@@ -14,12 +14,12 @@ package com.epolyakov.asynctasks.core
 			_failure = failure;
 		}
 
-		public function get success():ITask
+		internal function get success():ITask
 		{
 			return _success;
 		}
 
-		public function get failure():ITask
+		internal function get failure():ITask
 		{
 			return _failure;
 		}

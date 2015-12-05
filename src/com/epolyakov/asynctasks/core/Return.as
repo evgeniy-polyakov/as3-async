@@ -12,7 +12,7 @@ package com.epolyakov.asynctasks.core
 			_value = value;
 		}
 
-		public function get value():Object
+		internal function get value():Object
 		{
 			return _value;
 		}
