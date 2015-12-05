@@ -9,6 +9,6 @@ package com.epolyakov.asynctasks.core
 
 		function hook(task:Object):IAsyncSequence;
 
-		function fork(successTask:Object, failureTask:Object):IAsyncSequence;
+		function fork(success:Object, failure:Object):IAsyncSequence;
 	}
 }

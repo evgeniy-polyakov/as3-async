@@ -3,19 +3,17 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	public class Task implements IAsync
+	public class Task implements IAwaitable, ICancelable
 	{
 		private var _data:Object;
-		private var _target:IAsync;
+		private var _target:IAwaitable;
+		private var _cancelable:ICancelable;
 		private var _active:Boolean;
 		private var _result:IResult;
 
-		public function Task(target:IAsync = null)
+		public function Task(target:IAwaitable = null)
 		{
-			if (target)
-			{
-				_target = async(target).then(onReturn, onThrow);
-			}
+			_target = target;
 		}
 
 		final public function get active():Boolean
@@ -31,7 +29,7 @@ package com.epolyakov.asynctasks.core
 		/**
 		 * @inheritDoc
 		 */
-		final public function execute(data:Object = null, result:IResult = null):void
+		final public function await(data:Object = null, result:IResult = null):ICancelable
 		{
 			if (!_active)
 			{
@@ -40,19 +38,24 @@ package com.epolyakov.asynctasks.core
 				_data = data;
 				if (_target == null)
 				{
-					onExecute();
+					onAwait();
+				}
+				else if (_target is IAsyncSequence)
+				{
+					_cancelable = (_target as IAsyncSequence).fork(onReturn, onThrow).await(data);
 				}
 				else
 				{
-					_target.execute(data);
+					_cancelable = async(_target).fork(onReturn, onThrow).await(data);
 				}
 			}
+			return this;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		final public function interrupt():void
+		final public function cancel():void
 		{
 			if (_active)
 			{
@@ -61,11 +64,13 @@ package com.epolyakov.asynctasks.core
 				_data = null;
 				if (_target == null)
 				{
-					onInterrupt();
+					onCancel();
 				}
-				else
+				else if (_cancelable)
 				{
-					_target.interrupt();
+					var cancelable:ICancelable = _cancelable;
+					_cancelable = null;
+					cancelable.cancel();
 				}
 			}
 		}
@@ -75,11 +80,12 @@ package com.epolyakov.asynctasks.core
 			if (_active)
 			{
 				_active = false;
+				_cancelable = null;
+				_data = null;
 				if (_result)
 				{
 					var result:IResult = _result;
 					_result = null;
-					_data = null;
 					result.onReturn(value, this);
 				}
 			}
@@ -90,11 +96,12 @@ package com.epolyakov.asynctasks.core
 			if (_active)
 			{
 				_active = false;
+				_cancelable = null;
+				_data = null;
 				if (_result)
 				{
 					var result:IResult = _result;
 					_result = null;
-					_data = null;
 					result.onThrow(error, this);
 				}
 				else
@@ -104,12 +111,12 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		protected function onExecute():void
+		protected function onAwait():void
 		{
 		}
 
 
-		protected function onInterrupt():void
+		protected function onCancel():void
 		{
 		}
 	}
