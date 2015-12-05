@@ -3,8 +3,8 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	public function async(task:Object):IAsyncFactory
+	public function async(task:Object):IAsync
 	{
-		return new AsyncFactory(task);
+		return new AsyncSequence(task);
 	}
 }
