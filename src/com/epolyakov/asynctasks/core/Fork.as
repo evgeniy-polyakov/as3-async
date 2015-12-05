@@ -24,7 +24,7 @@ package com.epolyakov.asynctasks.core
 			return _failure;
 		}
 
-		public function await(data:Object = null, result:IResult = null):void
+		public function await(args:Object = null, result:IResult = null):void
 		{
 		}
 

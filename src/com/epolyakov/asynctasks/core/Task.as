@@ -28,24 +28,24 @@ package com.epolyakov.asynctasks.core
 		/**
 		 * @inheritDoc
 		 */
-		final public function await(data:Object = null, result:IResult = null):void
+		final public function await(args:Object = null, result:IResult = null):void
 		{
 			if (!_active)
 			{
 				_active = true;
 				_result = result;
-				_data = data;
+				_data = args;
 				if (_target == null)
 				{
 					onAwait();
 				}
 				else if (_target is IAsyncSequence)
 				{
-					(_target as IAsyncSequence).fork(onReturn, onThrow).await(data);
+					(_target as IAsyncSequence).fork(onReturn, onThrow).await(args);
 				}
 				else
 				{
-					async(_target).fork(onReturn, onThrow).await(data);
+					async(_target).fork(onReturn, onThrow).await(args);
 				}
 			}
 		}

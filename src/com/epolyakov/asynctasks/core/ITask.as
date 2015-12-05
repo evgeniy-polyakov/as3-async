@@ -5,7 +5,7 @@ package com.epolyakov.asynctasks.core
 	 */
 	public interface ITask
 	{
-		function await(data:Object = null, result:IResult = null):void;
+		function await(args:Object = null, result:IResult = null):void;
 
 		function cancel():void;
 	}

@@ -19,14 +19,14 @@ package com.epolyakov.asynctasks.core
 			return _func;
 		}
 
-		public function await(data:Object = null, result:IResult = null):void
+		public function await(args:Object = null, result:IResult = null):void
 		{
 			var value:*;
 			try
 			{
 				if (_func.length == 1)
 				{
-					value = _func(data);
+					value = _func(args);
 				}
 				else
 				{
@@ -49,11 +49,11 @@ package com.epolyakov.asynctasks.core
 			{
 				_task = value;
 				_result = result;
-				_task.await(data, this);
+				_task.await(args, this);
 			}
 			else if (value === undefined && result)
 			{
-				result.onReturn(data, this);
+				result.onReturn(args, this);
 			}
 			else if (result)
 			{

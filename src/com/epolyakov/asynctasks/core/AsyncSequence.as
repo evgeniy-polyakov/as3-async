@@ -32,7 +32,7 @@ package com.epolyakov.asynctasks.core
 			return _tasks;
 		}
 
-		public function await(data:Object = null, result:IResult = null):void
+		public function await(args:Object = null, result:IResult = null):void
 		{
 			if (!_active)
 			{
@@ -44,11 +44,11 @@ package com.epolyakov.asynctasks.core
 					{
 						_tasks[0] = Fork(_tasks[0]).success;
 					}
-					_tasks[0].await(data, this);
+					_tasks[0].await(args, this);
 				}
 				else if (result)
 				{
-					result.onReturn(data, this);
+					result.onReturn(args, this);
 				}
 			}
 		}

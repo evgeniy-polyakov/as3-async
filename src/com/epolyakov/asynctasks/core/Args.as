@@ -17,7 +17,7 @@ package com.epolyakov.asynctasks.core
 			return _value;
 		}
 
-		public function await(data:Object = null, result:IResult = null):void
+		public function await(args:Object = null, result:IResult = null):void
 		{
 			if (result)
 			{
