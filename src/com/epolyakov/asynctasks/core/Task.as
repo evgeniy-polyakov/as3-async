@@ -3,15 +3,14 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	public class Task implements IAwaitable, ICancelable
+	public class Task implements ITask
 	{
 		private var _data:Object;
-		private var _target:IAwaitable;
-		private var _cancelable:ICancelable;
+		private var _target:ITask;
 		private var _active:Boolean;
 		private var _result:IResult;
 
-		public function Task(target:IAwaitable = null)
+		public function Task(target:ITask = null)
 		{
 			_target = target;
 		}
@@ -29,7 +28,7 @@ package com.epolyakov.asynctasks.core
 		/**
 		 * @inheritDoc
 		 */
-		final public function await(data:Object = null, result:IResult = null):ICancelable
+		final public function await(data:Object = null, result:IResult = null):void
 		{
 			if (!_active)
 			{
@@ -42,14 +41,13 @@ package com.epolyakov.asynctasks.core
 				}
 				else if (_target is IAsyncSequence)
 				{
-					_cancelable = (_target as IAsyncSequence).fork(onReturn, onThrow).await(data);
+					(_target as IAsyncSequence).fork(onReturn, onThrow).await(data);
 				}
 				else
 				{
-					_cancelable = async(_target).fork(onReturn, onThrow).await(data);
+					async(_target).fork(onReturn, onThrow).await(data);
 				}
 			}
-			return this;
 		}
 
 		/**
@@ -66,11 +64,9 @@ package com.epolyakov.asynctasks.core
 				{
 					onCancel();
 				}
-				else if (_cancelable)
+				else
 				{
-					var cancelable:ICancelable = _cancelable;
-					_cancelable = null;
-					cancelable.cancel();
+					_target.cancel();
 				}
 			}
 		}
@@ -80,7 +76,6 @@ package com.epolyakov.asynctasks.core
 			if (_active)
 			{
 				_active = false;
-				_cancelable = null;
 				_data = null;
 				if (_result)
 				{
@@ -96,7 +91,6 @@ package com.epolyakov.asynctasks.core
 			if (_active)
 			{
 				_active = false;
-				_cancelable = null;
 				_data = null;
 				if (_result)
 				{

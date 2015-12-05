@@ -3,30 +3,33 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Fork implements IAwaitable
+	internal class Fork implements ITask
 	{
-		private var _success:IAwaitable;
-		private var _failure:IAwaitable;
+		private var _success:ITask;
+		private var _failure:ITask;
 
-		public function Fork(success:IAwaitable, failure:IAwaitable)
+		public function Fork(success:ITask, failure:ITask)
 		{
 			_success = success;
 			_failure = failure;
 		}
 
-		public function get success():IAwaitable
+		public function get success():ITask
 		{
 			return _success;
 		}
 
-		public function get failure():IAwaitable
+		public function get failure():ITask
 		{
 			return _failure;
 		}
 
-		public function await(data:Object = null, result:IResult = null):ICancelable
+		public function await(data:Object = null, result:IResult = null):void
 		{
-			return null;
+		}
+
+		public function cancel():void
+		{
 		}
 	}
 }

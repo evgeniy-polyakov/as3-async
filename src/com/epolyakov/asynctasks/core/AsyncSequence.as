@@ -3,37 +3,36 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class AsyncSequence implements IAsync, ICancelable, IResult
+	internal class AsyncSequence implements IAsync, IResult
 	{
-		private var _tasks:Vector.<IAwaitable>;
-		private var _cancelable:ICancelable;
+		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
 
 		public function AsyncSequence(task:Object)
 		{
-			_tasks = new <IAwaitable>[getTask(task)];
+			_tasks = new <ITask>[getTask(task)];
 		}
 
-		private static function getTask(value:Object):IAwaitable
+		private static function getTask(value:Object):ITask
 		{
-			if (value is IAwaitable)
+			if (value is ITask)
 			{
-				return value as IAwaitable;
+				return value as ITask;
 			}
 			if (value is Function)
 			{
 				return new Func(value as Function);
 			}
-			return new Data(value);
+			return new Args(value);
 		}
 
-		internal function get tasks():Vector.<IAwaitable>
+		internal function get tasks():Vector.<ITask>
 		{
 			return _tasks;
 		}
 
-		public function await(data:Object = null, result:IResult = null):ICancelable
+		public function await(data:Object = null, result:IResult = null):void
 		{
 			if (!_active)
 			{
@@ -45,18 +44,13 @@ package com.epolyakov.asynctasks.core
 					{
 						_tasks[0] = Fork(_tasks[0]).success;
 					}
-					var cancelable:ICancelable = _tasks[0].await(data, this);
-					if (_active)
-					{
-						_cancelable = cancelable;
-					}
+					_tasks[0].await(data, this);
 				}
 				else if (result)
 				{
 					result.onReturn(data, this);
 				}
 			}
-			return this;
 		}
 
 		public function cancel():void
@@ -65,15 +59,14 @@ package com.epolyakov.asynctasks.core
 			{
 				_active = false;
 				_result = null;
-				_tasks = null;
 
-				var cancelable:ICancelable = _cancelable;
-				_cancelable = null;
-				cancelable.cancel();
+				var task:ITask = _tasks[0];
+				_tasks = null;
+				task.cancel();
 			}
 		}
 
-		public function onReturn(value:Object, target:IAwaitable):void
+		public function onReturn(value:Object, target:ITask):void
 		{
 			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
 			{
@@ -81,22 +74,18 @@ package com.epolyakov.asynctasks.core
 					_tasks.shift();
 				}
 				while (_tasks.length > 0 && _tasks[0] is Fork && Fork(_tasks[0]).success == null);
+
 				if (_tasks.length > 0)
 				{
 					if (_tasks[0] is Fork)
 					{
 						_tasks[0] = Fork(_tasks[0]).success;
 					}
-					var cancelable:ICancelable = _tasks[0].await(value, this);
-					if (_active)
-					{
-						_cancelable = cancelable;
-					}
+					_tasks[0].await(value, this);
 				}
 				else
 				{
 					_active = false;
-					_cancelable = null;
 					_tasks = null;
 					if (_result)
 					{
@@ -108,7 +97,7 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		public function onThrow(error:Object, target:IAwaitable):void
+		public function onThrow(error:Object, target:ITask):void
 		{
 			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
 			{
@@ -120,16 +109,11 @@ package com.epolyakov.asynctasks.core
 				if (_tasks.length > 0)
 				{
 					_tasks[0] = Fork(_tasks[0]).failure;
-					var cancelable:ICancelable = _tasks[0].await(error, this);
-					if (_active)
-					{
-						_cancelable = cancelable;
-					}
+					_tasks[0].await(error, this);
 				}
 				else
 				{
 					_active = false;
-					_cancelable = null;
 					_tasks = null;
 					if (_result)
 					{

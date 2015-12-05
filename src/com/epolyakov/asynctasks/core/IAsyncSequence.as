@@ -3,7 +3,7 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	public interface IAsyncSequence extends IAwaitable
+	public interface IAsyncSequence extends ITask
 	{
 		function then(task:Object):IAsync;
 

@@ -3,11 +3,11 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Data implements IAsync
+	internal class Args implements ITask
 	{
 		private var _value:Object;
 
-		public function Data(value:Object)
+		public function Args(value:Object)
 		{
 			_value = value;
 		}
@@ -17,7 +17,7 @@ package com.epolyakov.asynctasks.core
 			return _value;
 		}
 
-		public function execute(data:Object = null, result:IResult = null):void
+		public function await(data:Object = null, result:IResult = null):void
 		{
 			if (result)
 			{
@@ -25,7 +25,7 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		public function interrupt():void
+		public function cancel():void
 		{
 		}
 	}

@@ -3,10 +3,10 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Func implements IAsync, IResult
+	internal class Func implements ITask, IResult
 	{
 		private var _func:Function;
-		private var _task:IAsync;
+		private var _task:ITask;
 		private var _result:IResult;
 
 		public function Func(func:Function)
@@ -19,7 +19,7 @@ package com.epolyakov.asynctasks.core
 			return _func;
 		}
 
-		public function execute(data:Object = null, result:IResult = null):void
+		public function await(data:Object = null, result:IResult = null):void
 		{
 			var value:*;
 			try
@@ -45,11 +45,11 @@ package com.epolyakov.asynctasks.core
 				}
 				return;
 			}
-			if (value is IAsync)
+			if (value is ITask)
 			{
 				_task = value;
 				_result = result;
-				_task.execute(data, this);
+				_task.await(data, this);
 			}
 			else if (value === undefined && result)
 			{
@@ -61,17 +61,18 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		public function interrupt():void
+		public function cancel():void
 		{
 			if (_task)
 			{
-				var task:IAsync = _task;
+				var task:ITask = _task;
+				_result = null;
 				_task = null;
-				task.interrupt();
+				task.cancel();
 			}
 		}
 
-		public function onReturn(value:Object, target:IAsync):void
+		public function onReturn(value:Object, target:ITask):void
 		{
 			if (target == _task)
 			{
@@ -85,7 +86,7 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		public function onThrow(error:Object, target:IAsync):void
+		public function onThrow(error:Object, target:ITask):void
 		{
 			if (target == _task)
 			{
