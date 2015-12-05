@@ -3,11 +3,11 @@ package com.epolyakov.asynctasks.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Args implements ITask
+	internal class Throw implements ITask
 	{
 		private var _value:Object;
 
-		public function Args(value:Object)
+		public function Throw(value:Object)
 		{
 			_value = value;
 		}
@@ -21,7 +21,7 @@ package com.epolyakov.asynctasks.core
 		{
 			if (result)
 			{
-				result.onReturn(_value, this);
+				result.onThrow(_value, this);
 			}
 		}
 

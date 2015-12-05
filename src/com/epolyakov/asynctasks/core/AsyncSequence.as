@@ -1,5 +1,7 @@
 package com.epolyakov.asynctasks.core
 {
+	import flash.events.ErrorEvent;
+
 	/**
 	 * @author epolyakov
 	 */
@@ -24,7 +26,11 @@ package com.epolyakov.asynctasks.core
 			{
 				return new Func(value as Function);
 			}
-			return new Args(value);
+			if (value is Error || value is ErrorEvent)
+			{
+				return new Throw(value);
+			}
+			return new Return(value);
 		}
 
 		internal function get tasks():Vector.<ITask>
