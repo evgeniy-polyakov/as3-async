@@ -71,7 +71,7 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		final protected function onReturn(value:Object):void
+		final public function onReturn(value:Object):void
 		{
 			if (_active)
 			{
@@ -86,7 +86,7 @@ package com.epolyakov.asynctasks.core
 			}
 		}
 
-		final protected function onThrow(error:Object):void
+		final public function onThrow(error:Object):void
 		{
 			if (_active)
 			{
