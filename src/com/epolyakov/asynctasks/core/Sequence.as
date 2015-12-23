@@ -7,6 +7,8 @@ package com.epolyakov.asynctasks.core
 	 */
 	internal class Sequence implements IAsync, IResult
 	{
+		private static var _instances:Vector.<Sequence> = new <Sequence>[];
+
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
@@ -14,6 +16,28 @@ package com.epolyakov.asynctasks.core
 		public function Sequence(task:Object)
 		{
 			_tasks = new <ITask>[getTask(task)];
+		}
+
+		internal static function get instances():Vector.<Sequence>
+		{
+			return _instances;
+		}
+
+		private static function addInstance(instance:Sequence):void
+		{
+			if (_instances.indexOf(instance) < 0)
+			{
+				_instances.push(instance);
+			}
+		}
+
+		private static function removeInstance(instance:Sequence):void
+		{
+			var index:int = _instances.indexOf(instance);
+			if (index >= 0)
+			{
+				_instances.splice(index, 1);
+			}
 		}
 
 		private static function getTask(value:Object):ITask
@@ -54,6 +78,7 @@ package com.epolyakov.asynctasks.core
 			{
 				if (_tasks && _tasks.length > 0)
 				{
+					addInstance(this);
 					_active = true;
 					_result = result;
 					if (_tasks[0] is Fork)
@@ -73,6 +98,7 @@ package com.epolyakov.asynctasks.core
 		{
 			if (_active)
 			{
+				removeInstance(this);
 				_active = false;
 				_result = null;
 
@@ -86,7 +112,8 @@ package com.epolyakov.asynctasks.core
 		{
 			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
 			{
-				do {
+				do
+				{
 					_tasks.shift();
 				}
 				while (_tasks.length > 0 && _tasks[0] is Fork && Fork(_tasks[0]).success == null);
@@ -101,8 +128,10 @@ package com.epolyakov.asynctasks.core
 				}
 				else
 				{
+					removeInstance(this);
 					_active = false;
 					_tasks = null;
+
 					if (_result)
 					{
 						var result:IResult = _result;
@@ -117,7 +146,8 @@ package com.epolyakov.asynctasks.core
 		{
 			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
 			{
-				do {
+				do
+				{
 					_tasks.shift();
 				}
 				while (_tasks.length > 0 && !(_tasks[0] is Fork));
@@ -129,8 +159,10 @@ package com.epolyakov.asynctasks.core
 				}
 				else
 				{
+					removeInstance(this);
 					_active = false;
 					_tasks = null;
+
 					if (_result)
 					{
 						var result:IResult = _result;
