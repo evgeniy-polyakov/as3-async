@@ -1,6 +1,6 @@
-package com.epolyakov.asynctasks.impl
+package com.epolyakov.async.tasks
 {
-	import com.epolyakov.asynctasks.core.Task;
+	import com.epolyakov.async.core.Task;
 
 	import flash.events.Event;
 	import flash.net.FileReference;

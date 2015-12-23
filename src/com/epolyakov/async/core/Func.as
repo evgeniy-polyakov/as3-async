@@ -1,4 +1,4 @@
-package com.epolyakov.asynctasks.core
+package com.epolyakov.async.core
 {
 	/**
 	 * @author epolyakov
