@@ -20,7 +20,7 @@ package com.epolyakov.asynctasks.impl
 			_delay = delay;
 		}
 
-		override protected function onExecute():void
+		override protected function onAwait():void
 		{
 			if (_dispatcher == null)
 			{
@@ -37,7 +37,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function onInterrupt():void
+		override protected function onCancel():void
 		{
 			if (_dispatcher != null)
 			{

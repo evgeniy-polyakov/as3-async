@@ -19,7 +19,7 @@ package com.epolyakov.asynctasks.impl
 	{
 		private var _file:FileReference;
 
-		override protected function onExecute():void
+		override protected function onAwait():void
 		{
 			_file = data as FileReference;
 			if (!_file)
@@ -39,7 +39,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function onInterrupt():void
+		override protected function onCancel():void
 		{
 			removeEventHandlers();
 			try

@@ -26,7 +26,7 @@ package com.epolyakov.asynctasks.impl
 			_filters = filters;
 		}
 
-		override protected function onExecute():void
+		override protected function onAwait():void
 		{
 			_file = new FileReference();
 			addEventHandlers();
@@ -42,7 +42,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function onInterrupt():void
+		override protected function onCancel():void
 		{
 			removeEventHandlers();
 			try

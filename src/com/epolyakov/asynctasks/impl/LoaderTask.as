@@ -35,7 +35,7 @@ package com.epolyakov.asynctasks.impl
 			_context = context;
 		}
 
-		override protected function onExecute():void
+		override protected function onAwait():void
 		{
 			_loader = new Loader();
 			addEventHandlers();
@@ -76,7 +76,7 @@ package com.epolyakov.asynctasks.impl
 			}
 		}
 
-		override protected function onInterrupt():void
+		override protected function onCancel():void
 		{
 			removeEventHandlers();
 			try
