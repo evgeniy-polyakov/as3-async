@@ -3,7 +3,7 @@ package com.epolyakov.async.core.mock
 	import com.epolyakov.async.core.IResult;
 	import com.epolyakov.async.core.ITask;
 
-	import mock.invoke;
+	import mock.Mock;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -12,12 +12,12 @@ package com.epolyakov.async.core.mock
 	{
 		public function onReturn(value:Object, target:ITask):void
 		{
-			invoke(this, onReturn, value, target);
+			Mock.invoke(this, onReturn, value, target);
 		}
 
 		public function onThrow(error:Object, target:ITask):void
 		{
-			invoke(this, onThrow, error, target);
+			Mock.invoke(this, onThrow, error, target);
 		}
 	}
 }

@@ -18,9 +18,9 @@ package mock
 
 		public function that(methodCall:*, times:* = 1):IVerifyActions
 		{
-			var invocation:Invocation = It.getCurrentInvocation();
-			var argumentsMatcher:ArgumentsMatcher = It.getArgumentsMatcher();
-			It.verifyComplete();
+			var invocation:Invocation = Mock.getCurrentInvocation();
+			var argumentsMatcher:ArgumentsMatcher = Mock.getArgumentsMatcher();
+			Mock.verifyComplete();
 
 			if (invocation == null)
 			{
@@ -46,7 +46,7 @@ package mock
 			}
 
 			var invocationsMatched:int = 0;
-			var invocations:Vector.<Invocation> = It.getInvocations();
+			var invocations:Vector.<Invocation> = Mock.getInvocations();
 			for (var i:int = _startInvocationIndex, n:int = invocations.length; i < n; i++)
 			{
 				if (invocation.object == invocations[i].object &&
@@ -70,10 +70,10 @@ package mock
 
 		public function total(times:*):void
 		{
-			It.verifyComplete();
+			Mock.verifyComplete();
 
 			var timesObj:Times = times is Times ? times : Times.exactly(times);
-			var invocations:Vector.<Invocation> = It.getInvocations();
+			var invocations:Vector.<Invocation> = Mock.getInvocations();
 			if (!timesObj.match(invocations.length))
 			{
 				throw new MockError("Expected mocked methods invoked " + timesObj + " but got " + Times.exactly(invocations.length) + "." +
@@ -83,7 +83,7 @@ package mock
 
 		public function verify():IVerify
 		{
-			var verification:Verification = It.verify() as Verification;
+			var verification:Verification = Mock.verify() as Verification;
 			verification._startInvocationIndex = _lastMatchedInvocationIndex + 1;
 			return verification;
 		}

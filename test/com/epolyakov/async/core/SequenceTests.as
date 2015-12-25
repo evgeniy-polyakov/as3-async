@@ -5,9 +5,7 @@ package com.epolyakov.async.core
 
 	import flash.events.ErrorEvent;
 
-	import mock.It;
-	import mock.setup;
-	import mock.verify;
+	import mock.Mock;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
@@ -19,6 +17,12 @@ package com.epolyakov.async.core
 	 */
 	public class SequenceTests
 	{
+		[Before]
+		public function Before():void
+		{
+			Mock.initialize();
+		}
+
 		[Test]
 		public function Sequence_ShouldStoreTheGivenTask():void
 		{
@@ -105,7 +109,7 @@ package com.epolyakov.async.core
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
 
-			setup().that(task.await(args, sequence))
+			Mock.setup().that(task.await(args, sequence))
 					.returns(function (args:Object, result:IResult):void
 					{
 						assertTrue(sequence.active);
@@ -115,7 +119,33 @@ package com.epolyakov.async.core
 
 			sequence.await(args, result);
 
-			verify().that(task.await(args, sequence))
+			Mock.verify().that(task.await(args, sequence))
+					.verify().that(result.onReturn(out, sequence))
+					.verify().total(2);
+
+			assertFalse(sequence.active);
+		}
+
+		[Test]
+		public function await_ShouldAwaitTask1():void
+		{
+			var task:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+
+			Mock.setup().that(task.await(args, sequence))
+					.returns(function (args:Object, result:IResult):void
+					{
+						assertTrue(sequence.active);
+						assertEquals(result, sequence);
+						result.onReturn(out, this as ITask);
+					});
+
+			sequence.await(args, result);
+
+			Mock.verify().that(task.await(args, sequence))
 					.verify().that(result.onReturn(out, sequence))
 					.verify().total(2);
 

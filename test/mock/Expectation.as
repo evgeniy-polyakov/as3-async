@@ -44,9 +44,9 @@ package mock
 
 		public function that(methodCall:*):ISetupActions
 		{
-			var invocation:Invocation = It.getCurrentInvocation();
-			var argumentsMatcher:ArgumentsMatcher = It.getArgumentsMatcher();
-			It.setupComplete();
+			var invocation:Invocation = Mock.getCurrentInvocation();
+			var argumentsMatcher:ArgumentsMatcher = Mock.getArgumentsMatcher();
+			Mock.setupComplete();
 
 			if (invocation == null)
 			{
