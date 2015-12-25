@@ -61,11 +61,22 @@ package mock
 			if (!timesObj.match(invocationsMatched))
 			{
 				throw new MockError("Expected " + invocation.toString(argumentsMatcher) +
-						" invoked " + timesObj.toString() + " but got " + Times.exactly(invocationsMatched).toString() +
+						" invoked " + timesObj + " but got " + Times.exactly(invocationsMatched) +
 						(_startInvocationIndex > 0 ? " starting from index " + _startInvocationIndex : "") + "." +
 						"\nPerformed invocations: " + (invocations.length > 0 ? "\n" + invocations.join(",\n") : "none") + ".");
 			}
 			return this;
+		}
+
+		public function total(times:*):void
+		{
+			var timesObj:Times = times is Times ? times : Times.exactly(times);
+			var invocations:Vector.<Invocation> = It.getInvocations();
+			if (!timesObj.match(invocations.length))
+			{
+				throw new MockError("Expected mocked methods invoked " + timesObj + " but got " + Times.exactly(invocations.length) + "." +
+						"\nPerformed invocations: " + (invocations.length > 0 ? "\n" + invocations.join(",\n") : "none") + ".");
+			}
 		}
 
 		public function verify():IVerify
