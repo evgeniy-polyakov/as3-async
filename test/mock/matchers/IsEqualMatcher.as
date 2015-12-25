@@ -32,11 +32,11 @@ package mock.matchers
 				{
 					return "It.isNull()";
 				}
-				if (_values[0] == true)
+				if (_values[0] === true)
 				{
 					return "It.isTrue()";
 				}
-				if (_values[0] == false)
+				if (_values[0] === false)
 				{
 					return "It.isFalse()";
 				}
