@@ -70,6 +70,8 @@ package mock
 
 		public function total(times:*):void
 		{
+			It.verifyComplete();
+
 			var timesObj:Times = times is Times ? times : Times.exactly(times);
 			var invocations:Vector.<Invocation> = It.getInvocations();
 			if (!timesObj.match(invocations.length))
