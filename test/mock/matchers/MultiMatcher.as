@@ -24,7 +24,7 @@ package mock.matchers
 
 		public function toString():String
 		{
-			return _name + "(" + _values.map(function (v:*):String
+			return _name + "(" + _values.map(function (v:*, ...rest):String
 					{
 						return v == null ? "null" : v.toString();
 					}) + ")";

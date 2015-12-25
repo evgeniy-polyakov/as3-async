@@ -23,5 +23,25 @@ package mock.matchers
 			}
 			return false;
 		}
+
+		override public function toString():String
+		{
+			if (_values.length == 1)
+			{
+				if (_values[0] === null)
+				{
+					return "It.isNull()";
+				}
+				if (_values[0] == true)
+				{
+					return "It.isTrue()";
+				}
+				if (_values[0] == false)
+				{
+					return "It.isFalse()";
+				}
+			}
+			return super.toString();
+		}
 	}
 }
