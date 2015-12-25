@@ -1,10 +1,14 @@
 package com.epolyakov.async.core
 {
+	import com.epolyakov.async.core.mock.MockResult;
+	import com.epolyakov.async.core.mock.MockTask;
+
 	import flash.events.ErrorEvent;
+
+	import mock.It;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
-	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertTrue;
 
@@ -16,14 +20,14 @@ package com.epolyakov.async.core
 		[Test]
 		public function Sequence_ShouldStoreTheGivenTask():void
 		{
-			var task:Task = new Task();
+			var task:ITask = new MockTask();
 			var sequence:Sequence = new Sequence(task);
 
 			assertEquals(1, sequence.tasks.length);
 			assertEquals(task, sequence.tasks[0]);
 
+			assertEquals(0, Sequence.instances.length);
 			assertFalse(sequence.active);
-			assertFalse(task.active);
 		}
 
 		[Test]
@@ -88,6 +92,30 @@ package com.epolyakov.async.core
 			assertEquals(1, sequence.tasks.length);
 			assertTrue(sequence.tasks[0] is Return);
 			assertNull(Return(sequence.tasks[0]).value);
+		}
+
+		[Test]
+		public function await_ShouldAwaitTask():void
+		{
+			var task:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+
+			It.setup().that(task.await(It.isAny(), It.isAny()))
+					.returns(function (args:Object, result:IResult):void
+					{
+						assertTrue(sequence.active);
+						result.onReturn(out, this as ITask);
+					});
+
+			sequence.await(args, result);
+
+			It.verify().that(task.await(args, sequence))
+					.verify().that(result.onReturn(out, sequence));
+
+			assertFalse(sequence.active);
 		}
 	}
 }
