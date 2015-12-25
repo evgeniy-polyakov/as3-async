@@ -115,11 +115,9 @@ package com.epolyakov.async.core
 
 			sequence.await(args, result);
 
-			verify().that(task.await(It.isAny(), It.isAny()));
-			verify().that(result.onReturn(It.isAny(), It.isAny()));
-
 			verify().that(task.await(args, sequence))
-					.verify().that(result.onReturn(out, sequence));
+					.verify().that(result.onReturn(out, sequence))
+					.verify().total(2);
 
 			assertFalse(sequence.active);
 		}
