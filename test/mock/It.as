@@ -2,12 +2,12 @@ package mock
 {
 	import mock.matchers.AnyMatcher;
 	import mock.matchers.ArgumentsMatcher;
-	import mock.matchers.IsOfTypeMatcher;
-	import mock.matchers.IsEqualMatcher;
 	import mock.matchers.FunctionMatcher;
-	import mock.matchers.NotOfTypeMatcher;
-	import mock.matchers.NotEqualMatcher;
+	import mock.matchers.IsEqualMatcher;
+	import mock.matchers.IsOfTypeMatcher;
 	import mock.matchers.IsStrictlyEqualMatcher;
+	import mock.matchers.NotEqualMatcher;
+	import mock.matchers.NotOfTypeMatcher;
 	import mock.matchers.NotStrictlyEqualMatcher;
 
 	/**
@@ -39,8 +39,12 @@ package mock
 			return _currentArguments;
 		}
 
-		public static function setup():ISetup
+		internal static function setup():ISetup
 		{
+			if (_isInVerifyMode)
+			{
+				throw new MockError("Can not setup in verification mode.");
+			}
 			_isInSetupMode = true;
 			var expectation:Expectation = new Expectation();
 			_expectations.unshift(expectation);
@@ -54,7 +58,7 @@ package mock
 			_currentInvocation = null;
 		}
 
-		public static function invoke(object:Object, method:Function, ...args):*
+		internal static function invoke(object:Object, method:Function, args:Array):*
 		{
 			var invocation:Invocation = new Invocation(object, method, args);
 
@@ -75,8 +79,12 @@ package mock
 			return undefined;
 		}
 
-		public static function verify():IVerify
+		internal static function verify():IVerify
 		{
+			if (_isInSetupMode)
+			{
+				throw new MockError("Can not verify in setup mode.");
+			}
 			_isInVerifyMode = true;
 			return new Verification();
 		}
