@@ -16,7 +16,7 @@ package mock
 			_startInvocationIndex = _lastMatchedInvocationIndex = index;
 		}
 
-		public function that(methodCall:*, times:Times = null):IVerifyActions
+		public function that(methodCall:*, times:* = 1):IVerifyActions
 		{
 			var invocation:Invocation = It.getCurrentInvocation();
 			var argumentsMatcher:ArgumentsMatcher = It.getArgumentsMatcher();
@@ -57,14 +57,11 @@ package mock
 					_lastMatchedInvocationIndex = i;
 				}
 			}
-			if (times == null)
-			{
-				times = Times.once;
-			}
-			if (!times.match(invocationsMatched))
+			var timesObj:Times = times is Times ? times : Times.exactly(times);
+			if (!timesObj.match(invocationsMatched))
 			{
 				throw new MockError("Expected " + invocation.toString(argumentsMatcher) +
-						" invoked " + times.toString() + " but got " + Times.exactly(invocationsMatched).toString() +
+						" invoked " + timesObj.toString() + " but got " + Times.exactly(invocationsMatched).toString() +
 						(_startInvocationIndex > 0 ? " starting from index " + _startInvocationIndex : "") + "." +
 						"\nPerformed invocations: " + (invocations.length > 0 ? "\n" + invocations.join(",\n") : "none") + ".");
 			}

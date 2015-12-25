@@ -5,6 +5,6 @@ package mock
 	 */
 	public interface IVerify
 	{
-		function that(methodCall:*, times:Times = null):IVerifyActions;
+		function that(methodCall:*, times:* = 1):IVerifyActions;
 	}
 }
