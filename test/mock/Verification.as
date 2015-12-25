@@ -66,7 +66,7 @@ package mock
 				throw new MockError("Expected " + invocation.toString(argumentsMatcher) +
 						" invoked " + times.toString() + " but got " + Times.exactly(invocationsMatched).toString() +
 						(_startInvocationIndex > 0 ? " starting from index " + _startInvocationIndex : "") + "." +
-						"\nPerformed invocations: " + (invocations.length > 0 ? invocations.join(",\n") : "none") + ".");
+						"\nPerformed invocations: " + (invocations.length > 0 ? "\n" + invocations.join(",\n") : "none") + ".");
 			}
 			return this;
 		}
