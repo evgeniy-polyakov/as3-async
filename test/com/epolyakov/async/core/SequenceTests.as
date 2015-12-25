@@ -6,6 +6,8 @@ package com.epolyakov.async.core
 	import flash.events.ErrorEvent;
 
 	import mock.It;
+	import mock.setup;
+	import mock.verify;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
@@ -103,16 +105,20 @@ package com.epolyakov.async.core
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
 
-			It.setup().that(task.await(It.isAny(), It.isAny()))
+			setup().that(task.await(args, sequence))
 					.returns(function (args:Object, result:IResult):void
 					{
 						assertTrue(sequence.active);
+						assertEquals(result, sequence);
 						result.onReturn(out, this as ITask);
 					});
 
 			sequence.await(args, result);
 
-			It.verify().that(task.await(args, sequence))
+			verify().that(task.await(It.isAny(), It.isAny()));
+			verify().that(result.onReturn(It.isAny(), It.isAny()));
+
+			verify().that(task.await(args, sequence))
 					.verify().that(result.onReturn(out, sequence));
 
 			assertFalse(sequence.active);

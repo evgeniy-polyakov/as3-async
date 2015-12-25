@@ -3,7 +3,7 @@ package com.epolyakov.async.core.mock
 	import com.epolyakov.async.core.IResult;
 	import com.epolyakov.async.core.ITask;
 
-	import mock.It;
+	import mock.invoke;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -12,12 +12,12 @@ package com.epolyakov.async.core.mock
 	{
 		public function await(args:Object = null, result:IResult = null):void
 		{
-			It.invoke(this, await, args, result);
+			invoke(this, await, args, result);
 		}
 
 		public function cancel():void
 		{
-			It.invoke(this, cancel);
+			invoke(this, cancel);
 		}
 	}
 }
