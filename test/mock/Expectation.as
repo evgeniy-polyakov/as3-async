@@ -1,7 +1,7 @@
 package mock
 {
 	import mock.matchers.ArgumentsMatcher;
-	import mock.matchers.EqualMatcher;
+	import mock.matchers.IsEqualMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -67,7 +67,7 @@ package mock
 			{
 				for each (var arg:* in invocation.arguments)
 				{
-					argumentsMatcher.arguments.push(new EqualMatcher(arg));
+					argumentsMatcher.arguments.push(new IsEqualMatcher(arg));
 				}
 			}
 

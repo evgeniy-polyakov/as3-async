@@ -1,7 +1,7 @@
 package mock
 {
 	import mock.matchers.ArgumentsMatcher;
-	import mock.matchers.EqualMatcher;
+	import mock.matchers.IsEqualMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -41,7 +41,7 @@ package mock
 			{
 				for each (var arg:* in invocation.arguments)
 				{
-					argumentsMatcher.arguments.push(new EqualMatcher(arg));
+					argumentsMatcher.arguments.push(new IsEqualMatcher(arg));
 				}
 			}
 
@@ -65,8 +65,8 @@ package mock
 			{
 				throw new MockError("Expected " + invocation.toString(argumentsMatcher) +
 						" invoked " + times.toString() + " but got " + Times.exactly(invocationsMatched).toString() +
-						(_startInvocationIndex > 0 ? " starting from " + _startInvocationIndex : "") + "." +
-						"\nPerformed invocations:\n" + invocations.join(",\n") + ".");
+						(_startInvocationIndex > 0 ? " starting from index " + _startInvocationIndex : "") + "." +
+						"\nPerformed invocations: " + (invocations.length > 0 ? invocations.join(",\n") : "none") + ".");
 			}
 			return this;
 		}

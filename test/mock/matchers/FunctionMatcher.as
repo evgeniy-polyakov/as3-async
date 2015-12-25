@@ -18,5 +18,10 @@ package mock.matchers
 		{
 			return _func(value);
 		}
+
+		public function toString():String
+		{
+			return "It.matches(" + _func + ")";
+		}
 	}
 }

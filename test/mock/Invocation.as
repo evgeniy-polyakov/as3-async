@@ -1,5 +1,7 @@
 package mock
 {
+	import flash.utils.describeType;
+
 	/**
 	 * @author Evgeniy Polyakov
 	 */
@@ -33,12 +35,54 @@ package mock
 
 		public function toString(arguments:Object = null):String
 		{
-			var s:String = object != null ? object.toString() + "." : "";
-			s += String(method); // todo get function name from metadata
+			var s:String = _object != null ? getObjectName() + "." : "";
+			s += getMethodName();
 			s += "(";
 			s += (arguments || _arguments).toString();
 			s += ")";
 			return s;
+		}
+
+		private function getObjectName():String
+		{
+			if (_object != null)
+			{
+				var qName:String = describeType(_object).@name.toXMLString();
+				var index:int = qName.indexOf("::");
+				if (index >= 0)
+				{
+					return qName.substring(index + 2);
+				}
+				return qName;
+			}
+			return String(_method);
+		}
+
+		private function getMethodName():String
+		{
+			if (_object != null)
+			{
+				var xml:XML = describeType(_object);
+				for each (var name:String in xml..method.@name)
+				{
+					if (_object[name] == _method)
+					{
+						return name;
+					}
+				}
+			}
+			if (_method != null)
+			{
+				var qName:String = describeType(_method).@name.toXMLString();
+				var s:XML = describeType(_method);
+				var index:int = qName.indexOf("::");
+				if (index >= 0)
+				{
+					return qName.substring(index + 2);
+				}
+				return qName;
+			}
+			return "null";
 		}
 	}
 }

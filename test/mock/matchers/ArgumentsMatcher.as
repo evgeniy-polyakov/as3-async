@@ -29,5 +29,10 @@ package mock.matchers
 			}
 			return false;
 		}
+
+		public function toString():String
+		{
+			return _arguments.join(",");
+		}
 	}
 }

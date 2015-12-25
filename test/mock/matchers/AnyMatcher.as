@@ -11,5 +11,10 @@ package mock.matchers
 		{
 			return true;
 		}
+
+		public function toString():String
+		{
+			return "It.isAny()";
+		}
 	}
 }

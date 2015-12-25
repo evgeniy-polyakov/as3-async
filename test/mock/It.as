@@ -2,10 +2,13 @@ package mock
 {
 	import mock.matchers.AnyMatcher;
 	import mock.matchers.ArgumentsMatcher;
-	import mock.matchers.ClassMatcher;
-	import mock.matchers.EqualMatcher;
+	import mock.matchers.IsOfTypeMatcher;
+	import mock.matchers.IsEqualMatcher;
 	import mock.matchers.FunctionMatcher;
-	import mock.matchers.StrictEqualMatcher;
+	import mock.matchers.NotOfTypeMatcher;
+	import mock.matchers.NotEqualMatcher;
+	import mock.matchers.IsStrictlyEqualMatcher;
+	import mock.matchers.NotStrictlyEqualMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -101,43 +104,74 @@ package mock
 			}
 			else
 			{
-				_currentArguments.arguments.push(new EqualMatcher(matcher));
+				_currentArguments.arguments.push(new IsEqualMatcher(matcher));
 			}
 		}
 
-		public static function equals(value:*):void
+		public static function isEqual(value:*, ...values):*
 		{
-			_currentArguments.arguments.push(new EqualMatcher(value));
+			_currentArguments.arguments.push(new IsEqualMatcher(value, values));
+			return undefined;
 		}
 
-		public static function strictlyEquals(value:*):void
+		public static function notEqual(value:*, ...values):*
 		{
-			_currentArguments.arguments.push(new StrictEqualMatcher(value));
+			_currentArguments.arguments.push(new NotEqualMatcher(value, values));
+			return undefined;
 		}
 
-		public static function isOfType(type:Class):void
+		public static function isStrictlyEqual(value:*, ...values):*
 		{
-			_currentArguments.arguments.push(new ClassMatcher(type));
+			_currentArguments.arguments.push(new IsStrictlyEqualMatcher(value, values));
+			return undefined;
 		}
 
-		public static function isNull():void
+		public static function notStrictlyEqual(value:*, ...values):*
 		{
-			_currentArguments.arguments.push(new EqualMatcher(null));
+			_currentArguments.arguments.push(new NotStrictlyEqualMatcher(value, values));
+			return undefined;
 		}
 
-		public static function isFalse():void
+		public static function isOfType(type:Class, ...types):*
 		{
-			_currentArguments.arguments.push(new EqualMatcher(false));
+			_currentArguments.arguments.push(new IsOfTypeMatcher(type, types));
+			return undefined;
 		}
 
-		public static function isTrue():void
+		public static function notOfType(type:Class, ...types):*
 		{
-			_currentArguments.arguments.push(new EqualMatcher(true));
+			_currentArguments.arguments.push(new NotOfTypeMatcher(type, types));
+			return undefined;
 		}
 
-		public static function isAny():void
+		public static function isNull():*
+		{
+			_currentArguments.arguments.push(new IsEqualMatcher(null));
+			return undefined;
+		}
+
+		public static function notNull():*
+		{
+			_currentArguments.arguments.push(new NotEqualMatcher(null));
+			return undefined;
+		}
+
+		public static function isFalse():*
+		{
+			_currentArguments.arguments.push(new IsEqualMatcher(false));
+			return undefined;
+		}
+
+		public static function isTrue():*
+		{
+			_currentArguments.arguments.push(new IsEqualMatcher(true));
+			return undefined;
+		}
+
+		public static function isAny():*
 		{
 			_currentArguments.arguments.push(new AnyMatcher());
+			return undefined;
 		}
 	}
 }
