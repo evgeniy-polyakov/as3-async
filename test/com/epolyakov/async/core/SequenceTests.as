@@ -125,31 +125,5 @@ package com.epolyakov.async.core
 
 			assertFalse(sequence.active);
 		}
-
-		[Test]
-		public function await_ShouldAwaitTask1():void
-		{
-			var task:MockTask = new MockTask();
-			var result:MockResult = new MockResult();
-			var args:Object = {};
-			var out:Object = {};
-			var sequence:Sequence = new Sequence(task);
-
-			Mock.setup().that(task.await(args, sequence))
-					.returns(function (args:Object, result:IResult):void
-					{
-						assertTrue(sequence.active);
-						assertEquals(result, sequence);
-						result.onReturn(out, this as ITask);
-					});
-
-			sequence.await(args, result);
-
-			Mock.verify().that(task.await(args, sequence))
-					.verify().that(result.onReturn(out, sequence))
-					.verify().total(2);
-
-			assertFalse(sequence.active);
-		}
 	}
 }
