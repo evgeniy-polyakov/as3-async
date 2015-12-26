@@ -25,6 +25,16 @@ package mock
 		{
 			if (_returns is Function)
 			{
+				if ((_returns as Function).length == 0)
+				{
+					return (_returns as Function).call(invocation.object);
+				}
+				if ((_returns as Function).length != invocation.arguments.length)
+				{
+					throw new MockError("Arguments mismatch: " +
+							"expected " + invocation.toString() +
+							"but got " + (_returns as Function).length);
+				}
 				return (_returns as Function).apply(invocation.object, invocation.arguments);
 			}
 			if (_returns !== undefined)
@@ -33,6 +43,16 @@ package mock
 			}
 			if (_throws is Function)
 			{
+				if ((_throws as Function).length == 0)
+				{
+					throw (_throws as Function).call(invocation.object);
+				}
+				if ((_throws as Function).length != invocation.arguments.length)
+				{
+					throw new MockError("Arguments mismatch: " +
+							"expected (" + invocation.toString() + ")" +
+							"but got " + (_throws as Function).length + ".");
+				}
 				throw (_throws as Function).apply(invocation.object, invocation.arguments);
 			}
 			if (_throws !== undefined)
@@ -60,7 +80,9 @@ package mock
 			{
 				if (argumentsMatcher.arguments.length != invocation.arguments.length)
 				{
-					throw new MockError("Arguments mismatch.");
+					throw new MockError("Arguments mismatch: " +
+							"expected (" + argumentsMatcher + ")" +
+							"but got (" + invocation.arguments + ").");
 				}
 			}
 			else

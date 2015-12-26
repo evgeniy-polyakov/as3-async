@@ -34,7 +34,9 @@ package mock
 			{
 				if (argumentsMatcher.arguments.length != invocation.arguments.length)
 				{
-					throw new MockError("Arguments mismatch.");
+					throw new MockError("Arguments mismatch: " +
+							"expected (" + argumentsMatcher + ")" +
+							"but got (" + invocation.arguments + ").");
 				}
 			}
 			else
