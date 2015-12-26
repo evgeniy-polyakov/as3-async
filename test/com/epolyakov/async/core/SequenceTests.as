@@ -5,7 +5,9 @@ package com.epolyakov.async.core
 
 	import flash.events.ErrorEvent;
 
+	import mock.It;
 	import mock.Mock;
+	import mock.Times;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
@@ -101,7 +103,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function await_ShouldAwaitTask():void
+		public function await_ShouldAwaitTaskAndKeepInstance():void
 		{
 			var task:MockTask = new MockTask();
 			var result:MockResult = new MockResult();
@@ -110,11 +112,16 @@ package com.epolyakov.async.core
 			var sequence:Sequence = new Sequence(task);
 
 			Mock.setup().that(task.await(args, sequence))
-					.returns(function (args:Object, result:IResult):void
+					.returns(function (args:Object, r:IResult):void
 					{
 						assertTrue(sequence.active);
-						assertEquals(result, sequence);
-						result.onReturn(out, this as ITask);
+						assertEquals(r, sequence);
+						assertEquals(result, sequence.result);
+						assertEquals(sequence.tasks.length, 1);
+						assertEquals(sequence.tasks[0], task);
+						assertEquals(Sequence.instances.length, 1);
+						assertEquals(Sequence.instances[0], sequence);
+						r.onReturn(out, this as ITask);
 					});
 
 			sequence.await(args, result);
@@ -124,6 +131,42 @@ package com.epolyakov.async.core
 					.verify().total(2);
 
 			assertFalse(sequence.active);
+			assertEquals(Sequence.instances.length, 0);
+		}
+
+		[Test]
+		public function await_ShouldStartForkSuccess():void
+		{
+			var success:MockTask = new MockTask();
+			var failure:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(new Fork(success, failure));
+
+			Mock.setup().that(success.await(args, sequence))
+					.returns(function (args:Object, r:IResult):void
+					{
+						assertTrue(sequence.active);
+						assertEquals(r, sequence);
+						assertEquals(result, sequence.result);
+						assertEquals(sequence.tasks.length, 1);
+						assertEquals(sequence.tasks[0], success);
+						assertEquals(Sequence.instances.length, 1);
+						assertEquals(Sequence.instances[0], sequence);
+						r.onReturn(out, this as ITask);
+					});
+
+			sequence.await(args, result);
+
+			Mock.verify().that(success.await(args, sequence))
+					.verify().that(result.onReturn(out, sequence))
+					.verify().total(2);
+
+			Mock.verify().that(failure.await(It.isAny(), It.isAny()), Times.never);
+
+			assertFalse(sequence.active);
+			assertEquals(Sequence.instances.length, 0);
 		}
 	}
 }
