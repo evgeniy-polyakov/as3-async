@@ -31,7 +31,7 @@ package mock
 			return _currentArguments;
 		}
 
-		public static function initialize():void
+		public static function clear():void
 		{
 			_expectations = new <Expectation>[];
 			_invocations = new <Invocation>[];

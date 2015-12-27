@@ -5,9 +5,7 @@ package com.epolyakov.async.core
 
 	import flash.events.ErrorEvent;
 
-	import mock.It;
 	import mock.Mock;
-	import mock.Times;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
@@ -22,7 +20,7 @@ package com.epolyakov.async.core
 		[Before]
 		public function Before():void
 		{
-			Mock.initialize();
+			Mock.clear();
 		}
 
 		[Test]
@@ -103,70 +101,93 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function await_ShouldAwaitTaskAndKeepInstance():void
+		public function await_ShouldCallTaskAwait():void
 		{
 			var task:MockTask = new MockTask();
 			var result:MockResult = new MockResult();
 			var args:Object = {};
-			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
-
-			Mock.setup().that(task.await(args, sequence))
-					.returns(function (args:Object, r:IResult):void
-					{
-						assertTrue(sequence.active);
-						assertEquals(r, sequence);
-						assertEquals(result, sequence.result);
-						assertEquals(sequence.tasks.length, 1);
-						assertEquals(sequence.tasks[0], task);
-						assertEquals(Sequence.instances.length, 1);
-						assertEquals(Sequence.instances[0], sequence);
-						r.onReturn(out, this as ITask);
-					});
 
 			sequence.await(args, result);
 
-			Mock.verify().that(task.await(args, sequence))
-					.verify().that(result.onReturn(out, sequence))
-					.verify().total(2);
+			Mock.verify().that(task.await(args, sequence));
+			Mock.verify().total(1);
 
-			assertFalse(sequence.active);
+			assertTrue(sequence.active);
+			assertEquals(sequence.result, result);
+
+			sequence.cancel();
+		}
+
+		[Test]
+		public function await_NullArgs_ShouldCallTaskAwait():void
+		{
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+
+			sequence.await();
+
+			Mock.verify().that(task.await(null, sequence));
+			Mock.verify().total(1);
+
+			assertTrue(sequence.active);
+			assertNull(sequence.result);
+
+			sequence.cancel();
+		}
+
+		[Test]
+		public function await_ShouldCallForkAwait():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var sequence:Sequence = new Sequence(new Fork(task, task1));
+
+			sequence.await(args, result);
+
+			Mock.verify().that(task.await(args, sequence));
+			Mock.verify().total(1);
+
+			assertTrue(sequence.active);
+			assertEquals(sequence.result, result);
+			assertEquals(sequence.tasks[0], task);
+
+			sequence.cancel();
+		}
+
+		[Test]
+		public function await_ShouldKeepInstance():void
+		{
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+
+			assertEquals(Sequence.instances.length, 0);
+
+			sequence.await();
+
+			assertEquals(Sequence.instances.length, 1);
+			assertEquals(Sequence.instances[0], sequence);
+
+			sequence.cancel();
+
 			assertEquals(Sequence.instances.length, 0);
 		}
 
 		[Test]
-		public function await_ShouldStartForkSuccess():void
+		public function await_CalledTwice_ShouldHaveNoEffect():void
 		{
-			var success:MockTask = new MockTask();
-			var failure:MockTask = new MockTask();
-			var result:MockResult = new MockResult();
-			var args:Object = {};
-			var out:Object = {};
-			var sequence:Sequence = new Sequence(new Fork(success, failure));
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
 
-			Mock.setup().that(success.await(args, sequence))
-					.returns(function (args:Object, r:IResult):void
-					{
-						assertTrue(sequence.active);
-						assertEquals(r, sequence);
-						assertEquals(result, sequence.result);
-						assertEquals(sequence.tasks.length, 1);
-						assertEquals(sequence.tasks[0], success);
-						assertEquals(Sequence.instances.length, 1);
-						assertEquals(Sequence.instances[0], sequence);
-						r.onReturn(out, this as ITask);
-					});
+			sequence.await();
+			sequence.await();
+			assertTrue(sequence.active);
+			Mock.verify().that(task.await(null, sequence));
+			Mock.verify().total(1);
 
-			sequence.await(args, result);
-
-			Mock.verify().that(success.await(args, sequence))
-					.verify().that(result.onReturn(out, sequence))
-					.verify().total(2);
-
-			Mock.verify().that(failure.await(It.isAny(), It.isAny()), Times.never);
-
-			assertFalse(sequence.active);
-			assertEquals(Sequence.instances.length, 0);
+			sequence.cancel();
 		}
 	}
 }
