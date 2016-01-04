@@ -33,73 +33,35 @@ package com.epolyakov.async.core
 
 			assertEquals(1, sequence.tasks.length);
 			assertEquals(task, sequence.tasks[0]);
-
-			assertEquals(0, Cache.instances.length);
-			assertFalse(sequence.active);
 		}
 
 		[Test]
-		public function Sequence_ShouldWrapFunction():void
+		public function Sequence_Shortcuts_ShouldAddTask():void
 		{
-			var func:Function = function ():void {};
-			var sequence:Sequence = new Sequence(func);
-
-			assertEquals(1, sequence.tasks.length);
-			assertTrue(sequence.tasks[0] is Func);
-			assertEquals(func, Func(sequence.tasks[0]).func);
-		}
-
-		[Test]
-		public function Sequence_ShouldWrapError():void
-		{
+			var task:MockTask = new MockTask();
+			var func:Function = function ():void
+			{
+			};
+			var data:Object = {};
 			var error:Error = new Error();
-			var sequence:Sequence = new Sequence(error);
+			var errorEvent:ErrorEvent = new ErrorEvent("test");
 
-			assertEquals(1, sequence.tasks.length);
-			assertTrue(sequence.tasks[0] is Throw);
-			assertEquals(error, Throw(sequence.tasks[0]).value);
-		}
+			var sequence:Sequence;
 
-		[Test]
-		public function Sequence_ShouldWrapErrorEvent():void
-		{
-			var error:ErrorEvent = new ErrorEvent("");
-			var sequence:Sequence = new Sequence(error);
+			sequence = new Sequence(task);
+			assertEquals(sequence.tasks[0], task);
 
-			assertEquals(1, sequence.tasks.length);
-			assertTrue(sequence.tasks[0] is Throw);
-			assertEquals(error, Throw(sequence.tasks[0]).value);
-		}
+			sequence = new Sequence(func);
+			assertEquals(Func(sequence.tasks[0]).func, func);
 
-		[Test]
-		public function Sequence_ShouldWrapObject():void
-		{
-			var object:Object = {};
-			var sequence:Sequence = new Sequence(object);
+			sequence = new Sequence(data);
+			assertEquals(Return(sequence.tasks[0]).value, data);
 
-			assertEquals(1, sequence.tasks.length);
-			assertTrue(sequence.tasks[0] is Return);
-			assertEquals(object, Return(sequence.tasks[0]).value);
-		}
+			sequence = new Sequence(error);
+			assertEquals(Throw(sequence.tasks[0]).value, error);
 
-		[Test]
-		public function Sequence_ShouldWrapPrimitive():void
-		{
-			var sequence:Sequence = new Sequence(100);
-
-			assertEquals(1, sequence.tasks.length);
-			assertTrue(sequence.tasks[0] is Return);
-			assertEquals(100, Return(sequence.tasks[0]).value);
-		}
-
-		[Test]
-		public function Sequence_ShouldWrapNull():void
-		{
-			var sequence:Sequence = new Sequence(null);
-
-			assertEquals(1, sequence.tasks.length);
-			assertTrue(sequence.tasks[0] is Return);
-			assertNull(Return(sequence.tasks[0]).value);
+			sequence = new Sequence(errorEvent);
+			assertEquals(Throw(sequence.tasks[0]).value, errorEvent);
 		}
 
 		[Test]
@@ -109,6 +71,8 @@ package com.epolyakov.async.core
 			var result:MockResult = new MockResult();
 			var args:Object = {};
 			var sequence:Sequence = new Sequence(task);
+
+			assertFalse(sequence.active);
 
 			sequence.await(args, result);
 
