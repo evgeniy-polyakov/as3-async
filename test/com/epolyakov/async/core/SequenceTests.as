@@ -5,10 +5,12 @@ package com.epolyakov.async.core
 
 	import flash.events.ErrorEvent;
 
+	import mock.It;
 	import mock.Mock;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
+	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertTrue;
 
@@ -32,7 +34,7 @@ package com.epolyakov.async.core
 			assertEquals(1, sequence.tasks.length);
 			assertEquals(task, sequence.tasks[0]);
 
-			assertEquals(0, Sequence.instances.length);
+			assertEquals(0, Cache.instances.length);
 			assertFalse(sequence.active);
 		}
 
@@ -163,16 +165,16 @@ package com.epolyakov.async.core
 			var task:MockTask = new MockTask();
 			var sequence:Sequence = new Sequence(task);
 
-			assertEquals(Sequence.instances.length, 0);
+			assertEquals(Cache.instances.length, 0);
 
 			sequence.await();
 
-			assertEquals(Sequence.instances.length, 1);
-			assertEquals(Sequence.instances[0], sequence);
+			assertEquals(Cache.instances.length, 1);
+			assertEquals(Cache.instances[0], sequence);
 
 			sequence.cancel();
 
-			assertEquals(Sequence.instances.length, 0);
+			assertEquals(Cache.instances.length, 0);
 		}
 
 		[Test]
@@ -185,12 +187,64 @@ package com.epolyakov.async.core
 			sequence.await();
 
 			assertTrue(sequence.active);
-			assertEquals(Sequence.instances.length, 1);
-			assertEquals(Sequence.instances[0], sequence);
+			assertEquals(Cache.instances.length, 1);
+			assertEquals(Cache.instances[0], sequence);
 			Mock.verify().that(task.await(null, sequence));
 			Mock.verify().total(1);
 
 			sequence.cancel();
+		}
+
+		[Test]
+		public function cancel_CalledFirst_ShouldHaveNoEffect():void
+		{
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+
+			sequence.cancel();
+
+			assertFalse(sequence.active);
+			assertNotNull(sequence.tasks);
+			assertEquals(Cache.instances.length, 0);
+			Mock.verify().total(0);
+		}
+
+		[Test]
+		public function cancel_ShouldCancelActiveTask():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+			sequence.then(task1);
+			sequence.then(task2);
+
+			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn(args, this as ITask);
+			});
+
+			sequence.await();
+			sequence.cancel();
+
+			Mock.verify().that(task.await(null, sequence))
+					.verify().that(task1.await(null, sequence))
+					.verify().that(task1.cancel())
+					.verify().total(3);
+		}
+
+		[Test]
+		public function cancel_ShouldDestroySequence():void
+		{
+			var sequence:Sequence = new Sequence(new MockTask());
+
+			sequence.await({}, new MockResult());
+			sequence.cancel();
+
+			assertFalse(sequence.active);
+			assertNull(sequence.tasks);
+			assertNull(sequence.result);
+			assertEquals(Cache.instances.length, 0);
 		}
 	}
 }
