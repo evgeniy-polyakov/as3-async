@@ -234,7 +234,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function cancel_ShouldDestroySequence():void
+		public function cancel_ShouldClearSequence():void
 		{
 			var sequence:Sequence = new Sequence(new MockTask());
 
@@ -242,9 +242,83 @@ package com.epolyakov.async.core
 			sequence.cancel();
 
 			assertFalse(sequence.active);
-			assertNull(sequence.tasks);
+			assertEquals(sequence.tasks.length, 0);
 			assertNull(sequence.result);
 			assertEquals(Cache.instances.length, 0);
+		}
+
+		[Test]
+		public function then_ShouldAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+			sequence.then(task1);
+			sequence.then(task2);
+
+			assertEquals(sequence.tasks.length, 3);
+			assertEquals(sequence.tasks[0], task);
+			assertEquals(sequence.tasks[1], task1);
+			assertEquals(sequence.tasks[2], task2);
+			Mock.verify().total(0);
+		}
+
+		[Test]
+		public function then_ShouldReturnSequence():void
+		{
+			var sequence:Sequence = new Sequence(new MockTask());
+
+			assertEquals(sequence.then(new MockTask()), sequence);
+		}
+
+		[Test]
+		public function then_ActiveSequence_ShouldNotAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+
+			sequence.await();
+			sequence.then(new MockTask());
+
+			assertEquals(sequence.tasks.length, 1);
+			assertEquals(sequence.tasks[0], task);
+
+			sequence.cancel();
+		}
+
+		[Test]
+		public function then_Shortcuts_ShouldAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Function = function ():void
+			{
+			};
+			var data:Object = {};
+			var error:Error = new Error();
+			var errorEvent:ErrorEvent = new ErrorEvent("test");
+
+			var sequence:Sequence;
+
+			sequence = new Sequence(null);
+			sequence.then(task);
+			assertEquals(sequence.tasks[1], task);
+
+			sequence = new Sequence(null);
+			sequence.then(func);
+			assertEquals(Func(sequence.tasks[1]).func, func);
+
+			sequence = new Sequence(null);
+			sequence.then(data);
+			assertEquals(Return(sequence.tasks[1]).value, data);
+
+			sequence = new Sequence(null);
+			sequence.then(error);
+			assertEquals(Throw(sequence.tasks[1]).value, error);
+
+			sequence = new Sequence(null);
+			sequence.then(errorEvent);
+			assertEquals(Throw(sequence.tasks[1]).value, errorEvent);
 		}
 	}
 }

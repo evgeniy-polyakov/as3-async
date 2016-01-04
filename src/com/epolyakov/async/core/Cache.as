@@ -31,7 +31,11 @@ package com.epolyakov.async.core
 
 		public static function clear():void
 		{
-			_instances = new <ITask>[];
+			var n:int = _instances.length;
+			if (n > 0)
+			{
+				_instances.splice(0, n);
+			}
 		}
 
 		public static function get length():int

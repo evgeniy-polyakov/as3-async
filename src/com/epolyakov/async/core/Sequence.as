@@ -52,7 +52,7 @@ package com.epolyakov.async.core
 		{
 			if (!_active)
 			{
-				if (_tasks && _tasks.length > 0)
+				if (_tasks.length > 0)
 				{
 					Cache.add(this);
 					_active = true;
@@ -78,15 +78,18 @@ package com.epolyakov.async.core
 				_active = false;
 				_result = null;
 
-				var task:ITask = _tasks[0];
-				_tasks = null;
-				task.cancel();
+				if (_tasks.length > 0)
+				{
+					var task:ITask = _tasks[0];
+					_tasks.splice(0, _tasks.length);
+					task.cancel();
+				}
 			}
 		}
 
 		public function onReturn(value:Object, target:ITask):void
 		{
-			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
+			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
 				do
 				{
@@ -106,7 +109,7 @@ package com.epolyakov.async.core
 				{
 					Cache.remove(this);
 					_active = false;
-					_tasks = null;
+					_tasks.splice(0, _tasks.length);
 
 					if (_result)
 					{
@@ -120,7 +123,7 @@ package com.epolyakov.async.core
 
 		public function onThrow(error:Object, target:ITask):void
 		{
-			if (_active && _tasks && _tasks.length > 0 && target == _tasks[0])
+			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
 				do
 				{
@@ -137,7 +140,7 @@ package com.epolyakov.async.core
 				{
 					Cache.remove(this);
 					_active = false;
-					_tasks = null;
+					_tasks.splice(0, _tasks.length);
 
 					if (_result)
 					{
@@ -155,7 +158,7 @@ package com.epolyakov.async.core
 
 		public function then(task:Object):IAsync
 		{
-			if (!_active && _tasks)
+			if (!_active)
 			{
 				_tasks.push(getTask(task));
 			}
@@ -164,7 +167,7 @@ package com.epolyakov.async.core
 
 		public function and(task:Object):IAsyncConjunction
 		{
-			if (!_active && _tasks && _tasks.length > 0)
+			if (!_active && _tasks.length > 0)
 			{
 				var n:int = _tasks.length - 1;
 				if (!(_tasks[n] is Conjunction))
@@ -178,7 +181,7 @@ package com.epolyakov.async.core
 
 		public function or(task:Object):IAsyncDisjunction
 		{
-			if (!_active && _tasks && _tasks.length > 0)
+			if (!_active && _tasks.length > 0)
 			{
 				var n:int = _tasks.length - 1;
 				if (!(_tasks[n] is Disjunction))
@@ -192,7 +195,7 @@ package com.epolyakov.async.core
 
 		public function fork(success:Object, failure:Object):IAsyncSequence
 		{
-			if (!_active && _tasks)
+			if (!_active)
 			{
 				_tasks.push(new Fork(getTask(success), getTask(failure)));
 			}
@@ -201,7 +204,7 @@ package com.epolyakov.async.core
 
 		public function hook(failure:Object):IAsyncSequence
 		{
-			if (!_active && _tasks)
+			if (!_active)
 			{
 				_tasks.push(new Fork(null, getTask(failure)));
 			}
