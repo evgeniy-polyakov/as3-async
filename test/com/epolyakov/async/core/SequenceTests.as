@@ -409,5 +409,130 @@ package com.epolyakov.async.core
 			sequence.and(errorEvent);
 			assertEquals(Throw(Conjunction(sequence.tasks[0]).tasks[1]).value, errorEvent);
 		}
+
+		[Test]
+		public function or_ShouldAddDisjunction():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+			sequence.or(task1);
+			sequence.or(task2);
+
+			assertEquals(sequence.tasks.length, 1);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks.length, 3);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks[0], task);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks[1], task1);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks[2], task2);
+			Mock.verify().total(0);
+		}
+
+		[Test]
+		public function or_ShouldAddDisjunctionAtTheEnd():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+			sequence.then(task1);
+			sequence.or(task2);
+
+			assertEquals(sequence.tasks.length, 2);
+			assertEquals(sequence.tasks[0], task);
+			assertEquals(Disjunction(sequence.tasks[1]).tasks.length, 2);
+			assertEquals(Disjunction(sequence.tasks[1]).tasks[0], task1);
+			assertEquals(Disjunction(sequence.tasks[1]).tasks[1], task2);
+			Mock.verify().total(0);
+		}
+
+		[Test]
+		public function or_ShouldNotRecreateDisjunction():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var disjunction:Disjunction = new Disjunction(task);
+			var sequence:Sequence = new Sequence(disjunction);
+			sequence.or(task1);
+			sequence.or(task2);
+
+			assertEquals(sequence.tasks.length, 1);
+			assertEquals(sequence.tasks[0], disjunction);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks.length, 3);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks[0], task);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks[1], task1);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks[2], task2);
+			Mock.verify().total(0);
+		}
+
+		[Test]
+		public function or_ShouldReturnSequence():void
+		{
+			var sequence:Sequence = new Sequence(new MockTask());
+
+			assertEquals(sequence.or(new MockTask()), sequence);
+		}
+
+		[Test]
+		public function or_ActiveSequence_ShouldNotAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+			sequence.await();
+			sequence.or(new MockTask());
+
+			assertEquals(sequence.tasks.length, 1);
+			assertEquals(sequence.tasks[0], task);
+
+			sequence.cancel();
+		}
+
+		[Test]
+		public function or_EmptySequence_ShouldNotAddTask():void
+		{
+			var sequence:Sequence = new Sequence(new MockTask());
+			sequence.await();
+			sequence.cancel();
+			sequence.or(new MockTask());
+
+			assertEquals(sequence.tasks.length, 0);
+
+			sequence.cancel();
+		}
+
+		[Test]
+		public function or_Shortcuts_ShouldAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Function = function ():void
+			{
+			};
+			var data:Object = {};
+			var error:Error = new Error();
+			var errorEvent:ErrorEvent = new ErrorEvent("test");
+
+			var sequence:Sequence;
+
+			sequence = new Sequence(null);
+			sequence.or(task);
+			assertEquals(Disjunction(sequence.tasks[0]).tasks[1], task);
+
+			sequence = new Sequence(null);
+			sequence.or(func);
+			assertEquals(Func(Disjunction(sequence.tasks[0]).tasks[1]).func, func);
+
+			sequence = new Sequence(null);
+			sequence.or(data);
+			assertEquals(Return(Disjunction(sequence.tasks[0]).tasks[1]).value, data);
+
+			sequence = new Sequence(null);
+			sequence.or(error);
+			assertEquals(Throw(Disjunction(sequence.tasks[0]).tasks[1]).value, error);
+
+			sequence = new Sequence(null);
+			sequence.or(errorEvent);
+			assertEquals(Throw(Disjunction(sequence.tasks[0]).tasks[1]).value, errorEvent);
+		}
 	}
 }
