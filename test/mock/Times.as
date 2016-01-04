@@ -60,8 +60,8 @@ package mock
 
 		public function Times(min:int, max:int)
 		{
-			_min = min;
-			_max = max;
+			_min = Math.max(min, 0);
+			_max = Math.max(_min, max);
 		}
 
 		internal function match(value:int):Boolean
@@ -71,15 +71,11 @@ package mock
 
 		public function toString():String
 		{
-			if (_min <= 0 && _max <= 0 || _min > _max)
-			{
-				return "never";
-			}
 			if (_min == _max)
 			{
 				return times(_min);
 			}
-			if (_min <= 0)
+			if (_min == 0)
 			{
 				return "at most " + times(_max);
 			}

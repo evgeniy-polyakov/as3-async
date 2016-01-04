@@ -13,7 +13,8 @@ package mock
 
 		public function Verification(index:int = 0)
 		{
-			_startInvocationIndex = _lastMatchedInvocationIndex = index;
+			_startInvocationIndex = index;
+			_lastMatchedInvocationIndex = index - 1;
 		}
 
 		public function that(mock:*, times:* = 1):IVerifyActions
