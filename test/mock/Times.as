@@ -77,17 +77,22 @@ package mock
 			}
 			if (_min == _max)
 			{
-				return _min + " times";
+				return times(_min);
 			}
 			if (_min <= 0)
 			{
-				return "at most " + _max + " times";
+				return "at most " + times(_max);
 			}
 			if (_max == int.MAX_VALUE)
 			{
-				return "at least " + _min + " times";
+				return "at least " + times(_min);
 			}
 			return "from " + _min + " to " + _max + " times";
+		}
+
+		private static function times(value:int):String
+		{
+			return value <= 0 ? "never" : value == 1 ? "once" : value + " times";
 		}
 	}
 }

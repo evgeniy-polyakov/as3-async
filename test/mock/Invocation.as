@@ -37,9 +37,7 @@ package mock
 		{
 			var s:String = _object != null ? getObjectName() + "." : "";
 			s += getMethodName();
-			s += "(";
-			s += (arguments || _arguments).toString();
-			s += ")";
+			s += "(" + getArguments(arguments) + ")";
 			return s;
 		}
 
@@ -82,7 +80,19 @@ package mock
 				}
 				return qName;
 			}
-			return "null";
+			return "*";
+		}
+
+		private function getArguments(arguments:Object):String
+		{
+			if (arguments != null)
+			{
+				return arguments.toString();
+			}
+			return _arguments.map(function (v:*, ...rest):String
+			{
+				return v == null ? "null" : v.toString();
+			}).toString();
 		}
 	}
 }

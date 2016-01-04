@@ -183,7 +183,7 @@ package com.epolyakov.async.core
 
 			sequence.await();
 			sequence.await();
-			
+
 			assertTrue(sequence.active);
 			assertEquals(Sequence.instances.length, 1);
 			assertEquals(Sequence.instances[0], sequence);

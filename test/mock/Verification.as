@@ -16,7 +16,7 @@ package mock
 			_startInvocationIndex = _lastMatchedInvocationIndex = index;
 		}
 
-		public function that(methodCall:*, times:* = 1):IVerifyActions
+		public function that(mock:*, times:* = 1):IVerifyActions
 		{
 			var invocation:Invocation = Mock.getCurrentInvocation();
 			var argumentsMatcher:ArgumentsMatcher = Mock.getArgumentsMatcher();
@@ -24,7 +24,14 @@ package mock
 
 			if (invocation == null)
 			{
-				throw new MockError("No invocation to verify.");
+				if (mock != null && !(mock is Function) && !(mock is Array) && !(mock is String) && !(mock is Number) && !(mock is Boolean))
+				{
+					invocation = new Invocation(mock, null, []);
+				}
+				else
+				{
+					throw new MockError("No invocation or mock object to verify.");
+				}
 			}
 			if (argumentsMatcher == null)
 			{
@@ -52,8 +59,8 @@ package mock
 			for (var i:int = _startInvocationIndex, n:int = invocations.length; i < n; i++)
 			{
 				if (invocation.object == invocations[i].object &&
-						invocation.method == invocations[i].method &&
-						argumentsMatcher.match(invocations[i].arguments))
+						(invocation.method == null || invocation.method == invocations[i].method) &&
+						(invocation.method == null || argumentsMatcher.match(invocations[i].arguments)))
 				{
 					invocationsMatched++;
 					_lastMatchedInvocationIndex = i;
