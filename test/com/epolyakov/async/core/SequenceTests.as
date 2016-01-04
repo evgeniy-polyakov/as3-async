@@ -534,5 +534,98 @@ package com.epolyakov.async.core
 			sequence.or(errorEvent);
 			assertEquals(Throw(Disjunction(sequence.tasks[0]).tasks[1]).value, errorEvent);
 		}
+
+		[Test]
+		public function fork_ShouldAddFork():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+			sequence.fork(task1, task2);
+
+			assertEquals(sequence.tasks.length, 2);
+			assertEquals(sequence.tasks[0], task);
+			assertEquals(Fork(sequence.tasks[1]).success, task1);
+			assertEquals(Fork(sequence.tasks[1]).failure, task2);
+			Mock.verify().total(0);
+		}
+
+		[Test]
+		public function fork_ShouldReturnSequence():void
+		{
+			var sequence:Sequence = new Sequence(new MockTask());
+
+			assertEquals(sequence.fork(new MockTask(), new MockTask()), sequence);
+		}
+
+		[Test]
+		public function fork_ActiveSequence_ShouldNotAddFork():void
+		{
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+
+			sequence.await();
+			sequence.fork(new MockTask(), new MockTask());
+
+			assertEquals(sequence.tasks.length, 1);
+			assertEquals(sequence.tasks[0], task);
+
+			sequence.cancel();
+		}
+
+		[Test]
+		public function fork_Shortcuts_ShouldAddFork():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Function = function ():void
+			{
+			};
+			var data:Object = {};
+			var error:Error = new Error();
+			var errorEvent:ErrorEvent = new ErrorEvent("test");
+
+			var sequence:Sequence;
+
+			sequence = new Sequence(null);
+			sequence.fork(task, null);
+			assertEquals(Fork(sequence.tasks[1]).success, task);
+
+			sequence = new Sequence(null);
+			sequence.fork(func, null);
+			assertEquals(Func(Fork(sequence.tasks[1]).success).func, func);
+
+			sequence = new Sequence(null);
+			sequence.fork(data, null);
+			assertEquals(Return(Fork(sequence.tasks[1]).success).value, data);
+
+			sequence = new Sequence(null);
+			sequence.fork(error, null);
+			assertEquals(Throw(Fork(sequence.tasks[1]).success).value, error);
+
+			sequence = new Sequence(null);
+			sequence.fork(errorEvent, null);
+			assertEquals(Throw(Fork(sequence.tasks[1]).success).value, errorEvent);
+
+			sequence = new Sequence(null);
+			sequence.fork(null, task);
+			assertEquals(Fork(sequence.tasks[1]).failure, task);
+
+			sequence = new Sequence(null);
+			sequence.fork(null, func);
+			assertEquals(Func(Fork(sequence.tasks[1]).failure).func, func);
+
+			sequence = new Sequence(null);
+			sequence.fork(null, data);
+			assertEquals(Return(Fork(sequence.tasks[1]).failure).value, data);
+
+			sequence = new Sequence(null);
+			sequence.fork(null, error);
+			assertEquals(Throw(Fork(sequence.tasks[1]).failure).value, error);
+
+			sequence = new Sequence(null);
+			sequence.fork(null, errorEvent);
+			assertEquals(Throw(Fork(sequence.tasks[1]).failure).value, errorEvent);
+		}
 	}
 }
