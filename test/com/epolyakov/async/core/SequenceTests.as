@@ -3,6 +3,8 @@ package com.epolyakov.async.core
 	import com.epolyakov.async.core.mock.MockResult;
 	import com.epolyakov.async.core.mock.MockTask;
 
+	import flash.errors.IOError;
+
 	import flash.events.ErrorEvent;
 
 	import mock.It;
@@ -84,6 +86,95 @@ package com.epolyakov.async.core
 			assertEquals(sequence.result, result);
 
 			sequence.cancel();
+		}
+
+		[Test]
+		public function await_ShouldReturnInResult():void
+		{
+			var task:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+
+			Mock.setup().that(task.await(args, sequence)).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn(out, this as ITask);
+			});
+
+			sequence.await(args, result);
+
+			assertFalse(sequence.active);
+			Mock.verify().that(task.await(args, sequence))
+					.verify().that(result.onReturn(out, sequence))
+					.verify().total(2);
+		}
+
+		[Test]
+		public function await_ShouldThrowInResult():void
+		{
+			var task:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+
+			Mock.setup().that(task.await(args, sequence)).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(out, this as ITask);
+			});
+
+			sequence.await(args, result);
+
+			assertFalse(sequence.active);
+			Mock.verify().that(task.await(args, sequence))
+					.verify().that(result.onThrow(out, sequence))
+					.verify().total(2);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldThrowError():void
+		{
+			var task:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+
+			Mock.setup().that(task.await(args, sequence)).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(new IOError(), this as ITask);
+			});
+
+			sequence.await(args);
+		}
+
+		[Test]
+		public function await_ShouldClearInstanceOnReturn():void
+		{
+			var task:Task = new Task();
+			var sequence:Sequence = new Sequence(task);
+
+			sequence.await({}, new MockResult());
+			assertEquals(Cache.instances.length, 1);
+			assertEquals(Cache.instances[0], sequence);
+
+			task.onReturn({});
+			assertEquals(Cache.instances.length, 0);
+		}
+
+		[Test]
+		public function await_ShouldClearInstanceOnThrow():void
+		{
+			var task:Task = new Task();
+			var sequence:Sequence = new Sequence(task);
+
+			sequence.await({}, new MockResult());
+			assertEquals(Cache.instances.length, 1);
+			assertEquals(Cache.instances[0], sequence);
+
+			task.onThrow({});
+			assertEquals(Cache.instances.length, 0);
 		}
 
 		[Test]
@@ -197,7 +288,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function await_ShouldThrowInResult():void
+		public function await_ShouldThrowInSequence():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
