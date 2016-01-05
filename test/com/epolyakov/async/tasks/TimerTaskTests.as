@@ -110,8 +110,16 @@ package com.epolyakov.async.tasks
 
 			task.await(args, result);
 
+			assertFalse(task.active);
 			Mock.verify().that(result.onReturn(args, task))
 					.verify().total(1);
+		}
+
+		[Test]
+		public function cancel_ShouldNotThrow():void
+		{
+			var task:TimerTask = new TimerTask(100);
+			task.cancel();
 		}
 	}
 }
