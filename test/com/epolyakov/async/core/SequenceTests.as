@@ -4,7 +4,6 @@ package com.epolyakov.async.core
 	import com.epolyakov.async.core.mock.MockTask;
 
 	import flash.errors.IOError;
-
 	import flash.events.ErrorEvent;
 
 	import mock.It;
@@ -442,6 +441,114 @@ package com.epolyakov.async.core
 			Mock.verify().that(task.await(args, sequence))
 					.verify().that(task1.await(It.isAny(), It.isAny()), Times.never)
 					.verify().that(error.await(args1, sequence))
+					.verify().that(task2.await(args2, sequence))
+					.verify().that(result.onReturn(out, sequence))
+					.verify().total(4);
+		}
+
+		[Test]
+		public function await_ShouldExecuteHookWithError():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var error:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var args1:Object = {};
+			var args2:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+			sequence.hook(error).fork(task2, error);
+
+			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(args1, this as ITask);
+			});
+			Mock.setup().that(error.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn(args2, this as ITask);
+			});
+			Mock.setup().that(task2.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn(out, this as ITask);
+			});
+
+			sequence.await(args, result);
+
+			Mock.verify().that(task.await(args, sequence))
+					.verify().that(task1.await(It.isAny(), It.isAny()), Times.never)
+					.verify().that(error.await(args1, sequence))
+					.verify().that(task2.await(args2, sequence))
+					.verify().that(result.onReturn(out, sequence))
+					.verify().total(4);
+		}
+
+		[Test]
+		public function await_ShouldSkipHooks():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var error:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var args1:Object = {};
+			var args2:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+			sequence.hook(task1).hook(error).then(task2);
+
+			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn(args2, this as ITask);
+			});
+			Mock.setup().that(task2.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn(out, this as ITask);
+			});
+
+			sequence.await(args, result);
+
+			Mock.verify().that(task.await(args, sequence))
+					.verify().that(task1.await(It.isAny(), It.isAny()), Times.never)
+					.verify().that(error.await(It.isAny(), It.isAny()), Times.never)
+					.verify().that(task2.await(args2, sequence))
+					.verify().that(result.onReturn(out, sequence))
+					.verify().total(3);
+		}
+
+		[Test]
+		public function await_ShouldExecuteSubsequentHooks():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var args1:Object = {};
+			var args2:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+			sequence.hook(task1).hook(task2);
+
+			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(args1, this as ITask);
+			});
+			Mock.setup().that(task1.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(args2, this as ITask);
+			});
+			Mock.setup().that(task2.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn(out, this as ITask);
+			});
+
+			sequence.await(args, result);
+
+			Mock.verify().that(task.await(args, sequence))
+					.verify().that(task1.await(args1, sequence))
 					.verify().that(task2.await(args2, sequence))
 					.verify().that(result.onReturn(out, sequence))
 					.verify().total(4);
