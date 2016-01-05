@@ -1,11 +1,10 @@
 package com.epolyakov.async.tasks
 {
 	import com.epolyakov.async.core.mock.MockResult;
+	import com.epolyakov.mock.Mock;
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-
-	import mock.Mock;
 
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertTrue;

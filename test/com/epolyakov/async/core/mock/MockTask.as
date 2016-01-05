@@ -2,8 +2,7 @@ package com.epolyakov.async.core.mock
 {
 	import com.epolyakov.async.core.IResult;
 	import com.epolyakov.async.core.ITask;
-
-	import mock.Mock;
+	import com.epolyakov.mock.Mock;
 
 	/**
 	 * @author Evgeniy Polyakov

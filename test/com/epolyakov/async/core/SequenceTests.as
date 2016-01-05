@@ -2,13 +2,12 @@ package com.epolyakov.async.core
 {
 	import com.epolyakov.async.core.mock.MockResult;
 	import com.epolyakov.async.core.mock.MockTask;
+	import com.epolyakov.mock.It;
+	import com.epolyakov.mock.Mock;
+	import com.epolyakov.mock.Times;
 
 	import flash.errors.IOError;
 	import flash.events.ErrorEvent;
-
-	import mock.It;
-	import mock.Mock;
-	import mock.Times;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;

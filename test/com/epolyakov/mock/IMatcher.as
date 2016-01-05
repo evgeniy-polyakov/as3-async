@@ -1,4 +1,4 @@
-package mock
+package com.epolyakov.mock
 {
 	/**
 	 * @author Evgeniy Polyakov

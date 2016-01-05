@@ -1,6 +1,6 @@
-package mock
+package com.epolyakov.mock
 {
-	import mock.matchers.ArgumentsMatcher;
+	import com.epolyakov.mock.matchers.ArgumentsMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov

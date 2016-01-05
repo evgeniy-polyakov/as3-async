@@ -1,6 +1,6 @@
-package mock.matchers
+package com.epolyakov.mock.matchers
 {
-	import mock.IMatcher;
+	import com.epolyakov.mock.IMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov

@@ -1,7 +1,7 @@
-package mock
+package com.epolyakov.mock
 {
-	import mock.matchers.ArgumentsMatcher;
-	import mock.matchers.IsEqualMatcher;
+	import com.epolyakov.mock.matchers.ArgumentsMatcher;
+	import com.epolyakov.mock.matchers.IsEqualMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov

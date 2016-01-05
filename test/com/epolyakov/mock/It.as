@@ -1,14 +1,14 @@
-package mock
+package com.epolyakov.mock
 {
-	import mock.matchers.AnyMatcher;
-	import mock.matchers.ArgumentsMatcher;
-	import mock.matchers.FunctionMatcher;
-	import mock.matchers.IsEqualMatcher;
-	import mock.matchers.IsOfTypeMatcher;
-	import mock.matchers.IsStrictlyEqualMatcher;
-	import mock.matchers.NotEqualMatcher;
-	import mock.matchers.NotOfTypeMatcher;
-	import mock.matchers.NotStrictlyEqualMatcher;
+	import com.epolyakov.mock.matchers.AnyMatcher;
+	import com.epolyakov.mock.matchers.ArgumentsMatcher;
+	import com.epolyakov.mock.matchers.FunctionMatcher;
+	import com.epolyakov.mock.matchers.IsEqualMatcher;
+	import com.epolyakov.mock.matchers.IsOfTypeMatcher;
+	import com.epolyakov.mock.matchers.IsStrictlyEqualMatcher;
+	import com.epolyakov.mock.matchers.NotEqualMatcher;
+	import com.epolyakov.mock.matchers.NotOfTypeMatcher;
+	import com.epolyakov.mock.matchers.NotStrictlyEqualMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov
