@@ -15,7 +15,7 @@ package com.epolyakov.mock
 	 */
 	public class It
 	{
-		public static function matches(matcher:*):void
+		public static function matches(matcher:*):*
 		{
 			if (matcher is IMatcher)
 			{
@@ -27,12 +27,13 @@ package com.epolyakov.mock
 			}
 			else if (matcher is Class)
 			{
-				Mock.getArgumentsMatcher().arguments.push(new FunctionMatcher(matcher));
+				Mock.getArgumentsMatcher().arguments.push(new IsOfTypeMatcher(matcher as Class, []));
 			}
 			else
 			{
 				Mock.getArgumentsMatcher().arguments.push(new IsEqualMatcher(matcher));
 			}
+			return undefined;
 		}
 
 		public static function isEqual(value:*, ...values):*
@@ -83,13 +84,13 @@ package com.epolyakov.mock
 			return undefined;
 		}
 
-		public static function isFalse():*
+		public static function isFalse():Boolean
 		{
 			Mock.getArgumentsMatcher().arguments.push(new IsEqualMatcher(false));
 			return undefined;
 		}
 
-		public static function isTrue():*
+		public static function isTrue():Boolean
 		{
 			Mock.getArgumentsMatcher().arguments.push(new IsEqualMatcher(true));
 			return undefined;
