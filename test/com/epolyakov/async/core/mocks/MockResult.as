@@ -1,4 +1,4 @@
-package com.epolyakov.async.core.mock
+package com.epolyakov.async.core.mocks
 {
 	import com.epolyakov.async.core.IResult;
 	import com.epolyakov.async.core.ITask;

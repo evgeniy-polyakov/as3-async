@@ -1,7 +1,7 @@
 package com.epolyakov.async.core
 {
-	import com.epolyakov.async.core.mock.MockResult;
-	import com.epolyakov.async.core.mock.MockTask;
+	import com.epolyakov.async.core.mocks.MockResult;
+	import com.epolyakov.async.core.mocks.MockTask;
 	import com.epolyakov.mock.It;
 	import com.epolyakov.mock.Mock;
 	import com.epolyakov.mock.Times;
