@@ -29,7 +29,7 @@ package com.epolyakov.async.tasks
 		 * @param source - The loading source: ByteArray class, ByteArray, URLRequest, String.
 		 * @param context - The loader context.
 		 */
-		public function LoaderTask(source:Object = null, context:LoaderContext = null)
+		public function LoaderTask(source:Object, context:LoaderContext = null)
 		{
 			_source = source;
 			_context = context;
@@ -40,26 +40,26 @@ package com.epolyakov.async.tasks
 			_loader = new Loader();
 			addEventHandlers();
 
-			var bytes:ByteArray;
-			var request:URLRequest;
-			if (_source is Class)
-			{
-				bytes = new (_source as Class)();
-			}
-			else if (_source is ByteArray)
-			{
-				bytes = _source as ByteArray;
-			}
-			else if (_source is URLRequest)
-			{
-				request = _source as URLRequest;
-			}
-			else
-			{
-				request = new URLRequest(String(_source));
-			}
 			try
 			{
+				var bytes:ByteArray;
+				var request:URLRequest;
+				if (_source is Class)
+				{
+					bytes = new (_source as Class)();
+				}
+				else if (_source is ByteArray)
+				{
+					bytes = _source as ByteArray;
+				}
+				else if (_source is URLRequest)
+				{
+					request = _source as URLRequest;
+				}
+				else
+				{
+					request = new URLRequest(String(_source));
+				}
 				if (bytes)
 				{
 					_loader.loadBytes(bytes, _context);
@@ -72,6 +72,7 @@ package com.epolyakov.async.tasks
 			catch (error:Error)
 			{
 				removeEventHandlers();
+				_loader = null;
 				onThrow(error);
 			}
 		}

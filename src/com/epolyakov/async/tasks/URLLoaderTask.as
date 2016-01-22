@@ -26,7 +26,7 @@ package com.epolyakov.async.tasks
 		 * @param source - The loading source: URLRequest or String.
 		 * @param format - The format of loading data.
 		 */
-		public function URLLoaderTask(source:Object = null, format:String = "text")
+		public function URLLoaderTask(source:Object, format:String = "text")
 		{
 			_source = source;
 			_format = format;
@@ -38,18 +38,17 @@ package com.epolyakov.async.tasks
 			_loader.dataFormat = _format;
 			addEventHandlers();
 
-			var request:URLRequest;
-			if (_source is URLRequest)
-			{
-				request = _source as URLRequest;
-			}
-			else
-			{
-				request = new URLRequest(String(_source));
-			}
-
 			try
 			{
+				var request:URLRequest;
+				if (_source is URLRequest)
+				{
+					request = _source as URLRequest;
+				}
+				else
+				{
+					request = new URLRequest(String(_source));
+				}
 				_loader.load(request);
 			}
 			catch (error:Error)
