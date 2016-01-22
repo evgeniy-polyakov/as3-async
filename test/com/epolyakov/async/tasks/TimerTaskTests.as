@@ -1,10 +1,10 @@
 package com.epolyakov.async.tasks
 {
 	import com.epolyakov.async.core.mocks.MockResult;
+	import com.epolyakov.async.tasks.mocks.MockResultDispatcher;
 	import com.epolyakov.mock.Mock;
 
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertTrue;
@@ -24,19 +24,9 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=500)]
 		public function await_ShouldWaitWithTheGivenDelay():void
 		{
-			var dispatcher:EventDispatcher = new EventDispatcher();
-			var result:MockResult = new MockResult();
+			var result:MockResultDispatcher = new MockResultDispatcher();
 			var args:Object = {};
 			var task:TimerTask = new TimerTask(200);
-
-			Mock.setup().that(result.onReturn(args, task)).returns(function ():void
-			{
-				dispatcher.dispatchEvent(new Event(Event.COMPLETE));
-			});
-			Mock.setup().that(result.onThrow(args, task)).returns(function ():void
-			{
-				dispatcher.dispatchEvent(new Event(Event.CANCEL));
-			});
 
 			task.await(args, result);
 
@@ -45,31 +35,21 @@ package com.epolyakov.async.tasks
 				assertTrue(task.active);
 				Mock.verify().total(0);
 			}, 100);
-			Async.handleEvent(this, dispatcher, Event.COMPLETE, function (...rest):void
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
 			{
 				assertFalse(task.active);
 				Mock.verify().that(result.onReturn(args, task))
 						.verify().total(1);
 			}, 300);
-			Async.failOnEvent(this, dispatcher, Event.CANCEL, 400);
+			Async.failOnEvent(this, result, Event.CANCEL, 400);
 		}
 
 		[Test(async, timeout=500)]
 		public function cancel_ShouldClearTimeout():void
 		{
-			var dispatcher:EventDispatcher = new EventDispatcher();
-			var result:MockResult = new MockResult();
+			var result:MockResultDispatcher = new MockResultDispatcher();
 			var args:Object = {};
 			var task:TimerTask = new TimerTask(200);
-
-			Mock.setup().that(result.onReturn(args, task)).returns(function ():void
-			{
-				dispatcher.dispatchEvent(new Event(Event.COMPLETE));
-			});
-			Mock.setup().that(result.onThrow(args, task)).returns(function ():void
-			{
-				dispatcher.dispatchEvent(new Event(Event.CANCEL));
-			});
 
 			task.await(args, result);
 
@@ -83,8 +63,8 @@ package com.epolyakov.async.tasks
 				assertFalse(task.active);
 				Mock.verify().total(0);
 			}, 100);
-			Async.failOnEvent(this, dispatcher, Event.COMPLETE, 400);
-			Async.failOnEvent(this, dispatcher, Event.CANCEL, 400);
+			Async.failOnEvent(this, result, Event.COMPLETE, 400);
+			Async.failOnEvent(this, result, Event.CANCEL, 400);
 		}
 
 		[Test]

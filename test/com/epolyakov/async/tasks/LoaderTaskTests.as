@@ -6,6 +6,7 @@ package com.epolyakov.async.tasks
 
 	import flash.display.Bitmap;
 	import flash.display.Loader;
+	import flash.events.Event;
 	import flash.net.URLRequest;
 
 	import org.flexunit.asserts.assertFalse;
@@ -54,13 +55,13 @@ package com.epolyakov.async.tasks
 		{
 			var result:MockResultDispatcher = new MockResultDispatcher();
 
-			Async.handleEvent(this, result, "return", function (...rest):void
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
 			{
 				assertFalse(task.active);
 				Mock.verify().that(result.onReturn(It.matches(is32), It.isEqual(task)), 1)
 						.verify().total(1);
 			});
-			Async.failOnEvent(this, result, "throw");
+			Async.failOnEvent(this, result, Event.CANCEL);
 
 			task.await(null, result);
 			assertTrue(task.active);

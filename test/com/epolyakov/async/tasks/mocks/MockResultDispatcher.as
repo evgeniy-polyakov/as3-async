@@ -16,13 +16,13 @@ package com.epolyakov.async.tasks.mocks
 		public function onReturn(value:Object, target:ITask):void
 		{
 			Mock.invoke(this, onReturn, value, target);
-			dispatchEvent(new Event("return"));
+			dispatchEvent(new Event(Event.COMPLETE));
 		}
 
 		public function onThrow(error:Object, target:ITask):void
 		{
 			Mock.invoke(this, onThrow, error, target);
-			dispatchEvent(new Event("throw"));
+			dispatchEvent(new Event(Event.CANCEL));
 		}
 	}
 }
