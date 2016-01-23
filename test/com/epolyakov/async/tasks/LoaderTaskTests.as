@@ -9,6 +9,8 @@ package com.epolyakov.async.tasks
 	import flash.display.Sprite;
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 
@@ -76,6 +78,71 @@ package com.epolyakov.async.tasks
 			task.await(null, result);
 			Mock.verify().that(result.onThrow(It.isOfType(IllegalOperationError), It.isEqual(task)), 1)
 					.verify().total(1);
+		}
+
+		[Test(async, timeout=1000)]
+		public function await_ShouldRemoveEventListenersIfComplete():void
+		{
+			var result:MockResultDispatcher = new MockResultDispatcher();
+			var task:LoaderTask = new LoaderTask(_byteArrayClass);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(result.onReturn(It.match(function (value:Object):Boolean
+						{
+							return value is Loader
+									&& !Loader(value).contentLoaderInfo.hasEventListener(Event.COMPLETE)
+									&& !Loader(value).contentLoaderInfo.hasEventListener(IOErrorEvent.IO_ERROR)
+									&& !Loader(value).contentLoaderInfo.hasEventListener(SecurityErrorEvent.SECURITY_ERROR);
+						}), It.isEqual(task)), 1)
+						.verify().total(1);
+			});
+			Async.failOnEvent(this, result, Event.CANCEL);
+
+			task.await(null, result);
+		}
+
+		[Test(async, timeout=1000)]
+		public function await_ShouldRemoveEventListenersIfError():void
+		{
+			var result:MockResultDispatcher = new MockResultDispatcher();
+			var task:LoaderTask = new LoaderTask("wrong-url");
+
+			Async.handleEvent(this, result, Event.CANCEL, function (...rest):void
+			{
+				Mock.verify().that(result.onThrow(It.match(function (value:Object):Boolean
+						{
+							return value is Event
+									&& !Event(value).target.hasEventListener(Event.COMPLETE)
+									&& !Event(value).target.hasEventListener(IOErrorEvent.IO_ERROR)
+									&& !Event(value).target.hasEventListener(SecurityErrorEvent.SECURITY_ERROR);
+						}), It.isEqual(task)), 1)
+						.verify().total(1);
+			});
+			Async.failOnEvent(this, result, Event.COMPLETE);
+
+			task.await(null, result);
+		}
+
+		[Test]
+		public function cancel_ShouldNotThrow():void
+		{
+			new LoaderTask("test").cancel();
+		}
+
+		[Test(async, timeout=1000)]
+		public function cancel_ShouldCancelLoading():void
+		{
+			var result:MockResultDispatcher = new MockResultDispatcher();
+			var task:LoaderTask = new LoaderTask(_byteArrayClass);
+
+			task.await(null, result);
+			task.cancel();
+
+			Mock.verify().total(0);
+
+			Async.failOnEvent(this, result, Event.COMPLETE, 400);
+			Async.failOnEvent(this, result, Event.CANCEL, 400);
 		}
 
 		private function shouldLoad(task:LoaderTask):void
