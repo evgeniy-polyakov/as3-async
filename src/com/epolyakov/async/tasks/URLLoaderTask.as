@@ -102,7 +102,6 @@ package com.epolyakov.async.tasks
 
 		private function errorEventHandler(event:Event):void
 		{
-			event.preventDefault();
 			removeEventHandlers();
 			_loader = null;
 			onThrow(event);
