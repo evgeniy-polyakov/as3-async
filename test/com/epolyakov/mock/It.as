@@ -1,7 +1,6 @@
 package com.epolyakov.mock
 {
 	import com.epolyakov.mock.matchers.AnyMatcher;
-	import com.epolyakov.mock.matchers.ArgumentsMatcher;
 	import com.epolyakov.mock.matchers.FunctionMatcher;
 	import com.epolyakov.mock.matchers.IsEqualMatcher;
 	import com.epolyakov.mock.matchers.IsOfTypeMatcher;
