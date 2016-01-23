@@ -23,7 +23,7 @@ package com.epolyakov.async.tasks
 	 */
 	public class LoaderTaskTests
 	{
-		[Embed("data/32.png", mimeType="application/octet-stream")]
+		[Embed("data/data.png", mimeType="application/octet-stream")]
 		private var _byteArrayClass:Class;
 
 		[Before]
@@ -47,13 +47,13 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function await_ShouldLoadUrl():void
 		{
-			shouldLoad(new LoaderTask("com/epolyakov/async/tasks/data/32.png"));
+			shouldLoad(new LoaderTask("com/epolyakov/async/tasks/data/data.png"));
 		}
 
 		[Test(async, timeout=1000)]
 		public function await_ShouldLoadUrlRequest():void
 		{
-			shouldLoad(new LoaderTask(new URLRequest("com/epolyakov/async/tasks/data/32.png")));
+			shouldLoad(new LoaderTask(new URLRequest("com/epolyakov/async/tasks/data/data.png")));
 		}
 
 		[Test]
