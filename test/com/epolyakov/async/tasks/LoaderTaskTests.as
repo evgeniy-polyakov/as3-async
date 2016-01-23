@@ -85,7 +85,7 @@ package com.epolyakov.async.tasks
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
 			{
 				assertFalse(task.active);
-				Mock.verify().that(result.onReturn(It.matches(function (value:Object):Boolean
+				Mock.verify().that(result.onReturn(It.match(function (value:Object):Boolean
 						{
 							return value is Loader
 									&& Loader(value).content is Bitmap
