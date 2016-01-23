@@ -45,7 +45,7 @@ package com.epolyakov.mock
 		{
 			if (_isInVerifyMode)
 			{
-				throw new MockError("Can not setup in verification mode.");
+				throw new SetupError("Can not setup in verification mode.");
 			}
 			_isInSetupMode = true;
 			var expectation:Expectation = new Expectation();
@@ -85,7 +85,7 @@ package com.epolyakov.mock
 		{
 			if (_isInSetupMode)
 			{
-				throw new MockError("Can not verify in setup mode.");
+				throw new SetupError("Can not verify in setup mode.");
 			}
 			_isInVerifyMode = true;
 			return new Verification();

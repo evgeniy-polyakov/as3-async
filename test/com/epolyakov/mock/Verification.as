@@ -31,7 +31,7 @@ package com.epolyakov.mock
 				}
 				else
 				{
-					throw new MockError("No invocation or mock object to verify.");
+					throw new SetupError("No invocation or mock object to verify.");
 				}
 			}
 			if (argumentsMatcher == null)
@@ -42,7 +42,7 @@ package com.epolyakov.mock
 			{
 				if (argumentsMatcher.arguments.length != invocation.arguments.length)
 				{
-					throw new MockError("Arguments mismatch: " +
+					throw new SetupError("Arguments mismatch: " +
 							"expected (" + argumentsMatcher + ")" +
 							"but got (" + invocation.arguments + ").");
 				}
@@ -70,7 +70,7 @@ package com.epolyakov.mock
 			var timesObj:Times = times is Times ? times : Times.exactly(times);
 			if (!timesObj.match(invocationsMatched))
 			{
-				throw new MockError("Expected " + invocation.toString(argumentsMatcher) +
+				throw new VerificationError("Expected " + invocation.toString(argumentsMatcher) +
 						" invoked " + timesObj + " but got " + Times.exactly(invocationsMatched) +
 						(_startInvocationIndex > 0 ? " starting from index " + _startInvocationIndex : "") + "." +
 						"\nPerformed invocations: " + (invocations.length > 0 ? "\n" + invocations.join(",\n") : "none") + ".");
@@ -86,7 +86,7 @@ package com.epolyakov.mock
 			var invocations:Vector.<Invocation> = Mock.getInvocations();
 			if (!timesObj.match(invocations.length))
 			{
-				throw new MockError("Expected mocked methods invoked " + timesObj + " but got " + Times.exactly(invocations.length) + "." +
+				throw new VerificationError("Expected mocked methods invoked " + timesObj + " but got " + Times.exactly(invocations.length) + "." +
 						"\nPerformed invocations: " + (invocations.length > 0 ? "\n" + invocations.join(",\n") : "none") + ".");
 			}
 		}

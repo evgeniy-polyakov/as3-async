@@ -9,13 +9,14 @@ package com.epolyakov.mock
 	import com.epolyakov.mock.matchers.NotEqualMatcher;
 	import com.epolyakov.mock.matchers.NotOfTypeMatcher;
 	import com.epolyakov.mock.matchers.NotStrictlyEqualMatcher;
+	import com.epolyakov.mock.matchers.RegExpMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov
 	 */
 	public class It
 	{
-		public static function matches(matcher:*):*
+		public static function match(matcher:*):*
 		{
 			if (matcher is IMatcher)
 			{
@@ -25,13 +26,13 @@ package com.epolyakov.mock
 			{
 				Mock.getArgumentsMatcher().arguments.push(new FunctionMatcher(matcher));
 			}
-			else if (matcher is Class)
+			else if (matcher is RegExp)
 			{
-				Mock.getArgumentsMatcher().arguments.push(new IsOfTypeMatcher(matcher as Class, []));
+				Mock.getArgumentsMatcher().arguments.push(new RegExpMatcher(matcher as RegExp));
 			}
 			else
 			{
-				Mock.getArgumentsMatcher().arguments.push(new IsEqualMatcher(matcher));
+				throw new SetupError("Expected argument matcher of type IMatcher, Function or RegExp, but got " + matcher);
 			}
 			return undefined;
 		}

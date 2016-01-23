@@ -3,9 +3,9 @@ package com.epolyakov.mock
 	/**
 	 * @author Evgeniy Polyakov
 	 */
-	public class MockError extends Error
+	public class SetupError extends Error
 	{
-		public function MockError(message:String)
+		public function SetupError(message:String)
 		{
 			super(message);
 		}
