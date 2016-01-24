@@ -9,12 +9,12 @@ package com.epolyakov.async.core.mocks
 	 */
 	public class MockResult implements IResult
 	{
-		public function onReturn(value:Object, target:ITask):void
+		public function onReturn(value:Object, target:ITask = null):void
 		{
 			Mock.invoke(this, onReturn, value, target);
 		}
 
-		public function onThrow(error:Object, target:ITask):void
+		public function onThrow(error:Object, target:ITask = null):void
 		{
 			Mock.invoke(this, onThrow, error, target);
 		}

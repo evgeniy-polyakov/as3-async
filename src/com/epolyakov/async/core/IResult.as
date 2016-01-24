@@ -5,8 +5,8 @@ package com.epolyakov.async.core
 	 */
 	public interface IResult
 	{
-		function onReturn(value:Object, target:ITask):void;
+		function onReturn(value:Object, target:ITask = null):void;
 
-		function onThrow(error:Object, target:ITask):void;
+		function onThrow(error:Object, target:ITask = null):void;
 	}
 }

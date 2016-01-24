@@ -87,7 +87,7 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onReturn(value:Object, target:ITask):void
+		public function onReturn(value:Object, target:ITask = null):void
 		{
 			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
@@ -121,7 +121,7 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onThrow(error:Object, target:ITask):void
+		public function onThrow(error:Object, target:ITask = null):void
 		{
 			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
