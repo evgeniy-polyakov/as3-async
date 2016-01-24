@@ -1,7 +1,6 @@
 package com.epolyakov.async.tasks
 {
 	import com.epolyakov.async.core.mocks.MockResult;
-	import com.epolyakov.async.tasks.mocks.MockResultDispatcher;
 	import com.epolyakov.mock.Mock;
 
 	import flash.events.Event;
@@ -24,7 +23,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=500)]
 		public function await_ShouldWaitWithTheGivenDelay():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var args:Object = {};
 			var task:TimerTask = new TimerTask(200);
 
@@ -47,7 +46,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=500)]
 		public function cancel_ShouldClearTimeout():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var args:Object = {};
 			var task:TimerTask = new TimerTask(200);
 

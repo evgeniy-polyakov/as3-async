@@ -1,6 +1,6 @@
 package com.epolyakov.async.tasks
 {
-	import com.epolyakov.async.tasks.mocks.MockResultDispatcher;
+	import com.epolyakov.async.core.mocks.MockResult;
 	import com.epolyakov.mock.It;
 	import com.epolyakov.mock.Mock;
 
@@ -59,7 +59,7 @@ package com.epolyakov.async.tasks
 		[Test]
 		public function await_ShouldThrowIfWrongClass():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:LoaderTask = new LoaderTask(Sprite);
 
 			task.await(null, result);
@@ -70,7 +70,7 @@ package com.epolyakov.async.tasks
 		[Test]
 		public function await_ShouldThrowIfWrongContext():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var context:LoaderContext = new LoaderContext();
 			context.parameters = [Sprite];
 			var task:LoaderTask = new LoaderTask("test", context);
@@ -83,7 +83,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function await_ShouldRemoveEventListenersIfComplete():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:LoaderTask = new LoaderTask(_byteArrayClass);
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
@@ -105,7 +105,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function await_ShouldRemoveEventListenersIfError():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:LoaderTask = new LoaderTask("wrong-url");
 
 			Async.handleEvent(this, result, Event.CANCEL, function (...rest):void
@@ -133,7 +133,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function cancel_ShouldCancelLoading():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:LoaderTask = new LoaderTask(_byteArrayClass);
 
 			task.await(null, result);
@@ -147,7 +147,7 @@ package com.epolyakov.async.tasks
 
 		private function shouldLoad(task:LoaderTask):void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
 			{

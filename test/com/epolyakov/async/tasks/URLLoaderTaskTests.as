@@ -1,6 +1,6 @@
 package com.epolyakov.async.tasks
 {
-	import com.epolyakov.async.tasks.mocks.MockResultDispatcher;
+	import com.epolyakov.async.core.mocks.MockResult;
 	import com.epolyakov.mock.It;
 	import com.epolyakov.mock.Mock;
 
@@ -43,7 +43,7 @@ package com.epolyakov.async.tasks
 		[Test]
 		public function await_ShouldThrowIfWrongURLRequest():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:URLLoaderTask = new URLLoaderTask(new URLRequest(null));
 
 			task.await(null, result);
@@ -54,7 +54,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function await_ShouldRemoveEventListenersIfComplete():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:URLLoaderTask = new URLLoaderTask("com/epolyakov/async/tasks/data/data.txt");
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
@@ -76,7 +76,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function await_ShouldRemoveEventListenersIfError():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:URLLoaderTask = new URLLoaderTask("wrong-url");
 
 			Async.handleEvent(this, result, Event.CANCEL, function (...rest):void
@@ -98,7 +98,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function await_ShouldLoadText():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:URLLoaderTask = new URLLoaderTask("com/epolyakov/async/tasks/data/data.txt", URLLoaderDataFormat.TEXT);
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
@@ -119,7 +119,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function await_ShouldLoadBinary():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:URLLoaderTask = new URLLoaderTask("com/epolyakov/async/tasks/data/data.txt", URLLoaderDataFormat.BINARY);
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
@@ -140,7 +140,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function await_ShouldLoadVariables():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:URLLoaderTask = new URLLoaderTask("com/epolyakov/async/tasks/data/data.txt", URLLoaderDataFormat.VARIABLES);
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
@@ -168,7 +168,7 @@ package com.epolyakov.async.tasks
 		[Test(async, timeout=1000)]
 		public function cancel_ShouldCancelLoading():void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 			var task:URLLoaderTask = new URLLoaderTask("com/epolyakov/async/tasks/data/data.txt");
 
 			task.await(null, result);
@@ -182,7 +182,7 @@ package com.epolyakov.async.tasks
 
 		private function shouldLoad(task:URLLoaderTask):void
 		{
-			var result:MockResultDispatcher = new MockResultDispatcher();
+			var result:MockResult = new MockResult();
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
 			{
