@@ -77,7 +77,7 @@ package com.epolyakov.async.core
 				{
 					var result:IResult = _result;
 					_result = null;
-					result.onReturn(value, this);
+					result.onReturn(value, target || this);
 				}
 			}
 		}
@@ -92,7 +92,7 @@ package com.epolyakov.async.core
 				{
 					var result:IResult = _result;
 					_result = null;
-					result.onThrow(error, this);
+					result.onThrow(error, target || this);
 				}
 				else
 				{
