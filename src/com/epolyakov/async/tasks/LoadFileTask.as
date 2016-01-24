@@ -21,10 +21,10 @@ package com.epolyakov.async.tasks
 
 		override protected function onAwait():void
 		{
-			_file = data as FileReference;
+			_file = args as FileReference;
 			if (!_file)
 			{
-				onThrow(new ArgumentError("LoadFileTask expects a FileReference object, got " + data + "."));
+				onThrow(new ArgumentError("LoadFileTask expects a FileReference object, got " + args + "."));
 				return;
 			}
 			addEventHandlers();

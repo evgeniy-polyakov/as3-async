@@ -3,9 +3,9 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	public class Task implements ITask
+	public class Task implements ITask, IResult
 	{
-		private var _data:Object;
+		private var _args:Object;
 		private var _target:ITask;
 		private var _active:Boolean;
 		private var _result:IResult;
@@ -20,9 +20,9 @@ package com.epolyakov.async.core
 			return _active;
 		}
 
-		final public function get data():Object
+		final public function get args():Object
 		{
-			return _data;
+			return _args;
 		}
 
 		/**
@@ -34,18 +34,14 @@ package com.epolyakov.async.core
 			{
 				_active = true;
 				_result = result;
-				_data = args;
+				_args = args;
 				if (_target == null)
 				{
 					onAwait();
 				}
-				else if (_target is IAsyncSequence)
-				{
-					(_target as IAsyncSequence).fork(onReturn, onThrow).await(args);
-				}
 				else
 				{
-					async(_target).fork(onReturn, onThrow).await(args);
+					_target.await(args, this);
 				}
 			}
 		}
@@ -59,7 +55,7 @@ package com.epolyakov.async.core
 			{
 				_active = false;
 				_result = null;
-				_data = null;
+				_args = null;
 				if (_target == null)
 				{
 					onCancel();
@@ -71,12 +67,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		final public function onReturn(value:Object):void
+		final public function onReturn(value:Object, target:ITask = null):void
 		{
 			if (_active)
 			{
 				_active = false;
-				_data = null;
+				_args = null;
 				if (_result)
 				{
 					var result:IResult = _result;
@@ -86,12 +82,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		final public function onThrow(error:Object):void
+		final public function onThrow(error:Object, target:ITask = null):void
 		{
 			if (_active)
 			{
 				_active = false;
-				_data = null;
+				_args = null;
 				if (_result)
 				{
 					var result:IResult = _result;

@@ -26,7 +26,7 @@ package com.epolyakov.async.tasks
 			}
 			else
 			{
-				onReturn(data);
+				onReturn(args);
 			}
 		}
 
@@ -38,7 +38,7 @@ package com.epolyakov.async.tasks
 		private function onTimeout():void
 		{
 			clearTimeout(_timeoutId);
-			onReturn(data);
+			onReturn(args);
 		}
 	}
 }

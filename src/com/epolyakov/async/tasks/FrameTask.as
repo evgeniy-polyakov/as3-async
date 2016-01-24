@@ -33,7 +33,7 @@ package com.epolyakov.async.tasks
 			}
 			else
 			{
-				onReturn(data);
+				onReturn(args);
 			}
 		}
 
@@ -51,7 +51,7 @@ package com.epolyakov.async.tasks
 			if (_current <= 0)
 			{
 				_dispatcher.removeEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
-				onReturn(data);
+				onReturn(args);
 			}
 		}
 	}
