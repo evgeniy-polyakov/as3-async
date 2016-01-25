@@ -8,21 +8,21 @@ package com.epolyakov.async.tasks
 	/**
 	 * @author Evgeniy S. Polyakov
 	 */
-	public class TimerTask extends Task
+	public class TimeoutTask extends Task
 	{
 		private var _timeoutId:uint;
-		private var _delay:int;
+		private var _milliseconds:int;
 
-		public function TimerTask(delay:int = 0)
+		public function TimeoutTask(milliseconds:int = 0)
 		{
-			_delay = delay;
+			_milliseconds = milliseconds;
 		}
 
 		override protected function onAwait():void
 		{
-			if (_delay > 0)
+			if (_milliseconds > 0)
 			{
-				_timeoutId = setTimeout(onTimeout, _delay)
+				_timeoutId = setTimeout(onTimeout, _milliseconds)
 			}
 			else
 			{

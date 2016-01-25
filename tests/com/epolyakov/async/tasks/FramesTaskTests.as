@@ -12,7 +12,7 @@ package com.epolyakov.async.tasks
 	/**
 	 * @author Evgeniy Polyakov
 	 */
-	public class TimerTaskTests
+	public class FramesTaskTests
 	{
 		[Before]
 		public function Before():void
@@ -25,7 +25,7 @@ package com.epolyakov.async.tasks
 		{
 			var result:MockResult = new MockResult();
 			var args:Object = {};
-			var task:TimerTask = new TimerTask(200);
+			var task:FramesTask = new FramesTask(2);
 
 			task.await(args, result);
 
@@ -33,7 +33,7 @@ package com.epolyakov.async.tasks
 			{
 				assertTrue(task.active);
 				Mock.verify().total(0);
-			}, 100);
+			}, 1);
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
 			{
 				assertFalse(task.active);
@@ -48,7 +48,7 @@ package com.epolyakov.async.tasks
 		{
 			var result:MockResult = new MockResult();
 			var args:Object = {};
-			var task:TimerTask = new TimerTask(200);
+			var task:FramesTask = new FramesTask(2);
 
 			task.await(args, result);
 
@@ -61,7 +61,7 @@ package com.epolyakov.async.tasks
 
 				assertFalse(task.active);
 				Mock.verify().total(0);
-			}, 100);
+			}, 1);
 			Async.failOnEvent(this, result, Event.COMPLETE, 400);
 			Async.failOnEvent(this, result, Event.CANCEL, 400);
 		}
@@ -71,7 +71,7 @@ package com.epolyakov.async.tasks
 		{
 			var result:MockResult = new MockResult();
 			var args:Object = {};
-			var task:TimerTask = new TimerTask(0);
+			var task:FramesTask = new FramesTask(0);
 
 			task.await(args, result);
 
@@ -84,7 +84,7 @@ package com.epolyakov.async.tasks
 		{
 			var result:MockResult = new MockResult();
 			var args:Object = {};
-			var task:TimerTask = new TimerTask(-1);
+			var task:FramesTask = new FramesTask(-1);
 
 			task.await(args, result);
 
@@ -96,7 +96,7 @@ package com.epolyakov.async.tasks
 		[Test]
 		public function cancel_ShouldNotThrow():void
 		{
-			var task:TimerTask = new TimerTask(100);
+			var task:FramesTask = new FramesTask(100);
 			task.cancel();
 		}
 	}

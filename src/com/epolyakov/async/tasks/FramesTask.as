@@ -9,15 +9,15 @@ package com.epolyakov.async.tasks
 	/**
 	 * @author Evgeniy S. Polyakov
 	 */
-	public class FrameTask extends Task
+	public class FramesTask extends Task
 	{
 		private static var _dispatcher:IEventDispatcher;
 		private var _current:int;
-		private var _delay:int;
+		private var _frames:int;
 
-		public function FrameTask(delay:int = 0)
+		public function FramesTask(frames:int = 0)
 		{
-			_delay = delay;
+			_frames = frames;
 		}
 
 		override protected function onAwait():void
@@ -26,7 +26,7 @@ package com.epolyakov.async.tasks
 			{
 				_dispatcher = new Sprite();
 			}
-			_current = _delay;
+			_current = _frames;
 			if (_current > 0)
 			{
 				_dispatcher.addEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
