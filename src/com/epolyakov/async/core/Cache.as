@@ -38,7 +38,7 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public static function get length():int
+		public static function get size():int
 		{
 			return _instances.length;
 		}
