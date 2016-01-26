@@ -1,6 +1,7 @@
 package com.epolyakov.async.core
 {
 	import com.epolyakov.async.core.mocks.MockTask;
+	import com.epolyakov.mock.Mock;
 
 	import org.flexunit.asserts.assertEquals;
 
@@ -13,6 +14,7 @@ package com.epolyakov.async.core
 		public function Before():void
 		{
 			Cache.clear();
+			Mock.clear();
 		}
 
 		[Test]
@@ -31,6 +33,7 @@ package com.epolyakov.async.core
 			assertEquals(task1, Cache.instances[0]);
 			assertEquals(task2, Cache.instances[1]);
 			assertEquals(task3, Cache.instances[2]);
+			Mock.verify().total(0);
 		}
 
 		[Test]
@@ -49,6 +52,7 @@ package com.epolyakov.async.core
 			assertEquals(2, Cache.size);
 			assertEquals(task1, Cache.instances[0]);
 			assertEquals(task3, Cache.instances[1]);
+			Mock.verify().total(0);
 		}
 
 		[Test]
@@ -65,6 +69,7 @@ package com.epolyakov.async.core
 
 			assertEquals(0, Cache.instances.length);
 			assertEquals(0, Cache.size);
+			Mock.verify().total(0);
 		}
 	}
 }

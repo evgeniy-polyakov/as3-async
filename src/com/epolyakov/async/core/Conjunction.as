@@ -33,7 +33,7 @@ package com.epolyakov.async.core
 		{
 			if (!_active)
 			{
-				if (_tasks && _tasks.length > 0)
+				if (_tasks.length > 0)
 				{
 					_active = true;
 					_result = result;
@@ -56,10 +56,10 @@ package com.epolyakov.async.core
 			{
 				_active = false;
 				_result = null;
-				if (_tasks && _tasks.length > 0)
+				if (_tasks.length > 0)
 				{
 					var tasks:Vector.<ITask> = _tasks.slice();
-					_tasks = null;
+					_tasks.splice(0, _tasks.length);
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
 					{
 						tasks[i].cancel();
@@ -70,7 +70,7 @@ package com.epolyakov.async.core
 
 		public function onReturn(value:Object, target:ITask = null):void
 		{
-			if (_active && _tasks && _tasks.length > 0)
+			if (_active && _tasks.length > 0)
 			{
 				var index:int = _tasks.indexOf(target);
 				if (index >= 0)
@@ -79,7 +79,6 @@ package com.epolyakov.async.core
 					if (_tasks.length == 0)
 					{
 						_active = false;
-						_tasks = null;
 						if (_result)
 						{
 							var result:IResult = _result;
@@ -93,14 +92,14 @@ package com.epolyakov.async.core
 
 		public function onThrow(error:Object, target:ITask = null):void
 		{
-			if (_active && _tasks && _tasks.length > 0)
+			if (_active && _tasks.length > 0)
 			{
 				var index:int = _tasks.indexOf(target);
 				if (index >= 0)
 				{
-					var tasks:Vector.<ITask> = _tasks.slice();
 					_active = false;
-					_tasks = null;
+					var tasks:Vector.<ITask> = _tasks.slice();
+					_tasks.splice(0, _tasks.length);
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
 					{
 						if (i != index)
@@ -124,7 +123,7 @@ package com.epolyakov.async.core
 
 		internal function add(task:ITask):void
 		{
-			if (!_active && _tasks && _tasks.indexOf(task) < 0)
+			if (!_active && _tasks.indexOf(task) < 0)
 			{
 				_tasks.push(task);
 			}
