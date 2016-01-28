@@ -16,7 +16,7 @@ package com.epolyakov.mock.matchers
 
 		public function match(value:*):Boolean
 		{
-			return _regexp.test(String(value));
+			return _regexp.test(value == null ? "" : value.toString());
 		}
 
 		public function toString():String
