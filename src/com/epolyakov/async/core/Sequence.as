@@ -10,7 +10,6 @@ package com.epolyakov.async.core
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
-		private var _args:Object;
 
 		public function Sequence(task:Object)
 		{
@@ -56,7 +55,6 @@ package com.epolyakov.async.core
 				if (_tasks.length > 0)
 				{
 					Cache.add(this);
-					_args = args;
 					_active = true;
 					_result = result;
 					_tasks[0].await(args, this);
@@ -73,7 +71,6 @@ package com.epolyakov.async.core
 			if (_active)
 			{
 				Cache.remove(this);
-				_args = null;
 				_active = false;
 				_result = null;
 
@@ -90,32 +87,22 @@ package com.epolyakov.async.core
 		{
 			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
-				if (value is ITask)
+				_tasks.shift();
+				if (_tasks.length > 0)
 				{
-					_tasks[0] = value as ITask;
-					_tasks[0].await(_args, this);
+					_tasks[0].await(value, this);
 				}
 				else
 				{
-					_tasks.shift();
-					if (_tasks.length > 0)
-					{
-						_args = value;
-						_tasks[0].await(value, this);
-					}
-					else
-					{
-						Cache.remove(this);
-						_args = null;
-						_active = false;
-						_tasks.splice(0, _tasks.length);
+					Cache.remove(this);
+					_active = false;
+					_tasks.splice(0, _tasks.length);
 
-						if (_result)
-						{
-							var result:IResult = _result;
-							_result = null;
-							result.onReturn(value, this);
-						}
+					if (_result)
+					{
+						var result:IResult = _result;
+						_result = null;
+						result.onReturn(value, this);
 					}
 				}
 			}
@@ -138,7 +125,6 @@ package com.epolyakov.async.core
 				else
 				{
 					Cache.remove(this);
-					_args = null;
 					_active = false;
 					_tasks.splice(0, _tasks.length);
 
