@@ -940,8 +940,8 @@ package com.epolyakov.async.core
 
 			assertEquals(sequence.tasks.length, 2);
 			assertEquals(sequence.tasks[0], task);
-			assertEquals(Fork(sequence.tasks[1]).success, task1);
-			assertEquals(Fork(sequence.tasks[1]).failure, task2);
+			assertEquals(Fork(sequence.tasks[1]).task1, task1);
+			assertEquals(Fork(sequence.tasks[1]).task2, task2);
 			Mock.verify().total(0);
 		}
 
@@ -983,43 +983,43 @@ package com.epolyakov.async.core
 
 			sequence = new Sequence(null);
 			sequence.fork(task, null);
-			assertEquals(Fork(sequence.tasks[1]).success, task);
+			assertEquals(Fork(sequence.tasks[1]).task1, task);
 
 			sequence = new Sequence(null);
 			sequence.fork(func, null);
-			assertEquals(Func(Fork(sequence.tasks[1]).success).func, func);
+			assertEquals(Func(Fork(sequence.tasks[1]).task1).func, func);
 
 			sequence = new Sequence(null);
 			sequence.fork(data, null);
-			assertEquals(Return(Fork(sequence.tasks[1]).success).value, data);
+			assertEquals(Return(Fork(sequence.tasks[1]).task1).value, data);
 
 			sequence = new Sequence(null);
 			sequence.fork(error, null);
-			assertEquals(Throw(Fork(sequence.tasks[1]).success).value, error);
+			assertEquals(Throw(Fork(sequence.tasks[1]).task1).value, error);
 
 			sequence = new Sequence(null);
 			sequence.fork(errorEvent, null);
-			assertEquals(Throw(Fork(sequence.tasks[1]).success).value, errorEvent);
+			assertEquals(Throw(Fork(sequence.tasks[1]).task1).value, errorEvent);
 
 			sequence = new Sequence(null);
 			sequence.fork(null, task);
-			assertEquals(Fork(sequence.tasks[1]).failure, task);
+			assertEquals(Fork(sequence.tasks[1]).task2, task);
 
 			sequence = new Sequence(null);
 			sequence.fork(null, func);
-			assertEquals(Func(Fork(sequence.tasks[1]).failure).func, func);
+			assertEquals(Func(Fork(sequence.tasks[1]).task2).func, func);
 
 			sequence = new Sequence(null);
 			sequence.fork(null, data);
-			assertEquals(Return(Fork(sequence.tasks[1]).failure).value, data);
+			assertEquals(Return(Fork(sequence.tasks[1]).task2).value, data);
 
 			sequence = new Sequence(null);
 			sequence.fork(null, error);
-			assertEquals(Throw(Fork(sequence.tasks[1]).failure).value, error);
+			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, error);
 
 			sequence = new Sequence(null);
 			sequence.fork(null, errorEvent);
-			assertEquals(Throw(Fork(sequence.tasks[1]).failure).value, errorEvent);
+			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, errorEvent);
 		}
 
 		[Test]
@@ -1034,10 +1034,10 @@ package com.epolyakov.async.core
 
 			assertEquals(sequence.tasks.length, 3);
 			assertEquals(sequence.tasks[0], task);
-			assertEquals(Fork(sequence.tasks[1]).success, null);
-			assertEquals(Fork(sequence.tasks[1]).failure, task1);
-			assertEquals(Fork(sequence.tasks[2]).success, null);
-			assertEquals(Fork(sequence.tasks[2]).failure, task2);
+			assertEquals(Fork(sequence.tasks[1]).task1, null);
+			assertEquals(Fork(sequence.tasks[1]).task2, task1);
+			assertEquals(Fork(sequence.tasks[2]).task1, null);
+			assertEquals(Fork(sequence.tasks[2]).task2, task2);
 			Mock.verify().total(0);
 		}
 
@@ -1079,28 +1079,28 @@ package com.epolyakov.async.core
 
 			sequence = new Sequence(null);
 			sequence.hook(task);
-			assertEquals(Fork(sequence.tasks[1]).success, null);
-			assertEquals(Fork(sequence.tasks[1]).failure, task);
+			assertEquals(Fork(sequence.tasks[1]).task1, null);
+			assertEquals(Fork(sequence.tasks[1]).task2, task);
 
 			sequence = new Sequence(null);
 			sequence.hook(func);
-			assertEquals(Fork(sequence.tasks[1]).success, null);
-			assertEquals(Func(Fork(sequence.tasks[1]).failure).func, func);
+			assertEquals(Fork(sequence.tasks[1]).task1, null);
+			assertEquals(Func(Fork(sequence.tasks[1]).task2).func, func);
 
 			sequence = new Sequence(null);
 			sequence.hook(data);
-			assertEquals(Fork(sequence.tasks[1]).success, null);
-			assertEquals(Return(Fork(sequence.tasks[1]).failure).value, data);
+			assertEquals(Fork(sequence.tasks[1]).task1, null);
+			assertEquals(Return(Fork(sequence.tasks[1]).task2).value, data);
 
 			sequence = new Sequence(null);
 			sequence.hook(error);
-			assertEquals(Fork(sequence.tasks[1]).success, null);
-			assertEquals(Throw(Fork(sequence.tasks[1]).failure).value, error);
+			assertEquals(Fork(sequence.tasks[1]).task1, null);
+			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, error);
 
 			sequence = new Sequence(null);
 			sequence.hook(errorEvent);
-			assertEquals(Fork(sequence.tasks[1]).success, null);
-			assertEquals(Throw(Fork(sequence.tasks[1]).failure).value, errorEvent);
+			assertEquals(Fork(sequence.tasks[1]).task1, null);
+			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, errorEvent);
 		}
 	}
 }
