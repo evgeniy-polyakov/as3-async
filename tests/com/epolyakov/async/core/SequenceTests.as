@@ -561,6 +561,56 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
+		public function await_ShouldHandleErrorsInTaskAwait():void
+		{
+			var task:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var sequence:Sequence = new Sequence(task);
+
+			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				throw out;
+			});
+
+			sequence.await(args, result);
+
+			Mock.verify().that(task.await(args, sequence))
+					.verify().that(result.onThrow(out, sequence))
+					.verify().total(2);
+		}
+
+		[Test]
+		public function await_ShouldHandleErrorsInTaskAwait2():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var out1:Object = {};
+			var sequence:Sequence = new Sequence(task);
+			sequence.hook(task1);
+
+			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				throw out;
+			});
+			Mock.setup().that(task1.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				throw out1;
+			});
+
+			sequence.await(args, result);
+
+			Mock.verify().that(task.await(args, sequence))
+					.verify().that(task1.await(It.isEqual(out), It.isOfType(Fork)))
+					.verify().that(result.onThrow(out1, sequence))
+					.verify().total(3);
+		}
+
+		[Test]
 		public function cancel_CalledFirst_ShouldHaveNoEffect():void
 		{
 			var task:MockTask = new MockTask();

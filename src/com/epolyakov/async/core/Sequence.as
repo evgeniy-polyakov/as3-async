@@ -57,7 +57,7 @@ package com.epolyakov.async.core
 					Cache.add(this);
 					_active = true;
 					_result = result;
-					_tasks[0].await(args, this);
+					taskAwait(args);
 				}
 				else if (result)
 				{
@@ -90,7 +90,7 @@ package com.epolyakov.async.core
 				_tasks.shift();
 				if (_tasks.length > 0)
 				{
-					_tasks[0].await(value, this);
+					taskAwait(value);
 				}
 				else
 				{
@@ -120,7 +120,7 @@ package com.epolyakov.async.core
 
 				if (_tasks.length > 0)
 				{
-					Fork(_tasks[0]).await2(error, this);
+					taskAwait2(error);
 				}
 				else
 				{
@@ -195,6 +195,46 @@ package com.epolyakov.async.core
 				_tasks.push(new Fork(null, getTask(failure)));
 			}
 			return this;
+		}
+
+		private function taskAwait(args:Object):void
+		{
+			var task:ITask = _tasks[0];
+			try
+			{
+				task.await(args, this);
+			}
+			catch (error:Object)
+			{
+				if (_tasks.length > 0 && task == _tasks[0])
+				{
+					onThrow(error, task);
+				}
+				else
+				{
+					throw error;
+				}
+			}
+		}
+
+		private function taskAwait2(args:Object):void
+		{
+			var task:Fork = Fork(_tasks[0]);
+			try
+			{
+				task.await2(args, this);
+			}
+			catch (error:Object)
+			{
+				if (_tasks.length > 0 && task == _tasks[0])
+				{
+					onThrow(error, task);
+				}
+				else
+				{
+					throw error;
+				}
+			}
 		}
 	}
 }
