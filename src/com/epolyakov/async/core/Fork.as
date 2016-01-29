@@ -65,7 +65,11 @@ package com.epolyakov.async.core
 				}
 				else if (result)
 				{
-					result.onReturn(args, this);
+					result.onThrow(args, this);
+				}
+				else
+				{
+					throw args;
 				}
 			}
 		}

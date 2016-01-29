@@ -78,7 +78,6 @@ package com.epolyakov.async.core
 		[Test]
 		public function await_ShouldCallOnReturnIfNullTask1():void
 		{
-			var task1:MockTask = new MockTask();
 			var task2:MockTask = new MockTask();
 			var fork:Fork = new Fork(null, task2);
 			var result:MockResult = new MockResult();
@@ -94,10 +93,9 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function await2_ShouldCallOnReturnIfNullTask2():void
+		public function await2_ShouldCallOnThrowIfNullTask2():void
 		{
 			var task1:MockTask = new MockTask();
-			var task2:MockTask = new MockTask();
 			var fork:Fork = new Fork(task1, null);
 			var result:MockResult = new MockResult();
 			var args:Object = {};
@@ -107,8 +105,18 @@ package com.epolyakov.async.core
 			assertEquals(0, fork.state);
 			assertNull(fork.result);
 
-			Mock.verify().that(result.onReturn(args, fork))
+			Mock.verify().that(result.onThrow(args, fork))
 					.verify().total(1);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await2_ShouldThrowIfNullTask2AndResult():void
+		{
+			var task1:MockTask = new MockTask();
+			var fork:Fork = new Fork(task1, null);
+			var args:Object = new IOError();
+
+			fork.await2(args, null);
 		}
 
 		[Test]
