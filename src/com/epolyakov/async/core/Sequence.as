@@ -200,7 +200,7 @@ package com.epolyakov.async.core
 		private function taskAwait(args:Object):void
 		{
 			var task:ITask = _tasks[0];
-			if (task is IAsync)
+			if (task is IAsync || (task is Fork && Fork(task).task1 is IAsync))
 			{
 				task.await(args, this);
 			}
