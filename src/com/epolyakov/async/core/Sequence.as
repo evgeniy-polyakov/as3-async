@@ -200,19 +200,26 @@ package com.epolyakov.async.core
 		private function taskAwait(args:Object):void
 		{
 			var task:ITask = _tasks[0];
-			try
+			if (task is IAsync)
 			{
 				task.await(args, this);
 			}
-			catch (error:Object)
+			else
 			{
-				if (_tasks.length > 0 && task == _tasks[0])
+				try
 				{
-					onThrow(error, task);
+					task.await(args, this);
 				}
-				else
+				catch (error:Object)
 				{
-					throw error;
+					if (_active && _tasks.length > 0 && task == _tasks[0])
+					{
+						onThrow(error, task);
+					}
+					else
+					{
+						throw error;
+					}
 				}
 			}
 		}
@@ -220,19 +227,26 @@ package com.epolyakov.async.core
 		private function taskAwait2(args:Object):void
 		{
 			var task:Fork = Fork(_tasks[0]);
-			try
+			if (task.task2 is IAsync)
 			{
-				task.await2(args, this);
+				task.await(args, this);
 			}
-			catch (error:Object)
+			else
 			{
-				if (_tasks.length > 0 && task == _tasks[0])
+				try
 				{
-					onThrow(error, task);
+					task.await2(args, this);
 				}
-				else
+				catch (error:Object)
 				{
-					throw error;
+					if (_active && _tasks.length > 0 && task == _tasks[0])
+					{
+						onThrow(error, task);
+					}
+					else
+					{
+						throw error;
+					}
 				}
 			}
 		}
