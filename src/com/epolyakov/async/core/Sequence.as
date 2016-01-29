@@ -10,6 +10,7 @@ package com.epolyakov.async.core
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
+		private var _args:Object;
 
 		public function Sequence(task:Object)
 		{
@@ -55,12 +56,9 @@ package com.epolyakov.async.core
 				if (_tasks.length > 0)
 				{
 					Cache.add(this);
+					_args = args;
 					_active = true;
 					_result = result;
-					if (_tasks[0] is Fork)
-					{
-						_tasks[0] = Fork(_tasks[0]).success;
-					}
 					_tasks[0].await(args, this);
 				}
 				else if (result)
@@ -75,6 +73,7 @@ package com.epolyakov.async.core
 			if (_active)
 			{
 				Cache.remove(this);
+				_args = null;
 				_active = false;
 				_result = null;
 
@@ -91,31 +90,32 @@ package com.epolyakov.async.core
 		{
 			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
-				do
+				if (value is ITask)
 				{
-					_tasks.shift();
-				}
-				while (_tasks.length > 0 && _tasks[0] is Fork && Fork(_tasks[0]).success == null);
-
-				if (_tasks.length > 0)
-				{
-					if (_tasks[0] is Fork)
-					{
-						_tasks[0] = Fork(_tasks[0]).success;
-					}
-					_tasks[0].await(value, this);
+					_tasks[0] = value as ITask;
+					_tasks[0].await(_args, this);
 				}
 				else
 				{
-					Cache.remove(this);
-					_active = false;
-					_tasks.splice(0, _tasks.length);
-
-					if (_result)
+					_tasks.shift();
+					if (_tasks.length > 0)
 					{
-						var result:IResult = _result;
-						_result = null;
-						result.onReturn(value, this);
+						_args = value;
+						_tasks[0].await(value, this);
+					}
+					else
+					{
+						Cache.remove(this);
+						_args = null;
+						_active = false;
+						_tasks.splice(0, _tasks.length);
+
+						if (_result)
+						{
+							var result:IResult = _result;
+							_result = null;
+							result.onReturn(value, this);
+						}
 					}
 				}
 			}
@@ -133,12 +133,12 @@ package com.epolyakov.async.core
 
 				if (_tasks.length > 0)
 				{
-					_tasks[0] = Fork(_tasks[0]).failure;
-					_tasks[0].await(error, this);
+					Fork(_tasks[0]).await2(error, this);
 				}
 				else
 				{
 					Cache.remove(this);
+					_args = null;
 					_active = false;
 					_tasks.splice(0, _tasks.length);
 
@@ -169,12 +169,12 @@ package com.epolyakov.async.core
 		{
 			if (!_active && _tasks.length > 0)
 			{
-				var n:int = _tasks.length - 1;
-				if (!(_tasks[n] is Conjunction))
+				var last:int = _tasks.length - 1;
+				if (!(_tasks[last] is Conjunction))
 				{
-					_tasks[n] = new Conjunction(_tasks[n]);
+					_tasks[last] = new Conjunction(_tasks[last]);
 				}
-				Conjunction(_tasks[n]).add(getTask(task));
+				Conjunction(_tasks[last]).add(getTask(task));
 			}
 			return this;
 		}
@@ -183,12 +183,12 @@ package com.epolyakov.async.core
 		{
 			if (!_active && _tasks.length > 0)
 			{
-				var n:int = _tasks.length - 1;
-				if (!(_tasks[n] is Disjunction))
+				var last:int = _tasks.length - 1;
+				if (!(_tasks[last] is Disjunction))
 				{
-					_tasks[n] = new Disjunction(_tasks[n]);
+					_tasks[last] = new Disjunction(_tasks[last]);
 				}
-				Disjunction(_tasks[n]).add(getTask(task));
+				Disjunction(_tasks[last]).add(getTask(task));
 			}
 			return this;
 		}
