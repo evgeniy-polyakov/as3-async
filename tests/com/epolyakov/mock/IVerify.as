@@ -5,7 +5,7 @@ package com.epolyakov.mock
 	 */
 	public interface IVerify
 	{
-		function that(mock:*, times:* = 1):IVerifyActions;
+		function that(methodCall:*, times:* = 1):IVerifyActions;
 
 		function total(times:*):void;
 	}

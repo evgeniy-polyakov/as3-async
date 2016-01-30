@@ -17,7 +17,7 @@ package com.epolyakov.mock
 			_lastMatchedInvocationIndex = index - 1;
 		}
 
-		public function that(mock:*, times:* = 1):IVerifyActions
+		public function that(methodCall:*, times:* = 1):IVerifyActions
 		{
 			var invocation:Invocation = Mock.getCurrentInvocation();
 			var argumentsMatcher:ArgumentsMatcher = Mock.getArgumentsMatcher();
@@ -25,14 +25,7 @@ package com.epolyakov.mock
 
 			if (invocation == null)
 			{
-				if (mock != null && !(mock is Function) && !(mock is Array) && !(mock is String) && !(mock is Number) && !(mock is Boolean))
-				{
-					invocation = new Invocation(mock, null, []);
-				}
-				else
-				{
-					throw new SetupError("No invocation or mock object to verify.");
-				}
+				throw new SetupError("No invocation to verify.");
 			}
 			if (argumentsMatcher == null)
 			{
