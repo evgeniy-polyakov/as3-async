@@ -610,6 +610,22 @@ package com.epolyakov.async.core
 					.verify().total(3);
 		}
 
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldThrowIfNoResult():void
+		{
+			var task:MockTask = new MockTask();
+			var args:Object = {};
+			var out:IOError = new IOError();
+			var sequence:Sequence = new Sequence(task);
+
+			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
+			{
+				throw out;
+			});
+
+			sequence.await(args, null);
+		}
+
 		[Test]
 		public function cancel_CalledFirst_ShouldHaveNoEffect():void
 		{
