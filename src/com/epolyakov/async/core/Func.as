@@ -22,28 +22,13 @@ package com.epolyakov.async.core
 		public function await(args:Object = null, result:IResult = null):void
 		{
 			var value:*;
-			try
+			if (_func.length == 1)
 			{
-				if (_func.length == 1)
-				{
-					value = _func(args);
-				}
-				else
-				{
-					value = _func();
-				}
+				value = _func(args);
 			}
-			catch (error:Object)
+			else
 			{
-				if (result)
-				{
-					result.onThrow(error, this);
-				}
-				else
-				{
-					throw error;
-				}
-				return;
+				value = _func();
 			}
 			if (value is ITask)
 			{
