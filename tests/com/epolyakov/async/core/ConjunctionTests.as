@@ -161,7 +161,7 @@ package com.epolyakov.async.core
 					{
 						return value is Array && (value as Array).length == 3
 								&& value[0] == 10 && value[1] == 20 && value[2] == 30;
-					}), It.isEqual(conjunction)))
+					}), conjunction))
 					.verify().total(4);
 		}
 	}

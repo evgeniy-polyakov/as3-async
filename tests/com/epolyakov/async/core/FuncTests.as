@@ -1,6 +1,7 @@
 package com.epolyakov.async.core
 {
 	import com.epolyakov.async.core.mocks.MockResult;
+	import com.epolyakov.async.core.mocks.MockTask;
 	import com.epolyakov.mock.Mock;
 
 	import flash.errors.IOError;
@@ -97,6 +98,65 @@ package com.epolyakov.async.core
 			var result:MockResult = new MockResult();
 
 			task.await(args, result);
+		}
+
+		[Test]
+		public function await_ShouldPassArgs():void
+		{
+			var args:Object = {};
+			var func:Function = function (obj:Object):void
+			{
+				Mock.invoke(null, func, obj);
+			};
+			var task:Func = new Func(func);
+			var result:MockResult = new MockResult();
+
+			task.await(args, result);
+
+			Mock.verify().that(func(args))
+					.verify().that(result.onReturn(args, task))
+					.verify().total(2);
+		}
+
+		[Test]
+		public function await_ShouldStartTask():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Func = new Func(function (obj:Object):ITask
+			{
+				return task;
+			});
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+
+			func.await(args, result);
+
+			Mock.verify().that(task.await(args, func))
+					.verify().total(1);
+		}
+
+		[Test]
+		public function await_ShouldReturn():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Func = new Func(function (obj:Object):ITask
+			{
+				return task;
+			});
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+
+			Mock.setup().that(task.await(args, func)).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn(out, this as ITask);
+			});
+
+			func.await(args, result);
+
+			Mock.verify().that(task.await(args, func))
+					.verify().that(result.onReturn(out, func))
+					.verify().total(2);
 		}
 	}
 }

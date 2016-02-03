@@ -204,7 +204,7 @@ package com.epolyakov.async.core
 
 			sequence.await(args, result);
 
-			Mock.verify().that(task.await(It.isEqual(args), It.isOfType(Fork)));
+			Mock.verify().that(task.await(args, It.isOfType(Fork)));
 			Mock.verify().total(1);
 
 			assertTrue(sequence.active);
@@ -351,8 +351,8 @@ package com.epolyakov.async.core
 			sequence.await(args, result);
 
 			Mock.verify().that(task.await(args, sequence))
-					.verify().that(task1.await(It.isEqual(args1), It.isOfType(Fork)))
-					.verify().that(task2.await(It.isEqual(args2), It.isOfType(Fork)))
+					.verify().that(task1.await(args1, It.isOfType(Fork)))
+					.verify().that(task2.await(args2, It.isOfType(Fork)))
 					.verify().that(result.onReturn(out, sequence))
 					.verify().total(4);
 		}
@@ -403,9 +403,9 @@ package com.epolyakov.async.core
 			sequence.await(args, result);
 
 			Mock.verify().that(task.await(args, sequence))
-					.verify().that(task1.await(It.isEqual(args1), It.isOfType(Fork)))
+					.verify().that(task1.await(args1, It.isOfType(Fork)))
 					.verify().that(task2.await(args2, sequence))
-					.verify().that(task3.await(It.isEqual(args3), It.isOfType(Fork)))
+					.verify().that(task3.await(args3, It.isOfType(Fork)))
 					.verify().that(task4.await(args4, sequence))
 					.verify().that(result.onReturn(out, sequence))
 					.verify().total(6);
@@ -444,8 +444,8 @@ package com.epolyakov.async.core
 
 			Mock.verify().that(task.await(args, sequence))
 					.verify().that(task1.await(It.isAny(), It.isAny()), Times.never)
-					.verify().that(error.await(It.isEqual(args1), It.isOfType(Fork)))
-					.verify().that(task2.await(It.isEqual(args2), It.isOfType(Fork)))
+					.verify().that(error.await(args1, It.isOfType(Fork)))
+					.verify().that(task2.await(args2, It.isOfType(Fork)))
 					.verify().that(result.onReturn(out, sequence))
 					.verify().total(4);
 		}
@@ -483,8 +483,8 @@ package com.epolyakov.async.core
 
 			Mock.verify().that(task.await(args, sequence))
 					.verify().that(task1.await(It.isAny(), It.isAny()), Times.never)
-					.verify().that(error.await(It.isEqual(args1), It.isOfType(Fork)))
-					.verify().that(task2.await(It.isEqual(args2), It.isOfType(Fork)))
+					.verify().that(error.await(args1, It.isOfType(Fork)))
+					.verify().that(task2.await(args2, It.isOfType(Fork)))
 					.verify().that(result.onReturn(out, sequence))
 					.verify().total(4);
 		}
@@ -554,8 +554,8 @@ package com.epolyakov.async.core
 			sequence.await(args, result);
 
 			Mock.verify().that(task.await(args, sequence))
-					.verify().that(task1.await(It.isEqual(args1), It.isOfType(Fork)))
-					.verify().that(task2.await(It.isEqual(args2), It.isOfType(Fork)))
+					.verify().that(task1.await(args1, It.isOfType(Fork)))
+					.verify().that(task2.await(args2, It.isOfType(Fork)))
 					.verify().that(result.onReturn(out, sequence))
 					.verify().total(4);
 		}
@@ -605,7 +605,7 @@ package com.epolyakov.async.core
 			sequence.await(args, result);
 
 			Mock.verify().that(task.await(args, sequence))
-					.verify().that(task1.await(It.isEqual(out), It.isOfType(Fork)))
+					.verify().that(task1.await(out, It.isOfType(Fork)))
 					.verify().that(result.onThrow(out1, sequence))
 					.verify().total(3);
 		}

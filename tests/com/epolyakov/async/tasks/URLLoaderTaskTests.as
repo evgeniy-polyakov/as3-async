@@ -47,7 +47,7 @@ package com.epolyakov.async.tasks
 			var task:URLLoaderTask = new URLLoaderTask(new URLRequest(null));
 
 			task.await(null, result);
-			Mock.verify().that(result.onThrow(It.isOfType(TypeError), It.isEqual(task)), 1)
+			Mock.verify().that(result.onThrow(It.isOfType(TypeError), task), 1)
 					.verify().total(1);
 		}
 
@@ -65,7 +65,7 @@ package com.epolyakov.async.tasks
 									&& !URLLoader(value).hasEventListener(Event.COMPLETE)
 									&& !URLLoader(value).hasEventListener(IOErrorEvent.IO_ERROR)
 									&& !URLLoader(value).hasEventListener(SecurityErrorEvent.SECURITY_ERROR);
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.CANCEL);
@@ -87,7 +87,7 @@ package com.epolyakov.async.tasks
 									&& !Event(value).target.hasEventListener(Event.COMPLETE)
 									&& !Event(value).target.hasEventListener(IOErrorEvent.IO_ERROR)
 									&& !Event(value).target.hasEventListener(SecurityErrorEvent.SECURITY_ERROR);
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.COMPLETE);
@@ -108,7 +108,7 @@ package com.epolyakov.async.tasks
 							return value is URLLoader
 									&& URLLoader(value).dataFormat == URLLoaderDataFormat.TEXT
 									&& URLLoader(value).data == "test=data";
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.CANCEL);
@@ -129,7 +129,7 @@ package com.epolyakov.async.tasks
 							return value is URLLoader
 									&& URLLoader(value).dataFormat == URLLoaderDataFormat.BINARY
 									&& URLLoader(value).data is ByteArray;
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.CANCEL);
@@ -151,7 +151,7 @@ package com.epolyakov.async.tasks
 									&& URLLoader(value).dataFormat == URLLoaderDataFormat.VARIABLES
 									&& URLLoader(value).data is URLVariables
 									&& URLLoader(value).data.test == "data";
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.CANCEL);
@@ -191,7 +191,7 @@ package com.epolyakov.async.tasks
 						{
 							return value is URLLoader
 									&& URLLoader(value).data == "test=data";
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.CANCEL);

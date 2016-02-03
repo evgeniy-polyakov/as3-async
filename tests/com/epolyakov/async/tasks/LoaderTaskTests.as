@@ -63,7 +63,7 @@ package com.epolyakov.async.tasks
 			var task:LoaderTask = new LoaderTask(Sprite);
 
 			task.await(null, result);
-			Mock.verify().that(result.onThrow(It.isOfType(TypeError), It.isEqual(task)), 1)
+			Mock.verify().that(result.onThrow(It.isOfType(TypeError), task), 1)
 					.verify().total(1);
 		}
 
@@ -76,7 +76,7 @@ package com.epolyakov.async.tasks
 			var task:LoaderTask = new LoaderTask("test", context);
 
 			task.await(null, result);
-			Mock.verify().that(result.onThrow(It.isOfType(IllegalOperationError), It.isEqual(task)), 1)
+			Mock.verify().that(result.onThrow(It.isOfType(IllegalOperationError), task), 1)
 					.verify().total(1);
 		}
 
@@ -94,7 +94,7 @@ package com.epolyakov.async.tasks
 									&& !Loader(value).contentLoaderInfo.hasEventListener(Event.COMPLETE)
 									&& !Loader(value).contentLoaderInfo.hasEventListener(IOErrorEvent.IO_ERROR)
 									&& !Loader(value).contentLoaderInfo.hasEventListener(SecurityErrorEvent.SECURITY_ERROR);
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.CANCEL);
@@ -116,7 +116,7 @@ package com.epolyakov.async.tasks
 									&& !Event(value).target.hasEventListener(Event.COMPLETE)
 									&& !Event(value).target.hasEventListener(IOErrorEvent.IO_ERROR)
 									&& !Event(value).target.hasEventListener(SecurityErrorEvent.SECURITY_ERROR);
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.COMPLETE);
@@ -158,7 +158,7 @@ package com.epolyakov.async.tasks
 									&& Loader(value).content is Bitmap
 									&& Bitmap(Loader(value).content).width == 32
 									&& Bitmap(Loader(value).content).height == 32
-						}), It.isEqual(task)), 1)
+						}), task), 1)
 						.verify().total(1);
 			});
 			Async.failOnEvent(this, result, Event.CANCEL);
