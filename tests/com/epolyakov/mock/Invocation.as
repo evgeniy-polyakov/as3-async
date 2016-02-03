@@ -15,7 +15,7 @@ package com.epolyakov.mock
 		{
 			_object = object;
 			_method = method;
-			_arguments = arguments;
+			_arguments = arguments || [];
 		}
 
 		internal function get object():Object

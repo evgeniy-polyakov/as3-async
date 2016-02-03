@@ -1,7 +1,6 @@
 package com.epolyakov.mock
 {
 	import com.epolyakov.mock.matchers.ArgumentsMatcher;
-	import com.epolyakov.mock.matchers.IsEqualMatcher;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -76,22 +75,7 @@ package com.epolyakov.mock
 			{
 				argumentsMatcher = new ArgumentsMatcher();
 			}
-			if (argumentsMatcher.arguments.length > 0)
-			{
-				if (argumentsMatcher.arguments.length != invocation.arguments.length)
-				{
-					throw new SetupError("Arguments mismatch: " +
-							"expected (" + argumentsMatcher + ")" +
-							"but got (" + invocation.arguments + ").");
-				}
-			}
-			else
-			{
-				for each (var arg:* in invocation.arguments)
-				{
-					argumentsMatcher.arguments.push(new IsEqualMatcher(arg));
-				}
-			}
+			argumentsMatcher.complete(invocation.arguments);
 
 			_object = invocation.object;
 			_method = invocation.method;
