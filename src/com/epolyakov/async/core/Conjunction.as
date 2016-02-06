@@ -42,7 +42,11 @@ package com.epolyakov.async.core
 					var tasks:Vector.<ITask> = _tasks.slice();
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
 					{
-						tasks[i].await(args, this);
+						// Check active because any of tasks can throw.
+						if (_active)
+						{
+							tasks[i].await(args, this);
+						}
 					}
 				}
 				else if (result)
