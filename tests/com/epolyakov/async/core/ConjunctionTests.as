@@ -164,5 +164,30 @@ package com.epolyakov.async.core
 					}), conjunction))
 					.verify().total(4);
 		}
+
+		[Test]
+		public function await_ShouldReturnInOrderOfExecution():void
+		{
+			var task:Task = new Task();
+			var task1:Task = new Task();
+			var task2:Task = new Task();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var conjunction:Conjunction = new Conjunction(task);
+			conjunction.add(task1);
+			conjunction.add(task2);
+			conjunction.await(args, result);
+
+			task1.onReturn(10);
+			task2.onReturn(20);
+			task.onReturn(0);
+
+			Mock.verify().that(result.onReturn(It.match(function (value:Object):Boolean
+					{
+						return value is Array && (value as Array).length == 3
+								&& value[0] == 10 && value[1] == 20 && value[2] == 0;
+					}), conjunction))
+					.verify().total(1);
+		}
 	}
 }

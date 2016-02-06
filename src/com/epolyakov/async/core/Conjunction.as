@@ -8,6 +8,7 @@ package com.epolyakov.async.core
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
+		private var _out:Array;
 
 		public function Conjunction(task:ITask)
 		{
@@ -37,6 +38,7 @@ package com.epolyakov.async.core
 				{
 					_active = true;
 					_result = result;
+					_out = [];
 					var tasks:Vector.<ITask> = _tasks.slice();
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
 					{
@@ -56,6 +58,7 @@ package com.epolyakov.async.core
 			{
 				_active = false;
 				_result = null;
+				_out = null;
 				if (_tasks.length > 0)
 				{
 					var tasks:Vector.<ITask> = _tasks.slice();
@@ -76,14 +79,17 @@ package com.epolyakov.async.core
 				if (index >= 0)
 				{
 					_tasks.splice(index, 1);
+					_out.push(value);
 					if (_tasks.length == 0)
 					{
 						_active = false;
 						if (_result)
 						{
 							var result:IResult = _result;
+							var out:Array = _out;
 							_result = null;
-							result.onReturn(value, this);
+							_out = null;
+							result.onReturn(out, this);
 						}
 					}
 				}
@@ -98,6 +104,7 @@ package com.epolyakov.async.core
 				if (index >= 0)
 				{
 					_active = false;
+					_out = null;
 					var tasks:Vector.<ITask> = _tasks.slice();
 					_tasks.splice(0, _tasks.length);
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
