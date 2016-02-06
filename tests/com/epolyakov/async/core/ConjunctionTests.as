@@ -4,6 +4,9 @@ package com.epolyakov.async.core
 	import com.epolyakov.async.core.mocks.MockTask;
 	import com.epolyakov.mock.It;
 	import com.epolyakov.mock.Mock;
+	import com.epolyakov.mock.Times;
+
+	import flash.errors.IOError;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
@@ -163,6 +166,8 @@ package com.epolyakov.async.core
 								&& value[0] == 10 && value[1] == 20 && value[2] == 30;
 					}), conjunction))
 					.verify().total(4);
+
+			assertEquals(conjunction.tasks.length, 0);
 		}
 
 		[Test]
@@ -188,6 +193,53 @@ package com.epolyakov.async.core
 								&& value[0] == 10 && value[1] == 20 && value[2] == 0;
 					}), conjunction))
 					.verify().total(1);
+		}
+
+		[Test]
+		public function await_ShouldThrowIfOneOfTasksThrows():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var error:Object = {};
+			var conjunction:Conjunction = new Conjunction(task);
+			conjunction.add(task1);
+			conjunction.add(task2);
+
+			Mock.setup().that(task1.await(args, conjunction)).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(error, this as ITask);
+			});
+			conjunction.await(args, result);
+
+			Mock.verify().that(task.await(args, conjunction))
+					.verify().that(task1.await(args, conjunction))
+					.verify().that(task2.await(args, conjunction), Times.never)
+					.verify().that(task.cancel())
+					.verify().that(task1.cancel(), Times.never)
+					.verify().that(task2.cancel())
+					.verify().that(result.onThrow(error, conjunction))
+					.verify().total(5);
+
+			assertEquals(conjunction.tasks.length, 0);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldNotHandleAwaitErrors():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var conjunction:Conjunction = new Conjunction(task);
+			conjunction.add(task1);
+			conjunction.add(task2);
+
+			Mock.setup().that(task1.await(args, conjunction)).throws(new IOError());
+			conjunction.await(args, result);
 		}
 	}
 }
