@@ -219,9 +219,9 @@ package com.epolyakov.async.core
 					.verify().that(task2.await(args, conjunction), Times.never)
 					.verify().that(task.cancel())
 					.verify().that(task1.cancel(), Times.never)
-					.verify().that(task2.cancel())
+					.verify().that(task2.cancel(), Times.never)
 					.verify().that(result.onThrow(error, conjunction))
-					.verify().total(5);
+					.verify().total(4);
 
 			assertEquals(conjunction.tasks.length, 0);
 		}
