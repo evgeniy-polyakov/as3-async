@@ -241,5 +241,46 @@ package com.epolyakov.async.core
 			Mock.setup().that(task1.await(args, conjunction)).throws(new IOError());
 			conjunction.await(args, result);
 		}
+
+		[Test]
+		public function cancel_ShouldSetActiveAndResult():void
+		{
+			var conjunction:Conjunction = new Conjunction(new MockTask());
+			var result:MockResult = new MockResult();
+			conjunction.await({}, result);
+			conjunction.cancel();
+
+			assertFalse(conjunction.active);
+			assertNull(conjunction.result);
+		}
+
+		[Test]
+		public function cancel_ShouldCancelAllTasks():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var args:Object = {};
+			var result:MockResult = new MockResult();
+			var conjunction:Conjunction = new Conjunction(task);
+			conjunction.add(task1);
+			conjunction.add(task2);
+
+			Mock.setup().that(task1.await(args, conjunction)).returns(function (args:Object, result:IResult):void
+			{
+				result.onReturn({}, this as ITask);
+			});
+
+			conjunction.await(args, result);
+			conjunction.cancel();
+
+			Mock.verify().that(task.await(args, conjunction))
+					.verify().that(task1.await(args, conjunction))
+					.verify().that(task2.await(args, conjunction))
+					.verify().that(task.cancel())
+					.verify().that(task1.cancel(), Times.never)
+					.verify().that(task2.cancel())
+					.verify().total(5);
+		}
 	}
 }
