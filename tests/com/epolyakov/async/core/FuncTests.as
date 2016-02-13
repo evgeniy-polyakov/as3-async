@@ -2,11 +2,16 @@ package com.epolyakov.async.core
 {
 	import com.epolyakov.async.core.mocks.MockResult;
 	import com.epolyakov.async.core.mocks.MockTask;
+	import com.epolyakov.mock.It;
 	import com.epolyakov.mock.Mock;
 
 	import flash.errors.IOError;
+	import flash.events.Event;
+	import flash.utils.setTimeout;
 
 	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.asserts.assertNull;
+	import org.flexunit.async.Async;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -20,7 +25,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function constructor_ShouldSetTasks():void
+		public function constructor_ShouldSetFunc():void
 		{
 			var func:Function = function ():void
 			{
@@ -71,7 +76,7 @@ package com.epolyakov.async.core
 					.verify().total(2);
 		}
 
-		[Test(expects="ArgumentError")]
+		[Test]
 		public function await_ShouldThrowIfMoreThan1Args():void
 		{
 			var out:Object = {};
@@ -84,9 +89,12 @@ package com.epolyakov.async.core
 			var result:MockResult = new MockResult();
 
 			task.await(args, result);
+
+			Mock.verify().that(result.onThrow(It.isOfType(ArgumentError), task))
+					.verify().total(1);
 		}
 
-		[Test(expects="flash.errors.IOError")]
+		[Test]
 		public function await_ShouldThrowIfFuncThrows():void
 		{
 			var args:Object = {};
@@ -98,6 +106,9 @@ package com.epolyakov.async.core
 			var result:MockResult = new MockResult();
 
 			task.await(args, result);
+
+			Mock.verify().that(result.onThrow(It.isOfType(IOError), task))
+					.verify().total(1);
 		}
 
 		[Test]
@@ -119,7 +130,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function await_ShouldStartTask():void
+		public function await_ShouldAwaitTask():void
 		{
 			var task:MockTask = new MockTask();
 			var func:Func = new Func(function (obj:Object):ITask
@@ -136,7 +147,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function await_ShouldReturn():void
+		public function await_ShouldReturnIfTaskReturns():void
 		{
 			var task:MockTask = new MockTask();
 			var func:Func = new Func(function (obj:Object):ITask
@@ -157,6 +168,115 @@ package com.epolyakov.async.core
 			Mock.verify().that(task.await(args, func))
 					.verify().that(result.onReturn(out, func))
 					.verify().total(2);
+		}
+
+		[Test]
+		public function await_ShouldThrowIfTaskThrows():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Func = new Func(function (obj:Object):ITask
+			{
+				return task;
+			});
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+
+			Mock.setup().that(task.await(args, func)).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(out, this as ITask);
+			});
+
+			func.await(args, result);
+
+			Mock.verify().that(task.await(args, func))
+					.verify().that(result.onThrow(out, func))
+					.verify().total(2);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldThrowIfTaskAwaitThrows():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Func = new Func(function (obj:Object):ITask
+			{
+				return task;
+			});
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = new IOError();
+
+			Mock.setup().that(task.await(args, func)).throws(out);
+
+			func.await(args, result);
+		}
+
+		[Test(async, timeout=1000)]
+		public function await_ShouldReturnIfTaskReturnsAsync():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Func = new Func(function (obj:Object):ITask
+			{
+				return task;
+			});
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+
+			Mock.setup().that(task.await(args, func)).returns(function (args:Object, result:IResult):void
+			{
+				setTimeout(result.onReturn, 100, out, this as ITask);
+			});
+
+			func.await(args, result);
+
+			assertEquals(task, func.task);
+			assertEquals(result, func.result);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(task.await(args, func))
+						.verify().that(result.onReturn(out, func))
+						.verify().total(2);
+
+				assertNull(func.task);
+				assertNull(func.result);
+			});
+			Async.failOnEvent(this, result, Event.CANCEL);
+		}
+
+		[Test(async, timeout=1000)]
+		public function await_ShouldThrowIfTaskThrowsAsync():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Func = new Func(function (obj:Object):ITask
+			{
+				return task;
+			});
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+
+			Mock.setup().that(task.await(args, func)).returns(function (args:Object, result:IResult):void
+			{
+				setTimeout(result.onReturn, 100, out, this as ITask);
+			});
+
+			func.await(args, result);
+
+			assertEquals(task, func.task);
+			assertEquals(result, func.result);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(task.await(args, func))
+						.verify().that(result.onReturn(out, func))
+						.verify().total(2);
+
+				assertNull(func.task);
+				assertNull(func.result);
+			});
+			Async.failOnEvent(this, result, Event.CANCEL);
 		}
 	}
 }

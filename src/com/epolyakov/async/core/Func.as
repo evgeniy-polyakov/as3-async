@@ -19,16 +19,37 @@ package com.epolyakov.async.core
 			return _func;
 		}
 
+		internal function get task():ITask
+		{
+			return _task;
+		}
+
+		internal function get result():IResult
+		{
+			return _result;
+		}
+
 		public function await(args:Object = null, result:IResult = null):void
 		{
 			var value:*;
-			if (_func.length == 1)
+			try
 			{
-				value = _func(args);
+				if (_func.length == 1)
+				{
+					value = _func(args);
+				}
+				else
+				{
+					value = _func();
+				}
 			}
-			else
+			catch (error:*)
 			{
-				value = _func();
+				if (result)
+				{
+					result.onThrow(error, this);
+				}
+				return;
 			}
 			if (value is ITask)
 			{
