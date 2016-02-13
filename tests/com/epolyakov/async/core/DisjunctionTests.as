@@ -5,10 +5,14 @@ package com.epolyakov.async.core
 	import com.epolyakov.mock.Mock;
 	import com.epolyakov.mock.Times;
 
+	import flash.events.Event;
+	import flash.utils.setTimeout;
+
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertTrue;
+	import org.flexunit.async.Async;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -219,6 +223,135 @@ package com.epolyakov.async.core
 					.verify().total(4);
 
 			assertEquals(disjunction.tasks.length, 0);
+		}
+
+		[Test(async, timeout=1000)]
+		public function await_ShouldReturnIfOneTaskReturnsAsync():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var disjunction:Disjunction = new Disjunction(task);
+
+			Mock.setup().that(task.await(args, disjunction)).returns(function (args:Object, result:IResult):void
+			{
+				setTimeout(result.onReturn, 200, 10, this as ITask);
+			});
+			Mock.setup().that(task1.await(args, disjunction)).returns(function (args:Object, result:IResult):void
+			{
+				setTimeout(result.onReturn, 100, 20, this as ITask);
+			});
+			Mock.setup().that(task2.await(args, disjunction)).returns(function (args:Object, result:IResult):void
+			{
+				setTimeout(result.onReturn, 300, 30, this as ITask);
+			});
+
+			disjunction.add(task1);
+			disjunction.add(task2);
+			disjunction.await(args, result);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(task.await(args, disjunction))
+						.verify().that(task1.await(args, disjunction))
+						.verify().that(task2.await(args, disjunction))
+						.verify().that(task.cancel())
+						.verify().that(task1.cancel(), Times.never)
+						.verify().that(task2.cancel())
+						.verify().that(result.onReturn(20, disjunction))
+						.verify().total(6);
+
+				assertNull(disjunction.result);
+				assertFalse(disjunction.active);
+				assertEquals(disjunction.tasks.length, 0);
+			});
+			Async.failOnEvent(this, result, Event.CANCEL);
+		}
+
+		[Test(async, timeout=1000)]
+		public function await_ShouldThrowIfOneOfTaskThrowsAsync():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var disjunction:Disjunction = new Disjunction(task);
+
+			Mock.setup().that(task.await(args, disjunction)).returns(function (args:Object, result:IResult):void
+			{
+				setTimeout(result.onReturn, 200, 10, this as ITask);
+			});
+			Mock.setup().that(task1.await(args, disjunction)).returns(function (args:Object, result:IResult):void
+			{
+				setTimeout(result.onThrow, 100, 20, this as ITask);
+			});
+			Mock.setup().that(task2.await(args, disjunction)).returns(function (args:Object, result:IResult):void
+			{
+				setTimeout(result.onReturn, 300, 30, this as ITask);
+			});
+
+			disjunction.add(task1);
+			disjunction.add(task2);
+			disjunction.await(args, result);
+
+			Async.handleEvent(this, result, Event.CANCEL, function (...rest):void
+			{
+				Mock.verify().that(task.await(args, disjunction))
+						.verify().that(task1.await(args, disjunction))
+						.verify().that(task2.await(args, disjunction))
+						.verify().that(task.cancel())
+						.verify().that(task1.cancel(), Times.never)
+						.verify().that(task2.cancel())
+						.verify().that(result.onThrow(20, disjunction))
+						.verify().total(6);
+
+				assertNull(disjunction.result);
+				assertFalse(disjunction.active);
+				assertEquals(disjunction.tasks.length, 0);
+			});
+			Async.failOnEvent(this, result, Event.COMPLETE);
+		}
+
+		[Test(async, timeout=1000)]
+		public function cancel_ShouldCancelAllTasksAsync():void
+		{
+			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var result:MockResult = new MockResult();
+			var args:Object = {};
+			var out:Object = {};
+			var disjunction:Disjunction = new Disjunction(task);
+
+			disjunction.add(task1);
+			disjunction.add(task2);
+			disjunction.await(args, result);
+
+			setTimeout(function ():void
+			{
+				disjunction.cancel();
+				result.dispatchEvent(new Event(Event.CLOSE));
+			}, 200);
+
+			Async.handleEvent(this, result, Event.CLOSE, function (...rest):void
+			{
+				Mock.verify().that(task.await(args, disjunction))
+						.verify().that(task1.await(args, disjunction))
+						.verify().that(task2.await(args, disjunction))
+						.verify().that(task.cancel())
+						.verify().that(task1.cancel())
+						.verify().that(task2.cancel())
+						.verify().total(6);
+
+				assertNull(disjunction.result);
+				assertFalse(disjunction.active);
+				assertEquals(disjunction.tasks.length, 0);
+			});
+			Async.failOnEvent(this, result, Event.CANCEL);
+			Async.failOnEvent(this, result, Event.COMPLETE);
 		}
 
 		[Test]
