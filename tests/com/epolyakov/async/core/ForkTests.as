@@ -5,7 +5,6 @@ package com.epolyakov.async.core
 	import com.epolyakov.mock.Mock;
 
 	import flash.errors.EOFError;
-
 	import flash.errors.IOError;
 
 	import org.flexunit.asserts.assertEquals;
@@ -267,7 +266,7 @@ package com.epolyakov.async.core
 			fork.await(args, null);
 		}
 
-		[Test(expects="flash.errors.IOError")]
+		[Test(expects="flash.errors.EOFError")]
 		public function await2_ShouldThrowIfNullResult():void
 		{
 			var task1:MockTask = new MockTask();
@@ -275,7 +274,7 @@ package com.epolyakov.async.core
 			var fork:Fork = new Fork(task1, task2);
 			var args:Object = {};
 			var out1:Object = new IOError();
-			var out2:Object = new IOError();
+			var out2:Object = new EOFError();
 
 			Mock.setup().that(task1.await(args, fork)).returns(function (args:Object, result:IResult):void
 			{
@@ -285,6 +284,38 @@ package com.epolyakov.async.core
 			{
 				result.onThrow(out2, this as ITask);
 			});
+
+			fork.await2(args, null);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldThrowIfNullResult1():void
+		{
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var fork:Fork = new Fork(task1, task2);
+			var args:Object = {};
+			var out1:Object = new IOError();
+			var out2:Object = new EOFError();
+
+			Mock.setup().that(task1.await(args, fork)).throws(out1);
+			Mock.setup().that(task2.await(args, fork)).throws(out2);
+
+			fork.await(args, null);
+		}
+
+		[Test(expects="flash.errors.EOFError")]
+		public function await2_ShouldThrowIfNullResult1():void
+		{
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
+			var fork:Fork = new Fork(task1, task2);
+			var args:Object = {};
+			var out1:Object = new IOError();
+			var out2:Object = new EOFError();
+
+			Mock.setup().that(task1.await(args, fork)).throws(out1);
+			Mock.setup().that(task2.await(args, fork)).throws(out2);
 
 			fork.await2(args, null);
 		}

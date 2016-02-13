@@ -111,6 +111,19 @@ package com.epolyakov.async.core
 					.verify().total(1);
 		}
 
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldThrowErrorIfFuncThrows():void
+		{
+			var args:Object = {};
+			var func:Function = function (obj:Object):Object
+			{
+				throw new IOError();
+			};
+			var task:Func = new Func(func);
+
+			task.await(args, null);
+		}
+
 		[Test]
 		public function await_ShouldPassArgs():void
 		{
@@ -195,7 +208,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function await_ShouldNotThrowIfTaskAwaitThrows():void
+		public function await_ShouldThrowIfTaskAwaitThrows():void
 		{
 			var task:MockTask = new MockTask();
 			var func:Func = new Func(function (obj:Object):ITask
@@ -213,6 +226,41 @@ package com.epolyakov.async.core
 			Mock.verify().that(task.await(args, func))
 					.verify().that(result.onThrow(out, func))
 					.verify().total(2);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldThrowErrorIfTaskThrows():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Func = new Func(function (obj:Object):ITask
+			{
+				return task;
+			});
+			var args:Object = {};
+			var out:Object = new IOError();
+
+			Mock.setup().that(task.await(args, func)).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(out, this as ITask);
+			});
+
+			func.await(args, null);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldThrowErrorIfTaskAwaitThrows():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Func = new Func(function (obj:Object):ITask
+			{
+				return task;
+			});
+			var args:Object = {};
+			var out:Object = new IOError();
+
+			Mock.setup().that(task.await(args, func)).throws(out);
+
+			func.await(args, null);
 		}
 
 		[Test(async, timeout=1000)]

@@ -48,8 +48,9 @@ package com.epolyakov.async.core
 				if (result)
 				{
 					result.onThrow(error, this);
+					return;
 				}
-				return;
+				throw error;
 			}
 			if (value is ITask)
 			{
@@ -99,7 +100,7 @@ package com.epolyakov.async.core
 			if (target == _task)
 			{
 				super.onThrow(error, target);
-				
+
 				_task = null;
 				if (_result)
 				{

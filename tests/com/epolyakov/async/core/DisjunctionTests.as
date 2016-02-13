@@ -5,6 +5,7 @@ package com.epolyakov.async.core
 	import com.epolyakov.mock.Mock;
 	import com.epolyakov.mock.Times;
 
+	import flash.errors.IOError;
 	import flash.events.Event;
 	import flash.utils.setTimeout;
 
@@ -223,6 +224,33 @@ package com.epolyakov.async.core
 					.verify().total(4);
 
 			assertEquals(disjunction.tasks.length, 0);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await_NullResult_ShouldThrowErrorIfTaskThrows():void
+		{
+			var task:MockTask = new MockTask();
+			var args:Object = {};
+			var disjunction:Disjunction = new Disjunction(task);
+
+			Mock.setup().that(task.await(args, disjunction)).returns(function (args:Object, result:IResult):void
+			{
+				result.onThrow(new IOError(), this as ITask);
+			});
+
+			disjunction.await(args);
+		}
+
+		[Test(expects="flash.errors.IOError")]
+		public function await_NullResult_ShouldThrowErrorIfTaskAwaitThrows():void
+		{
+			var task:MockTask = new MockTask();
+			var args:Object = {};
+			var disjunction:Disjunction = new Disjunction(task);
+
+			Mock.setup().that(task.await(args, disjunction)).throws(new IOError());
+
+			disjunction.await(args);
 		}
 
 		[Test(async, timeout=1000)]
