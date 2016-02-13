@@ -560,13 +560,13 @@ package com.epolyakov.async.core
 					.verify().total(4);
 		}
 
-		[Test]
-		public function await_ShouldHandleErrorsInTaskAwait():void
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldHandleNotErrorsInTaskAwait():void
 		{
 			var task:MockTask = new MockTask();
 			var result:MockResult = new MockResult();
 			var args:Object = {};
-			var out:Object = {};
+			var out:IOError = new IOError();
 			var sequence:Sequence = new Sequence(task);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
@@ -575,20 +575,16 @@ package com.epolyakov.async.core
 			});
 
 			sequence.await(args, result);
-
-			Mock.verify().that(task.await(args, sequence))
-					.verify().that(result.onThrow(out, sequence))
-					.verify().total(2);
 		}
 
-		[Test]
-		public function await_ShouldHandleErrorsInTaskAwait2():void
+		[Test(expects="flash.errors.IOError")]
+		public function await_ShouldNotHandleErrorsInTaskAwait2():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var result:MockResult = new MockResult();
 			var args:Object = {};
-			var out:Object = {};
+			var out:Object = new IOError();
 			var out1:Object = {};
 			var sequence:Sequence = new Sequence(task);
 			sequence.hook(task1);
@@ -603,11 +599,6 @@ package com.epolyakov.async.core
 			});
 
 			sequence.await(args, result);
-
-			Mock.verify().that(task.await(args, sequence))
-					.verify().that(task1.await(out, It.isOfType(Fork)))
-					.verify().that(result.onThrow(out1, sequence))
-					.verify().total(3);
 		}
 
 		[Test(expects="flash.errors.IOError")]

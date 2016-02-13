@@ -57,7 +57,7 @@ package com.epolyakov.async.core
 					Cache.add(this);
 					_active = true;
 					_result = result;
-					taskAwait(args);
+					_tasks[0].await(args, this);
 				}
 				else if (result)
 				{
@@ -90,13 +90,12 @@ package com.epolyakov.async.core
 				_tasks.shift();
 				if (_tasks.length > 0)
 				{
-					taskAwait(value);
+					_tasks[0].await(value, this);
 				}
 				else
 				{
 					Cache.remove(this);
 					_active = false;
-					_tasks.splice(0, _tasks.length);
 
 					if (_result)
 					{
@@ -120,13 +119,12 @@ package com.epolyakov.async.core
 
 				if (_tasks.length > 0)
 				{
-					taskAwait2(error);
+					Fork(_tasks[0]).await2(error, this);
 				}
 				else
 				{
 					Cache.remove(this);
 					_active = false;
-					_tasks.splice(0, _tasks.length);
 
 					if (_result)
 					{
@@ -195,60 +193,6 @@ package com.epolyakov.async.core
 				_tasks.push(new Fork(null, getTask(failure)));
 			}
 			return this;
-		}
-
-		private function taskAwait(args:Object):void
-		{
-			var task:ITask = _tasks[0];
-			if (task is IAsync || (task is Fork && Fork(task).task1 is IAsync))
-			{
-				task.await(args, this);
-			}
-			else
-			{
-				try
-				{
-					task.await(args, this);
-				}
-				catch (error:Object)
-				{
-					if (_active && _tasks.length > 0 && task == _tasks[0])
-					{
-						onThrow(error, task);
-					}
-					else
-					{
-						throw error;
-					}
-				}
-			}
-		}
-
-		private function taskAwait2(args:Object):void
-		{
-			var task:Fork = Fork(_tasks[0]);
-			if (task.task2 is IAsync)
-			{
-				task.await(args, this);
-			}
-			else
-			{
-				try
-				{
-					task.await2(args, this);
-				}
-				catch (error:Object)
-				{
-					if (_active && _tasks.length > 0 && task == _tasks[0])
-					{
-						onThrow(error, task);
-					}
-					else
-					{
-						throw error;
-					}
-				}
-			}
 		}
 	}
 }
