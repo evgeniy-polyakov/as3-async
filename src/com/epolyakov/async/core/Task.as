@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	public class Task implements ITask, IResult
+	public class Task extends Launcher implements ITask, IResult
 	{
 		private var _args:Object;
 		private var _target:ITask;
@@ -25,9 +25,6 @@ package com.epolyakov.async.core
 			return _args;
 		}
 
-		/**
-		 * @inheritDoc
-		 */
 		final public function await(args:Object = null, result:IResult = null):void
 		{
 			if (!_active)
@@ -37,18 +34,22 @@ package com.epolyakov.async.core
 				_args = args;
 				if (_target == null)
 				{
-					onAwait();
+					try
+					{
+						onAwait();
+					}
+					catch (error:*)
+					{
+						onThrow(error);
+					}
 				}
 				else
 				{
-					_target.await(args, this);
+					launch(_target, args);
 				}
 			}
 		}
 
-		/**
-		 * @inheritDoc
-		 */
 		final public function cancel():void
 		{
 			if (_active)
@@ -67,10 +68,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		final public function onReturn(value:Object, target:ITask = null):void
+		final override public function onReturn(value:Object, target:ITask = null):void
 		{
 			if (_active)
 			{
+				super.onReturn(value, target);
+
 				_active = false;
 				_args = null;
 				if (_result)
@@ -82,10 +85,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		final public function onThrow(error:Object, target:ITask = null):void
+		final override public function onThrow(error:Object, target:ITask = null):void
 		{
 			if (_active)
 			{
+				super.onThrow(error, target);
+
 				_active = false;
 				_args = null;
 				if (_result)

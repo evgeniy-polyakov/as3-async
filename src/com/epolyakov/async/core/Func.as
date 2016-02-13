@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Func implements ITask, IResult
+	internal class Func extends Launcher implements ITask, IReliable
 	{
 		private var _func:Function;
 		private var _task:ITask;
@@ -55,7 +55,7 @@ package com.epolyakov.async.core
 			{
 				_task = value;
 				_result = result;
-				_task.await(args, this);
+				launch(_task, args);
 			}
 			else if (value === undefined && result)
 			{
@@ -78,10 +78,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onReturn(value:Object, target:ITask = null):void
+		override public function onReturn(value:Object, target:ITask = null):void
 		{
 			if (target == _task)
 			{
+				super.onReturn(value, target);
+
 				_task = null;
 				if (_result)
 				{
@@ -92,10 +94,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onThrow(error:Object, target:ITask = null):void
+		override public function onThrow(error:Object, target:ITask = null):void
 		{
 			if (target == _task)
 			{
+				super.onThrow(error, target);
+				
 				_task = null;
 				if (_result)
 				{

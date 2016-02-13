@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Return implements ITask
+	internal class Return implements ITask, IReliable
 	{
 		private var _value:Object;
 

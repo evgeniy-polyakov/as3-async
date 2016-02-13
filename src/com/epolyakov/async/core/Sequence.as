@@ -5,7 +5,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Sequence implements IAsync, IResult
+	internal class Sequence extends Launcher implements IAsync, IResult
 	{
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
@@ -13,10 +13,10 @@ package com.epolyakov.async.core
 
 		public function Sequence(task:Object)
 		{
-			_tasks = new <ITask>[getTask(task)];
+			_tasks = new <ITask>[cast(task)];
 		}
 
-		private static function getTask(value:Object):ITask
+		private static function cast(value:Object):ITask
 		{
 			if (value is ITask)
 			{
@@ -57,7 +57,7 @@ package com.epolyakov.async.core
 					Cache.add(this);
 					_active = true;
 					_result = result;
-					_tasks[0].await(args, this);
+					launch(_tasks[0], args);
 				}
 				else if (result)
 				{
@@ -83,14 +83,16 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onReturn(value:Object, target:ITask = null):void
+		override public function onReturn(value:Object, target:ITask = null):void
 		{
 			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
+				super.onReturn(value, target);
+
 				_tasks.shift();
 				if (_tasks.length > 0)
 				{
-					_tasks[0].await(value, this);
+					launch(_tasks[0], value);
 				}
 				else
 				{
@@ -107,10 +109,11 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onThrow(error:Object, target:ITask = null):void
+		override public function onThrow(error:Object, target:ITask = null):void
 		{
 			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
+				super.onThrow(error, target);
 				do
 				{
 					_tasks.shift();
@@ -144,7 +147,7 @@ package com.epolyakov.async.core
 		{
 			if (!_active)
 			{
-				_tasks.push(getTask(task));
+				_tasks.push(cast(task));
 			}
 			return this;
 		}
@@ -158,7 +161,7 @@ package com.epolyakov.async.core
 				{
 					_tasks[last] = new Conjunction(_tasks[last]);
 				}
-				Conjunction(_tasks[last]).add(getTask(task));
+				Conjunction(_tasks[last]).add(cast(task));
 			}
 			return this;
 		}
@@ -172,7 +175,7 @@ package com.epolyakov.async.core
 				{
 					_tasks[last] = new Disjunction(_tasks[last]);
 				}
-				Disjunction(_tasks[last]).add(getTask(task));
+				Disjunction(_tasks[last]).add(cast(task));
 			}
 			return this;
 		}
@@ -181,7 +184,7 @@ package com.epolyakov.async.core
 		{
 			if (!_active)
 			{
-				_tasks.push(new Fork(getTask(success), getTask(failure)));
+				_tasks.push(new Fork(cast(success), cast(failure)));
 			}
 			return this;
 		}
@@ -190,7 +193,7 @@ package com.epolyakov.async.core
 		{
 			if (!_active)
 			{
-				_tasks.push(new Fork(null, getTask(failure)));
+				_tasks.push(new Fork(null, cast(failure)));
 			}
 			return this;
 		}

@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Disjunction implements ITask, IResult
+	internal class Disjunction extends Launcher implements ITask, IReliable
 	{
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
@@ -45,14 +45,7 @@ package com.epolyakov.async.core
 						// Check active because any of tasks can return or throw.
 						if (_active)
 						{
-							try
-							{
-								tasks[i].await(args, this);
-							}
-							catch (error:*)
-							{
-								onThrow(error, tasks[i]);
-							}
+							launch(tasks[i], args);
 						}
 					}
 					_activating = false;
@@ -82,10 +75,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onReturn(value:Object, target:ITask = null):void
+		override public function onReturn(value:Object, target:ITask = null):void
 		{
 			if (_active && _tasks.length > 0)
 			{
+				super.onReturn(value, target);
+
 				var index:int = _tasks.indexOf(target);
 				if (index >= 0)
 				{
@@ -109,10 +104,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onThrow(error:Object, target:ITask = null):void
+		override public function onThrow(error:Object, target:ITask = null):void
 		{
 			if (_active && _tasks.length > 0)
 			{
+				super.onThrow(error, target);
+				
 				var index:int = _tasks.indexOf(target);
 				if (index >= 0)
 				{

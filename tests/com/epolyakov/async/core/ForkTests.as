@@ -4,6 +4,8 @@ package com.epolyakov.async.core
 	import com.epolyakov.async.core.mocks.MockTask;
 	import com.epolyakov.mock.Mock;
 
+	import flash.errors.EOFError;
+
 	import flash.errors.IOError;
 
 	import org.flexunit.asserts.assertEquals;
@@ -251,7 +253,7 @@ package com.epolyakov.async.core
 			var fork:Fork = new Fork(task1, task2);
 			var args:Object = {};
 			var out1:Object = new IOError();
-			var out2:Object = new IOError();
+			var out2:Object = new EOFError();
 
 			Mock.setup().that(task1.await(args, fork)).returns(function (args:Object, result:IResult):void
 			{

@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Throw implements ITask
+	internal class Throw implements ITask, IReliable
 	{
 		private var _value:Object;
 

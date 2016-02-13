@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Fork implements ITask, IResult
+	internal class Fork extends Launcher implements ITask, IReliable
 	{
 		private var _state:int;
 		private var _result:IResult;
@@ -44,7 +44,7 @@ package com.epolyakov.async.core
 				{
 					_state = 1;
 					_result = result;
-					_task1.await(args, this);
+					launch(_task1, args);
 				}
 				else if (result)
 				{
@@ -61,7 +61,7 @@ package com.epolyakov.async.core
 				{
 					_state = 2;
 					_result = result;
-					_task2.await(args, this);
+					launch(_task2, args);
 				}
 				else if (result)
 				{
@@ -103,10 +103,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onReturn(value:Object, target:ITask = null):void
+		override public function onReturn(value:Object, target:ITask = null):void
 		{
 			if ((_state == 1 && target == _task1) || (_state == 2 && target == _task2))
 			{
+				super.onReturn(value, target);
+
 				_state = 0;
 				_task1 = null;
 				_task2 = null;
@@ -119,10 +121,12 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function onThrow(error:Object, target:ITask = null):void
+		override public function onThrow(error:Object, target:ITask = null):void
 		{
 			if ((_state == 1 && target == _task1) || (_state == 2 && target == _task2))
 			{
+				super.onThrow(error, target);
+				
 				_state = 0;
 				_task1 = null;
 				_task2 = null;

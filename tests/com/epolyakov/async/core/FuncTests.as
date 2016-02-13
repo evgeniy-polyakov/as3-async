@@ -194,8 +194,8 @@ package com.epolyakov.async.core
 					.verify().total(2);
 		}
 
-		[Test(expects="flash.errors.IOError")]
-		public function await_ShouldThrowIfTaskAwaitThrows():void
+		[Test]
+		public function await_ShouldNotThrowIfTaskAwaitThrows():void
 		{
 			var task:MockTask = new MockTask();
 			var func:Func = new Func(function (obj:Object):ITask
@@ -209,6 +209,10 @@ package com.epolyakov.async.core
 			Mock.setup().that(task.await(args, func)).throws(out);
 
 			func.await(args, result);
+
+			Mock.verify().that(task.await(args, func))
+					.verify().that(result.onThrow(out, func))
+					.verify().total(2);
 		}
 
 		[Test(async, timeout=1000)]
