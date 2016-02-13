@@ -5,8 +5,6 @@ package com.epolyakov.async.core
 	import com.epolyakov.mock.Mock;
 	import com.epolyakov.mock.Times;
 
-	import flash.errors.IOError;
-
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertNull;
@@ -195,20 +193,32 @@ package com.epolyakov.async.core
 			assertEquals(disjunction.tasks.length, 0);
 		}
 
-		[Test(expects="flash.errors.IOError")]
-		public function await_ShouldNotHandleAwaitErrors():void
+		[Test]
+		public function await_ShouldThrowIfOneOfTasksAwaitThrows():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var task2:MockTask = new MockTask();
 			var result:MockResult = new MockResult();
 			var args:Object = {};
+			var error:Object = {};
 			var disjunction:Disjunction = new Disjunction(task);
 			disjunction.add(task1);
 			disjunction.add(task2);
 
-			Mock.setup().that(task1.await(args, disjunction)).throws(new IOError());
+			Mock.setup().that(task1.await(args, disjunction)).throws(error);
 			disjunction.await(args, result);
+
+			Mock.verify().that(task.await(args, disjunction))
+					.verify().that(task1.await(args, disjunction))
+					.verify().that(task2.await(args, disjunction), Times.never)
+					.verify().that(task.cancel())
+					.verify().that(task1.cancel(), Times.never)
+					.verify().that(task2.cancel(), Times.never)
+					.verify().that(result.onThrow(error, disjunction))
+					.verify().total(4);
+
+			assertEquals(disjunction.tasks.length, 0);
 		}
 
 		[Test]

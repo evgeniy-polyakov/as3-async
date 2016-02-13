@@ -8,6 +8,7 @@ package com.epolyakov.async.core
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
+		private var _activating:Boolean;
 		private var _out:Array;
 
 		public function Conjunction(task:ITask)
@@ -39,15 +40,24 @@ package com.epolyakov.async.core
 					_active = true;
 					_result = result;
 					_out = [];
+					_activating = true;
 					var tasks:Vector.<ITask> = _tasks.slice();
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
 					{
 						// Check active because any of tasks can throw.
 						if (_active)
 						{
-							tasks[i].await(args, this);
+							try
+							{
+								tasks[i].await(args, this);
+							}
+							catch (error:*)
+							{
+								onThrow(error, tasks[i]);
+							}
 						}
 					}
+					_activating = false;
 				}
 				else if (result)
 				{
@@ -111,7 +121,7 @@ package com.epolyakov.async.core
 					_out = null;
 					var tasks:Vector.<ITask> = _tasks.slice();
 					_tasks.splice(0, _tasks.length);
-					for (var i:int = 0, n:int = tasks.length; i < n; i++)
+					for (var i:int = 0, n:int = _activating ? index : tasks.length; i < n; i++)
 					{
 						if (i != index)
 						{
