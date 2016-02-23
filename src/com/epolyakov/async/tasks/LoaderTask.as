@@ -21,6 +21,7 @@ package com.epolyakov.async.tasks
 	 */
 	public class LoaderTask extends Task
 	{
+		internal var mockLoaderClass:Class;
 		private var _loader:Loader;
 		private var _source:Object;
 		private var _context:LoaderContext;
@@ -37,7 +38,7 @@ package com.epolyakov.async.tasks
 
 		override protected function onAwait():void
 		{
-			_loader = new Loader();
+			_loader = new (mockLoaderClass || Loader)();
 			addEventHandlers();
 
 			try

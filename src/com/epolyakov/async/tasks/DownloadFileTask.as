@@ -18,6 +18,7 @@ package com.epolyakov.async.tasks
 	 */
 	public class DownloadFileTask extends Task
 	{
+		internal var mockFileReferenceClass:Class;
 		private var _file:FileReference;
 		private var _source:Object;
 		private var _defaultFileName:String;
@@ -34,7 +35,7 @@ package com.epolyakov.async.tasks
 
 		override protected function onAwait():void
 		{
-			_file = new FileReference();
+			_file = new (mockFileReferenceClass || FileReference)();
 
 			var request:URLRequest;
 			if (_source is URLRequest)
