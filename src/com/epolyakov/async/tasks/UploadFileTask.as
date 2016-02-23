@@ -23,22 +23,15 @@ package com.epolyakov.async.tasks
 		private var _file:FileReference;
 		private var _source:Object;
 		private var _dataFieldName:String;
-		private var _testUpload:Boolean;
-		private var _waitForServerData:Boolean;
 
 		/**
 		 * @param source - The URLRequest object or string with url of file to upload.
 		 * @param dataFieldName - The data field name in the upload request.
-		 * @param testUpload - If true just test upload function without sending the actual data.
-		 * @param waitForServerData - If true wait until the server returns the response.
 		 */
-		public function UploadFileTask(source:Object = null, dataFieldName:String = "Filedata",
-									   testUpload:Boolean = false, waitForServerData:Boolean = true)
+		public function UploadFileTask(source:Object, dataFieldName:String = "Filedata")
 		{
 			_source = source;
 			_dataFieldName = dataFieldName;
-			_testUpload = testUpload;
-			_waitForServerData = waitForServerData;
 		}
 
 		override protected function onAwait():void
@@ -49,19 +42,19 @@ package com.epolyakov.async.tasks
 				onThrow(new ArgumentError("UploadFileTask expects a FileReference object, got " + args + "."));
 				return;
 			}
-			var request:URLRequest;
-			if (_source is URLRequest)
-			{
-				request = _source as URLRequest;
-			}
-			else
-			{
-				request = new URLRequest(String(_source));
-			}
 			addEventHandlers();
 			try
 			{
-				_file.upload(request, _dataFieldName, _testUpload);
+				var request:URLRequest;
+				if (_source is URLRequest)
+				{
+					request = _source as URLRequest;
+				}
+				else
+				{
+					request = new URLRequest(String(_source));
+				}
+				_file.upload(request, _dataFieldName);
 			}
 			catch (error:Error)
 			{
@@ -88,14 +81,7 @@ package com.epolyakov.async.tasks
 		{
 			if (_file)
 			{
-				if (_waitForServerData)
-				{
-					_file.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, completeEventDataHandler);
-				}
-				else
-				{
-					_file.addEventListener(Event.COMPLETE, completeEventHandler);
-				}
+				_file.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, completeEventHandler);
 				_file.addEventListener(IOErrorEvent.IO_ERROR, errorEventHandler);
 				_file.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorEventHandler);
 			}
@@ -105,22 +91,13 @@ package com.epolyakov.async.tasks
 		{
 			if (_file)
 			{
-				_file.removeEventListener(Event.COMPLETE, completeEventHandler);
-				_file.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, completeEventDataHandler);
+				_file.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, completeEventHandler);
 				_file.removeEventListener(IOErrorEvent.IO_ERROR, errorEventHandler);
 				_file.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, errorEventHandler);
 			}
 		}
 
-		private function completeEventHandler(event:Event):void
-		{
-			removeEventHandlers();
-			var file:FileReference = _file;
-			_file = null;
-			onReturn(file);
-		}
-
-		private function completeEventDataHandler(event:DataEvent):void
+		private function completeEventHandler(event:DataEvent):void
 		{
 			removeEventHandlers();
 			_file = null;
