@@ -22,7 +22,7 @@ package com.epolyakov.async.tasks
 		/**
 		 * @param filters - The Array of FileFilter objects
 		 */
-		public function BrowseFileTask(filters:Array)
+		public function BrowseFileTask(filters:Array = null)
 		{
 			_filters = filters;
 		}
