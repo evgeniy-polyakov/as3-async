@@ -1,5 +1,7 @@
 package com.epolyakov.mock.matchers
 {
+	import com.epolyakov.mock.Utils;
+
 	/**
 	 * @author Evgeniy Polyakov
 	 */
@@ -24,10 +26,7 @@ package com.epolyakov.mock.matchers
 
 		public function toString():String
 		{
-			return _name + "(" + _values.map(function (v:*, ...rest):String
-					{
-						return v == null ? "null" : v.toString();
-					}) + ")";
+			return _name + "(" + Utils.arrayToString(_values) + ")";
 		}
 	}
 }

@@ -2,6 +2,7 @@ package com.epolyakov.mock.matchers
 {
 	import com.epolyakov.mock.IMatcher;
 	import com.epolyakov.mock.SetupError;
+	import com.epolyakov.mock.Utils;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -49,10 +50,7 @@ package com.epolyakov.mock.matchers
 			{
 				throw new SetupError("Arguments mismatch: " +
 						"expected (" + _matchers.join(",") + ") " +
-						"but got (" + arguments.map(function (v:*, ...rest):String
-						{
-							return v == null ? "null" : v.toString();
-						}).toString() + ").");
+						"but got (" + Utils.arrayToString(arguments) + ").");
 			}
 			_matchers = matchers;
 		}

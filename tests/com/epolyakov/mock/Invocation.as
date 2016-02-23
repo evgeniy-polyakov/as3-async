@@ -1,7 +1,5 @@
 package com.epolyakov.mock
 {
-	import flash.utils.describeType;
-
 	/**
 	 * @author Evgeniy Polyakov
 	 */
@@ -35,64 +33,10 @@ package com.epolyakov.mock
 
 		public function toString(arguments:Object = null):String
 		{
-			var s:String = _object != null ? getObjectName() + "." : "";
-			s += getMethodName();
-			s += "(" + getArguments(arguments) + ")";
+			var s:String = _object != null ? Utils.objectToClassName(_object) + "." : "";
+			s += Utils.functionToMethodName(_method, _object);
+			s += "(" + (arguments ? arguments.toString() : Utils.arrayToString(_arguments)) + ")";
 			return s;
-		}
-
-		private function getObjectName():String
-		{
-			if (_object != null)
-			{
-				var qName:String = describeType(_object).@name.toXMLString();
-				var index:int = qName.indexOf("::");
-				if (index >= 0)
-				{
-					return qName.substring(index + 2);
-				}
-				return qName;
-			}
-			return String(_method);
-		}
-
-		private function getMethodName():String
-		{
-			if (_object != null)
-			{
-				var xml:XML = describeType(_object);
-				for each (var name:String in xml..method.@name)
-				{
-					if (_object[name] == _method)
-					{
-						return name;
-					}
-				}
-			}
-			if (_method != null)
-			{
-				var qName:String = describeType(_method).@name.toXMLString();
-				var s:XML = describeType(_method);
-				var index:int = qName.indexOf("::");
-				if (index >= 0)
-				{
-					return qName.substring(index + 2);
-				}
-				return qName;
-			}
-			return "*";
-		}
-
-		private function getArguments(arguments:Object):String
-		{
-			if (arguments != null)
-			{
-				return arguments.toString();
-			}
-			return _arguments.map(function (v:*, ...rest):String
-			{
-				return v == null ? "null" : v.toString();
-			}).toString();
 		}
 	}
 }
