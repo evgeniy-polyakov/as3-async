@@ -1,6 +1,7 @@
 package com.epolyakov.async.tasks
 {
 	import com.epolyakov.async.core.mocks.MockResult;
+	import com.epolyakov.async.tasks.mocks.MockLoader;
 	import com.epolyakov.mock.It;
 	import com.epolyakov.mock.Mock;
 
@@ -13,6 +14,7 @@ package com.epolyakov.async.tasks
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
+	import flash.utils.ByteArray;
 
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertTrue;
@@ -54,6 +56,68 @@ package com.epolyakov.async.tasks
 		public function await_ShouldLoadUrlRequest():void
 		{
 			shouldLoad(new LoaderTask(new URLRequest("com/epolyakov/async/tasks/data/data.png")));
+		}
+
+		[Test]
+		public function await_ByteArrayClass_ShouldCallLoadBytes():void
+		{
+			var context:LoaderContext = new LoaderContext();
+			var task:LoaderTask = new LoaderTask(_byteArrayClass, context);
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockLoader();
+
+			task.await({}, result);
+
+			Mock.verify().that(task.mockLoader.loadBytes(It.isOfType(_byteArrayClass), context))
+					.verify().total(1);
+		}
+
+		[Test]
+		public function await_ByteArray_ShouldCallLoadBytes():void
+		{
+			var context:LoaderContext = new LoaderContext();
+			var bytes:ByteArray = new _byteArrayClass();
+			var task:LoaderTask = new LoaderTask(bytes, context);
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockLoader();
+
+			task.await({}, result);
+
+			Mock.verify().that(task.mockLoader.loadBytes(bytes, context))
+					.verify().total(1);
+		}
+
+		[Test]
+		public function await_URLRequest_ShouldCallLoad():void
+		{
+			var context:LoaderContext = new LoaderContext();
+			var request:URLRequest = new URLRequest();
+			var task:LoaderTask = new LoaderTask(request, context);
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockLoader();
+
+			task.await({}, result);
+
+			Mock.verify().that(task.mockLoader.load(request, context))
+					.verify().total(1);
+		}
+
+		[Test]
+		public function await_String_ShouldCallLoad():void
+		{
+			var context:LoaderContext = new LoaderContext();
+			var request:String = "path/to/file";
+			var task:LoaderTask = new LoaderTask(request, context);
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockLoader();
+
+			task.await({}, result);
+
+			Mock.verify().that(task.mockLoader.load(It.match(function (r:URLRequest):Boolean
+					{
+						return r.url == request;
+					}), context))
+					.verify().total(1);
 		}
 
 		[Test]
@@ -128,6 +192,21 @@ package com.epolyakov.async.tasks
 		public function cancel_ShouldNotThrow():void
 		{
 			new LoaderTask("test").cancel();
+		}
+
+		[Test]
+		public function cancel_ShouldCallClose():void
+		{
+			var task:LoaderTask = new LoaderTask("test");
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockLoader();
+
+			task.await({}, result);
+			task.cancel();
+
+			Mock.verify().that(task.mockLoader.load(It.isAny(), It.isAny()))
+					.verify().that(task.mockLoader.close())
+					.verify().total(2);
 		}
 
 		[Test(async, timeout=1000)]
