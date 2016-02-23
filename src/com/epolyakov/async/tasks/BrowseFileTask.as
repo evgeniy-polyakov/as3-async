@@ -15,7 +15,7 @@ package com.epolyakov.async.tasks
 	 */
 	public class BrowseFileTask extends Task
 	{
-		internal var mockFileReferenceClass:Class;
+		internal var mockFileReference:FileReference;
 		private var _file:FileReference;
 		private var _filters:Array;
 
@@ -29,7 +29,7 @@ package com.epolyakov.async.tasks
 
 		override protected function onAwait():void
 		{
-			_file = new (mockFileReferenceClass || FileReference)();
+			_file = mockFileReference || new FileReference();
 			addEventHandlers();
 
 			try

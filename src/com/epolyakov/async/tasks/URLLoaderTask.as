@@ -18,7 +18,7 @@ package com.epolyakov.async.tasks
 	 */
 	public class URLLoaderTask extends Task
 	{
-		internal var mockLoaderClass:Class;
+		internal var mockLoader:URLLoader;
 		private var _loader:URLLoader;
 		private var _source:Object;
 		private var _format:String;
@@ -35,7 +35,7 @@ package com.epolyakov.async.tasks
 
 		override protected function onAwait():void
 		{
-			_loader = new (mockLoaderClass || URLLoader)();
+			_loader = mockLoader || new URLLoader();
 			_loader.dataFormat = _format;
 			addEventHandlers();
 
