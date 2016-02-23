@@ -27,7 +27,7 @@ package com.epolyakov.async.tasks
 		 * @param source - The URLRequest object or string with url of file to download.
 		 * @param defaultFileName - The name of the file displayed in the download dialog.
 		 */
-		public function DownloadFileTask(source:Object, defaultFileName:String)
+		public function DownloadFileTask(source:Object, defaultFileName:String = null)
 		{
 			_source = source;
 			_defaultFileName = defaultFileName;
@@ -36,19 +36,19 @@ package com.epolyakov.async.tasks
 		override protected function onAwait():void
 		{
 			_file = mockFileReference || new FileReference();
-
-			var request:URLRequest;
-			if (_source is URLRequest)
-			{
-				request = _source as URLRequest;
-			}
-			else
-			{
-				request = new URLRequest(String(_source));
-			}
 			addEventHandlers();
+
 			try
 			{
+				var request:URLRequest;
+				if (_source is URLRequest)
+				{
+					request = _source as URLRequest;
+				}
+				else
+				{
+					request = new URLRequest(String(_source));
+				}
 				_file.download(request, _defaultFileName);
 			}
 			catch (error:Error)
