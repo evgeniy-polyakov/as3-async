@@ -209,6 +209,25 @@ package com.epolyakov.async.tasks
 					.verify().total(2);
 		}
 
+		[Test]
+		public function cancel_ShouldRemoveEventListeners():void
+		{
+			var task:LoaderTask = new LoaderTask("test");
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockLoader();
+
+			task.await({}, result);
+			assertTrue(task.mockLoader.contentLoaderInfo.hasEventListener(Event.COMPLETE));
+			assertTrue(task.mockLoader.contentLoaderInfo.hasEventListener(IOErrorEvent.IO_ERROR));
+			assertTrue(task.mockLoader.contentLoaderInfo.hasEventListener(SecurityErrorEvent.SECURITY_ERROR));
+
+			task.cancel();
+
+			assertFalse(task.mockLoader.contentLoaderInfo.hasEventListener(Event.COMPLETE));
+			assertFalse(task.mockLoader.contentLoaderInfo.hasEventListener(IOErrorEvent.IO_ERROR));
+			assertFalse(task.mockLoader.contentLoaderInfo.hasEventListener(SecurityErrorEvent.SECURITY_ERROR));
+		}
+
 		[Test(async, timeout=1000)]
 		public function cancel_ShouldCancelLoading():void
 		{

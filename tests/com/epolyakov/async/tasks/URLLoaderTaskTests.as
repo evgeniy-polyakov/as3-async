@@ -1,6 +1,7 @@
 package com.epolyakov.async.tasks
 {
 	import com.epolyakov.async.core.mocks.MockResult;
+	import com.epolyakov.async.tasks.mocks.MockURLLoader;
 	import com.epolyakov.mock.It;
 	import com.epolyakov.mock.Mock;
 
@@ -38,6 +39,37 @@ package com.epolyakov.async.tasks
 		public function await_ShouldLoadUrlRequest():void
 		{
 			shouldLoad(new URLLoaderTask(new URLRequest("com/epolyakov/async/tasks/data/data.txt")));
+		}
+
+		[Test]
+		public function await_URLRequest_ShouldCallLoad():void
+		{
+			var request:URLRequest = new URLRequest();
+			var task:URLLoaderTask = new URLLoaderTask(request);
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockURLLoader();
+
+			task.await({}, result);
+
+			Mock.verify().that(task.mockLoader.load(request))
+					.verify().total(1);
+		}
+
+		[Test]
+		public function await_String_ShouldCallLoad():void
+		{
+			var request:String = "path/to/file";
+			var task:URLLoaderTask = new URLLoaderTask(request);
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockURLLoader();
+
+			task.await({}, result);
+
+			Mock.verify().that(task.mockLoader.load(It.match(function (r:URLRequest):Boolean
+					{
+						return r.url == request;
+					})))
+					.verify().total(1);
 		}
 
 		[Test]
@@ -163,6 +195,40 @@ package com.epolyakov.async.tasks
 		public function cancel_ShouldNotThrow():void
 		{
 			new URLLoaderTask("test").cancel();
+		}
+
+		[Test]
+		public function cancel_ShouldCallClose():void
+		{
+			var task:URLLoaderTask = new URLLoaderTask("test");
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockURLLoader();
+
+			task.await({}, result);
+			task.cancel();
+
+			Mock.verify().that(task.mockLoader.load(It.isAny()))
+					.verify().that(task.mockLoader.close())
+					.verify().total(2);
+		}
+
+		[Test]
+		public function cancel_ShouldRemoveEventListeners():void
+		{
+			var task:URLLoaderTask = new URLLoaderTask("test");
+			var result:MockResult = new MockResult();
+			task.mockLoader = new MockURLLoader();
+
+			task.await({}, result);
+			assertTrue(task.mockLoader.hasEventListener(Event.COMPLETE));
+			assertTrue(task.mockLoader.hasEventListener(IOErrorEvent.IO_ERROR));
+			assertTrue(task.mockLoader.hasEventListener(SecurityErrorEvent.SECURITY_ERROR));
+
+			task.cancel();
+
+			assertFalse(task.mockLoader.hasEventListener(Event.COMPLETE));
+			assertFalse(task.mockLoader.hasEventListener(IOErrorEvent.IO_ERROR));
+			assertFalse(task.mockLoader.hasEventListener(SecurityErrorEvent.SECURITY_ERROR));
 		}
 
 		[Test(async, timeout=1000)]
