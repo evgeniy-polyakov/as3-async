@@ -35,6 +35,7 @@ package com.epolyakov.async.tasks
 			catch (error:Error)
 			{
 				removeEventHandlers();
+				_file = null;
 				onThrow(error);
 			}
 		}
