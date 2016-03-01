@@ -342,8 +342,8 @@ package com.epolyakov.async.core
 			var args2:Object = {};
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
-			sequence.fork(task1, error)
-					.fork(task2, error);
+			sequence.then(task1, error)
+					.then(task2, error);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
 			{
@@ -384,9 +384,9 @@ package com.epolyakov.async.core
 			var args4:Object = {};
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
-			sequence.fork(task1, error)
+			sequence.then(task1, error)
 					.then(task2)
-					.fork(task3, error)
+					.then(task3, error)
 					.then(task4);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
@@ -434,8 +434,8 @@ package com.epolyakov.async.core
 			var args2:Object = {};
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
-			sequence.fork(task1, error)
-					.fork(task2, error);
+			sequence.then(task1, error)
+					.then(task2, error);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
 			{
@@ -474,7 +474,7 @@ package com.epolyakov.async.core
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
 			sequence.hook(error)
-					.fork(task2, error);
+					.then(task2, error);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
 			{
@@ -716,23 +716,23 @@ package com.epolyakov.async.core
 
 			var sequence:Sequence;
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.then(task);
 			assertEquals(sequence.tasks[1], task);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.then(func);
 			assertEquals(Func(sequence.tasks[1]).func, func);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.then(data);
 			assertEquals(Return(sequence.tasks[1]).value, data);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.then(error);
 			assertEquals(Throw(sequence.tasks[1]).value, error);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.then(errorEvent);
 			assertEquals(Throw(sequence.tasks[1]).value, errorEvent);
 		}
@@ -816,16 +816,13 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function and_EmptySequence_ShouldNotAddTask():void
+		public function and_EmptySequence_ShouldAddTask():void
 		{
-			var sequence:Sequence = new Sequence(new MockTask());
-			sequence.await();
-			sequence.cancel();
-			sequence.and(new MockTask());
-
-			assertEquals(sequence.tasks.length, 0);
-
-			sequence.cancel();
+			var sequence:Sequence = new Sequence(null);
+			var task:MockTask = new MockTask();
+			sequence.and(task);
+			assertEquals(1, sequence.tasks.length);
+			assertEquals(task, sequence.tasks[0]);
 		}
 
 		[Test]
@@ -841,23 +838,23 @@ package com.epolyakov.async.core
 
 			var sequence:Sequence;
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.and(task);
 			assertEquals(Conjunction(sequence.tasks[0]).tasks[1], task);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.and(func);
 			assertEquals(Func(Conjunction(sequence.tasks[0]).tasks[1]).func, func);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.and(data);
 			assertEquals(Return(Conjunction(sequence.tasks[0]).tasks[1]).value, data);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.and(error);
 			assertEquals(Throw(Conjunction(sequence.tasks[0]).tasks[1]).value, error);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.and(errorEvent);
 			assertEquals(Throw(Conjunction(sequence.tasks[0]).tasks[1]).value, errorEvent);
 		}
@@ -941,16 +938,13 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function or_EmptySequence_ShouldNotAddTask():void
+		public function or_EmptySequence_ShouldAddTask():void
 		{
-			var sequence:Sequence = new Sequence(new MockTask());
-			sequence.await();
-			sequence.cancel();
-			sequence.or(new MockTask());
-
-			assertEquals(sequence.tasks.length, 0);
-
-			sequence.cancel();
+			var sequence:Sequence = new Sequence(null);
+			var task:MockTask = new MockTask();
+			sequence.or(task);
+			assertEquals(1, sequence.tasks.length);
+			assertEquals(task, sequence.tasks[0]);
 		}
 
 		[Test]
@@ -966,23 +960,23 @@ package com.epolyakov.async.core
 
 			var sequence:Sequence;
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.or(task);
 			assertEquals(Disjunction(sequence.tasks[0]).tasks[1], task);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.or(func);
 			assertEquals(Func(Disjunction(sequence.tasks[0]).tasks[1]).func, func);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.or(data);
 			assertEquals(Return(Disjunction(sequence.tasks[0]).tasks[1]).value, data);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.or(error);
 			assertEquals(Throw(Disjunction(sequence.tasks[0]).tasks[1]).value, error);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.or(errorEvent);
 			assertEquals(Throw(Disjunction(sequence.tasks[0]).tasks[1]).value, errorEvent);
 		}
@@ -994,7 +988,7 @@ package com.epolyakov.async.core
 			var task1:MockTask = new MockTask();
 			var task2:MockTask = new MockTask();
 			var sequence:Sequence = new Sequence(task);
-			sequence.fork(task1, task2);
+			sequence.then(task1, task2);
 
 			assertEquals(sequence.tasks.length, 2);
 			assertEquals(sequence.tasks[0], task);
@@ -1008,7 +1002,7 @@ package com.epolyakov.async.core
 		{
 			var sequence:Sequence = new Sequence(new MockTask());
 
-			assertEquals(sequence.fork(new MockTask(), new MockTask()), sequence);
+			assertEquals(sequence.then(new MockTask(), new MockTask()), sequence);
 		}
 
 		[Test]
@@ -1018,7 +1012,7 @@ package com.epolyakov.async.core
 			var sequence:Sequence = new Sequence(task);
 
 			sequence.await();
-			sequence.fork(new MockTask(), new MockTask());
+			sequence.then(new MockTask(), new MockTask());
 
 			assertEquals(sequence.tasks.length, 1);
 			assertEquals(sequence.tasks[0], task);
@@ -1039,44 +1033,44 @@ package com.epolyakov.async.core
 
 			var sequence:Sequence;
 
-			sequence = new Sequence(null);
-			sequence.fork(task, null);
-			assertEquals(Fork(sequence.tasks[1]).task1, task);
+			sequence = new Sequence({});
+			sequence.then(task, null);
+			assertEquals(sequence.tasks[1], task);
 
-			sequence = new Sequence(null);
-			sequence.fork(func, null);
-			assertEquals(Func(Fork(sequence.tasks[1]).task1).func, func);
+			sequence = new Sequence({});
+			sequence.then(func, null);
+			assertEquals(Func(sequence.tasks[1]).func, func);
 
-			sequence = new Sequence(null);
-			sequence.fork(data, null);
-			assertEquals(Return(Fork(sequence.tasks[1]).task1).value, data);
+			sequence = new Sequence({});
+			sequence.then(data, null);
+			assertEquals(Return(sequence.tasks[1]).value, data);
 
-			sequence = new Sequence(null);
-			sequence.fork(error, null);
-			assertEquals(Throw(Fork(sequence.tasks[1]).task1).value, error);
+			sequence = new Sequence({});
+			sequence.then(error, null);
+			assertEquals(Throw(sequence.tasks[1]).value, error);
 
-			sequence = new Sequence(null);
-			sequence.fork(errorEvent, null);
-			assertEquals(Throw(Fork(sequence.tasks[1]).task1).value, errorEvent);
+			sequence = new Sequence({});
+			sequence.then(errorEvent, null);
+			assertEquals(Throw(sequence.tasks[1]).value, errorEvent);
 
-			sequence = new Sequence(null);
-			sequence.fork(null, task);
+			sequence = new Sequence({});
+			sequence.then(null, task);
 			assertEquals(Fork(sequence.tasks[1]).task2, task);
 
-			sequence = new Sequence(null);
-			sequence.fork(null, func);
+			sequence = new Sequence({});
+			sequence.then(null, func);
 			assertEquals(Func(Fork(sequence.tasks[1]).task2).func, func);
 
-			sequence = new Sequence(null);
-			sequence.fork(null, data);
+			sequence = new Sequence({});
+			sequence.then(null, data);
 			assertEquals(Return(Fork(sequence.tasks[1]).task2).value, data);
 
-			sequence = new Sequence(null);
-			sequence.fork(null, error);
+			sequence = new Sequence({});
+			sequence.then(null, error);
 			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, error);
 
-			sequence = new Sequence(null);
-			sequence.fork(null, errorEvent);
+			sequence = new Sequence({});
+			sequence.then(null, errorEvent);
 			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, errorEvent);
 		}
 
@@ -1135,30 +1129,45 @@ package com.epolyakov.async.core
 
 			var sequence:Sequence;
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.hook(task);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Fork(sequence.tasks[1]).task2, task);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.hook(func);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Func(Fork(sequence.tasks[1]).task2).func, func);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.hook(data);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Return(Fork(sequence.tasks[1]).task2).value, data);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.hook(error);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, error);
 
-			sequence = new Sequence(null);
+			sequence = new Sequence({});
 			sequence.hook(errorEvent);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, errorEvent);
+		}
+
+		[Test]
+		public function then_ShouldNotAddNullTask():void
+		{
+			var sequence:Sequence = new Sequence(null);
+			assertEquals(0, sequence.tasks.length);
+			sequence.then(null, null);
+			assertEquals(0, sequence.tasks.length);
+			sequence.hook(null);
+			assertEquals(0, sequence.tasks.length);
+			sequence.and(null);
+			assertEquals(0, sequence.tasks.length);
+			sequence.or(null);
+			assertEquals(0, sequence.tasks.length);
 		}
 	}
 }

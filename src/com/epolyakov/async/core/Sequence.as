@@ -13,10 +13,14 @@ package com.epolyakov.async.core
 
 		public function Sequence(task:Object)
 		{
-			_tasks = new <ITask>[cast(task)];
+			_tasks = new <ITask>[];
+			if (task != null)
+			{
+				_tasks.push(toTask(task));
+			}
 		}
 
-		private static function cast(value:Object):ITask
+		private static function toTask(value:Object):ITask
 		{
 			if (value is ITask)
 			{
@@ -143,57 +147,73 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function then(task:Object):IAsync
+		public function then(task:Object, errorHandler:Object = null):IAsync
 		{
 			if (!_active)
 			{
-				_tasks.push(cast(task));
+				if (task != null && errorHandler == null)
+				{
+					_tasks.push(toTask(task));
+				}
+				else if (task != null && errorHandler != null)
+				{
+					_tasks.push(new Fork(toTask(task), toTask(errorHandler)));
+				}
+				else if (errorHandler != null)
+				{
+					_tasks.push(new Fork(null, toTask(errorHandler)));
+				}
 			}
 			return this;
 		}
 
 		public function and(task:Object):IAsyncConjunction
 		{
-			if (!_active && _tasks.length > 0)
+			if (!_active && task != null)
 			{
 				var last:int = _tasks.length - 1;
-				if (!(_tasks[last] is Conjunction))
+				if (last < 0)
 				{
-					_tasks[last] = new Conjunction(_tasks[last]);
+					_tasks.push(toTask(task));
 				}
-				Conjunction(_tasks[last]).add(cast(task));
+				else
+				{
+					if (!(_tasks[last] is Conjunction))
+					{
+						_tasks[last] = new Conjunction(_tasks[last]);
+					}
+					Conjunction(_tasks[last]).add(toTask(task));
+				}
 			}
 			return this;
 		}
 
 		public function or(task:Object):IAsyncDisjunction
 		{
-			if (!_active && _tasks.length > 0)
+			if (!_active && task != null)
 			{
 				var last:int = _tasks.length - 1;
-				if (!(_tasks[last] is Disjunction))
+				if (last < 0)
 				{
-					_tasks[last] = new Disjunction(_tasks[last]);
+					_tasks.push(toTask(task));
 				}
-				Disjunction(_tasks[last]).add(cast(task));
+				else
+				{
+					if (!(_tasks[last] is Disjunction))
+					{
+						_tasks[last] = new Disjunction(_tasks[last]);
+					}
+					Disjunction(_tasks[last]).add(toTask(task));
+				}
 			}
 			return this;
 		}
 
-		public function fork(success:Object, failure:Object):IAsyncSequence
+		public function hook(errorHandler:Object):IAsyncSequence
 		{
-			if (!_active)
+			if (!_active && errorHandler != null)
 			{
-				_tasks.push(new Fork(cast(success), cast(failure)));
-			}
-			return this;
-		}
-
-		public function hook(failure:Object):IAsyncSequence
-		{
-			if (!_active)
-			{
-				_tasks.push(new Fork(null, cast(failure)));
+				_tasks.push(new Fork(null, toTask(errorHandler)));
 			}
 			return this;
 		}

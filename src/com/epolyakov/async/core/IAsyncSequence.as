@@ -5,10 +5,8 @@ package com.epolyakov.async.core
 	 */
 	public interface IAsyncSequence extends ITask
 	{
-		function then(task:Object):IAsync;
+		function then(task:Object, errorHandler:Object = null):IAsync;
 
-		function hook(task:Object):IAsyncSequence;
-
-		function fork(success:Object, failure:Object):IAsyncSequence;
+		function hook(errorHandler:Object):IAsyncSequence;
 	}
 }
