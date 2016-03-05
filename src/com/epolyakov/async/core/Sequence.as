@@ -133,25 +133,68 @@ package com.epolyakov.async.core
 
 		override public function onReturn(value:Object, target:ITask = null):void
 		{
-			if (_active && _tasks.length > 0 && target == _tasks[0])
+			if (_active && _tasks.length > 0)
 			{
-				super.onReturn(value, target);
-
-				_tasks.shift();
-				if (_tasks.length > 0)
+				var complete:Boolean = false;
+				switch (_type)
 				{
-					launch(_tasks[0], value);
+					case SEQUENCE:
+						if (target == _tasks[0])
+						{
+							super.onReturn(value, target);
+
+							_tasks.shift();
+							if (_tasks.length > 0)
+							{
+								launch(_tasks[0], value);
+							}
+							else
+							{
+								complete = true;
+							}
+						}
+						break;
+					case CONJUNCTION:
+						var index:int = _tasks.indexOf(target);
+						if (index >= 0)
+						{
+							super.onReturn(value, target);
+
+							_tasks.splice(index, 1);
+							_out.push(value);
+							complete = _tasks.length == 0;
+						}
+						break;
+					case DISJUNCTION:
+						var index:int = _tasks.indexOf(target);
+						if (index >= 0)
+						{
+							super.onReturn(value, target);
+
+							var tasks:Vector.<ITask> = _tasks.slice();
+							_tasks.splice(0, _tasks.length);
+							for (var i:int = 0, n:int = _activating ? index : tasks.length; i < n; i++)
+							{
+								if (i != index)
+								{
+									tasks[i].cancel();
+								}
+							}
+							complete = true;
+						}
+						break;
 				}
-				else
+				if (complete)
 				{
 					Cache.remove(this);
 					_active = false;
-
 					if (_result)
 					{
 						var result:IResult = _result;
+						var out:Array = _out;
 						_result = null;
-						result.onReturn(value, this);
+						_out = null;
+						result.onReturn(_type == CONJUNCTION ? out : value, this);
 					}
 				}
 			}
@@ -161,33 +204,95 @@ package com.epolyakov.async.core
 		{
 			if (_active && _tasks.length > 0 && target == _tasks[0])
 			{
-				super.onThrow(error, target);
-				do
-				{
-					_tasks.shift();
-				}
-				while (_tasks.length > 0 && !(_tasks[0] is Fork));
+				switch (_type) {
+					case SEQUENCE:
+						super.onThrow(error, target);
+						do
+						{
+							_tasks.shift();
+						}
+						while (_tasks.length > 0 && !(_tasks[0] is Fork));
 
-				if (_tasks.length > 0)
-				{
-					Fork(_tasks[0]).await2(error, this);
-				}
-				else
-				{
-					Cache.remove(this);
-					_active = false;
+						if (_tasks.length > 0)
+						{
+							Fork(_tasks[0]).await2(error, this);
+						}
+						else
+						{
+							Cache.remove(this);
+							_active = false;
 
-					if (_result)
-					{
-						var result:IResult = _result;
-						_result = null;
-						result.onThrow(error, this);
-					}
-					else
-					{
-						throw error;
-					}
+							if (_result)
+							{
+								var result:IResult = _result;
+								_result = null;
+								result.onThrow(error, this);
+							}
+							else
+							{
+								throw error;
+							}
+						}
+						break;
+					case CONJUNCTION:
+						super.onThrow(error, target);
+
+						var index:int = _tasks.indexOf(target);
+						if (index >= 0)
+						{
+							_active = false;
+							_out = null;
+							var tasks:Vector.<ITask> = _tasks.slice();
+							_tasks.splice(0, _tasks.length);
+							for (var i:int = 0, n:int = _activating ? index : tasks.length; i < n; i++)
+							{
+								if (i != index)
+								{
+									tasks[i].cancel();
+								}
+							}
+							if (_result)
+							{
+								var async:IResult = _result;
+								_result = null;
+								async.onThrow(error, this);
+							}
+							else
+							{
+								throw error;
+							}
+						}
+						break;
+					case DISJUNCTION:
+						super.onThrow(error, target);
+
+						var index:int = _tasks.indexOf(target);
+						if (index >= 0)
+						{
+							_active = false;
+							var tasks:Vector.<ITask> = _tasks.slice();
+							_tasks.splice(0, _tasks.length);
+							for (var i:int = 0, n:int = _activating ? index : tasks.length; i < n; i++)
+							{
+								if (i != index)
+								{
+									tasks[i].cancel();
+								}
+							}
+							if (_result)
+							{
+								var result:IResult = _result;
+								_result = null;
+								result.onThrow(error, this);
+							}
+							else
+							{
+								throw error;
+							}
+						}
+						break;
 				}
+
 			}
 		}
 
