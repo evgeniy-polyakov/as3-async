@@ -7,9 +7,16 @@ package com.epolyakov.async.core
 	 */
 	internal class Sequence extends Launcher implements IAsync, IReliable
 	{
+		private static const SEQUENCE:int = 0;
+		private static const CONJUNCTION:int = 1;
+		private static const DISJUNCTION:int = 2;
+
+		private var _type:int = SEQUENCE;
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
+		private var _activating:Boolean;
+		private var _out:Array;
 
 		public function Sequence(task:Object)
 		{
@@ -58,10 +65,33 @@ package com.epolyakov.async.core
 			{
 				if (_tasks.length > 0)
 				{
-					Cache.add(this);
+					if (!(result is Sequence))
+					{
+						Cache.add(this);
+					}
 					_active = true;
 					_result = result;
-					launch(_tasks[0], args);
+					if (_type == SEQUENCE)
+					{
+						launch(_tasks[0], args);
+					}
+					else
+					{
+						if (_type == CONJUNCTION)
+						{
+							_out = [];
+						}
+						_activating = true;
+						var tasks:Vector.<ITask> = _tasks.slice();
+						for (var i:int = 0, n:int = tasks.length; i < n; i++)
+						{
+							if (_active)
+							{
+								launch(tasks[i], args);
+							}
+						}
+						_activating = false;
+					}
 				}
 				else if (result)
 				{
@@ -77,12 +107,26 @@ package com.epolyakov.async.core
 				Cache.remove(this);
 				_active = false;
 				_result = null;
+				_out = null;
 
-				if (_tasks.length > 0)
+				var n:int = _tasks.length;
+				if (n > 0)
 				{
-					var task:ITask = _tasks[0];
-					_tasks.splice(0, _tasks.length);
-					task.cancel();
+					if (_type == SEQUENCE)
+					{
+						var task:ITask = _tasks[0];
+						_tasks.splice(0, n);
+						task.cancel();
+					}
+					else
+					{
+						var tasks:Vector.<ITask> = _tasks.slice();
+						_tasks.splice(0, n);
+						for (var i:int = 0; i < n; i++)
+						{
+							tasks[i].cancel();
+						}
+					}
 				}
 			}
 		}
