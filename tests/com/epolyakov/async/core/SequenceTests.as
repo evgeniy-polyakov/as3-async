@@ -473,7 +473,7 @@ package com.epolyakov.async.core
 			var args2:Object = {};
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
-			sequence.hook(error)
+			sequence.except(error)
 					.then(task2, error);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
@@ -512,7 +512,7 @@ package com.epolyakov.async.core
 			var args2:Object = {};
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
-			sequence.hook(task1).hook(error).then(task2);
+			sequence.except(task1).except(error).then(task2);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
 			{
@@ -545,8 +545,8 @@ package com.epolyakov.async.core
 			var args2:Object = {};
 			var out:Object = {};
 			var sequence:Sequence = new Sequence(task);
-			sequence.hook(task1)
-					.hook(task2);
+			sequence.except(task1)
+					.except(task2);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).returns(function (args:Object, result:IResult):void
 			{
@@ -598,7 +598,7 @@ package com.epolyakov.async.core
 			var out:Object = new IOError();
 			var out1:Object = {};
 			var sequence:Sequence = new Sequence(task);
-			sequence.hook(task1);
+			sequence.except(task1);
 
 			Mock.setup().that(task.await(It.isAny(), It.isAny())).throws(out);
 			Mock.setup().that(task1.await(It.isAny(), It.isAny())).throws(out1);
@@ -1075,14 +1075,14 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function hook_ShouldAddFork():void
+		public function except_ShouldAddFork():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var task2:MockTask = new MockTask();
 			var sequence:Sequence = new Sequence(task);
-			sequence.hook(task1);
-			sequence.hook(task2);
+			sequence.except(task1);
+			sequence.except(task2);
 
 			assertEquals(sequence.tasks.length, 3);
 			assertEquals(sequence.tasks[0], task);
@@ -1094,21 +1094,21 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function hook_ShouldReturnSequence():void
+		public function except_ShouldReturnSequence():void
 		{
 			var sequence:Sequence = new Sequence(new MockTask());
 
-			assertEquals(sequence.hook(new MockTask()), sequence);
+			assertEquals(sequence.except(new MockTask()), sequence);
 		}
 
 		[Test]
-		public function hook_ActiveSequence_ShouldNotAddFork():void
+		public function except_ActiveSequence_ShouldNotAddFork():void
 		{
 			var task:MockTask = new MockTask();
 			var sequence:Sequence = new Sequence(task);
 
 			sequence.await();
-			sequence.hook(new MockTask());
+			sequence.except(new MockTask());
 
 			assertEquals(sequence.tasks.length, 1);
 			assertEquals(sequence.tasks[0], task);
@@ -1117,7 +1117,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function hook_Shortcuts_ShouldAddTask():void
+		public function except_Shortcuts_ShouldAddTask():void
 		{
 			var task:MockTask = new MockTask();
 			var func:Function = function ():void
@@ -1130,27 +1130,27 @@ package com.epolyakov.async.core
 			var sequence:Sequence;
 
 			sequence = new Sequence({});
-			sequence.hook(task);
+			sequence.except(task);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Fork(sequence.tasks[1]).task2, task);
 
 			sequence = new Sequence({});
-			sequence.hook(func);
+			sequence.except(func);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Func(Fork(sequence.tasks[1]).task2).func, func);
 
 			sequence = new Sequence({});
-			sequence.hook(data);
+			sequence.except(data);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Return(Fork(sequence.tasks[1]).task2).value, data);
 
 			sequence = new Sequence({});
-			sequence.hook(error);
+			sequence.except(error);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, error);
 
 			sequence = new Sequence({});
-			sequence.hook(errorEvent);
+			sequence.except(errorEvent);
 			assertEquals(Fork(sequence.tasks[1]).task1, null);
 			assertEquals(Throw(Fork(sequence.tasks[1]).task2).value, errorEvent);
 		}
@@ -1162,7 +1162,7 @@ package com.epolyakov.async.core
 			assertEquals(0, sequence.tasks.length);
 			sequence.then(null, null);
 			assertEquals(0, sequence.tasks.length);
-			sequence.hook(null);
+			sequence.except(null);
 			assertEquals(0, sequence.tasks.length);
 			sequence.and(null);
 			assertEquals(0, sequence.tasks.length);

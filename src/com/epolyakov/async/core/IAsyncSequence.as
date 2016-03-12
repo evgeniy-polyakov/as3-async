@@ -7,6 +7,6 @@ package com.epolyakov.async.core
 	{
 		function then(task:Object, errorHandler:Object = null):IAsync;
 
-		function hook(errorHandler:Object):IAsyncSequence;
+		function except(task:Object):IAsyncSequence;
 	}
 }

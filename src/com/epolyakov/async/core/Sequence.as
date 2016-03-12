@@ -209,11 +209,11 @@ package com.epolyakov.async.core
 			return this;
 		}
 
-		public function hook(errorHandler:Object):IAsyncSequence
+		public function except(task:Object):IAsyncSequence
 		{
-			if (!_active && errorHandler != null)
+			if (!_active && task != null)
 			{
-				_tasks.push(new Fork(null, toTask(errorHandler)));
+				_tasks.push(new Fork(null, toTask(task)));
 			}
 			return this;
 		}
