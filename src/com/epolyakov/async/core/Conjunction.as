@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Conjunction extends Launcher implements ITask, IReliable
+	internal class Conjunction extends Launcher implements IAsyncConjunction, IReliable
 	{
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
@@ -11,9 +11,13 @@ package com.epolyakov.async.core
 		private var _activating:Boolean;
 		private var _out:Array;
 
-		public function Conjunction(task:ITask)
+		public function Conjunction(task:Object)
 		{
-			_tasks = new <ITask>[task];
+			_tasks = new <ITask>[];
+			if (task != null)
+			{
+				_tasks.push(toTask(task));
+			}
 		}
 
 		internal function get tasks():Vector.<ITask>
@@ -110,7 +114,7 @@ package com.epolyakov.async.core
 			if (_active && _tasks.length > 0)
 			{
 				super.onThrow(error, target);
-				
+
 				var index:int = _tasks.indexOf(target);
 				if (index >= 0)
 				{
@@ -139,12 +143,17 @@ package com.epolyakov.async.core
 			}
 		}
 
-		internal function add(task:ITask):void
+		public function and(task:Object):IAsyncConjunction
 		{
-			if (!_active && _tasks.indexOf(task) < 0)
+			if (!_active && task != null)
 			{
-				_tasks.push(task);
+				var t:ITask = toTask(task);
+				if (_tasks.indexOf(t) < 0)
+				{
+					_tasks.push(t);
+				}
 			}
+			return this;
 		}
 	}
 }
