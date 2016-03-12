@@ -46,7 +46,7 @@ package com.epolyakov.async.core
 			_callback = true;
 		}
 
-		protected final function toTask(value:Object):ITask
+		internal final function toTask(value:Object):ITask
 		{
 			if (value is ITask)
 			{
