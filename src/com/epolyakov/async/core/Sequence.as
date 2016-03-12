@@ -128,69 +128,27 @@ package com.epolyakov.async.core
 			}
 		}
 
-		public function then(task:Object, errorHandler:Object = null):IAsync
+		public function then(task:Object, onError:Object = null):IAsync
 		{
 			if (!_active)
 			{
-				if (task != null && errorHandler == null)
+				if (task != null && onError == null)
 				{
 					_tasks.push(toTask(task));
 				}
-				else if (task != null && errorHandler != null)
+				else if (task != null && onError != null)
 				{
-					_tasks.push(new Fork(toTask(task), toTask(errorHandler)));
+					_tasks.push(new Fork(toTask(task), toTask(onError)));
 				}
-				else if (errorHandler != null)
+				else if (onError != null)
 				{
-					_tasks.push(new Fork(null, toTask(errorHandler)));
+					_tasks.push(new Fork(null, toTask(onError)));
 				}
 			}
 			return this;
 		}
 
-		public function and(task:Object):IAsyncConjunction
-		{
-			if (!_active && task != null)
-			{
-				var last:int = _tasks.length - 1;
-				if (last < 0)
-				{
-					_tasks.push(toTask(task));
-				}
-				else
-				{
-					if (!(_tasks[last] is Conjunction))
-					{
-						_tasks[last] = new Conjunction(_tasks[last]);
-					}
-					Conjunction(_tasks[last]).add(toTask(task));
-				}
-			}
-			return this;
-		}
-
-		public function or(task:Object):IAsyncDisjunction
-		{
-			if (!_active && task != null)
-			{
-				var last:int = _tasks.length - 1;
-				if (last < 0)
-				{
-					_tasks.push(toTask(task));
-				}
-				else
-				{
-					if (!(_tasks[last] is Disjunction))
-					{
-						_tasks[last] = new Disjunction(_tasks[last]);
-					}
-					Disjunction(_tasks[last]).add(toTask(task));
-				}
-			}
-			return this;
-		}
-
-		public function except(task:Object):IAsyncSequence
+		public function except(task:Object):IAsync
 		{
 			if (!_active && task != null)
 			{
