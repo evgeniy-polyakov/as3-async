@@ -1,7 +1,5 @@
 package com.epolyakov.async.core
 {
-	import flash.events.ErrorEvent;
-
 	/**
 	 * @author epolyakov
 	 */
@@ -18,23 +16,6 @@ package com.epolyakov.async.core
 			{
 				_tasks.push(toTask(task));
 			}
-		}
-
-		private static function toTask(value:Object):ITask
-		{
-			if (value is ITask)
-			{
-				return value as ITask;
-			}
-			if (value is Function)
-			{
-				return new Func(value as Function);
-			}
-			if (value is Error || value is ErrorEvent)
-			{
-				return new Throw(value);
-			}
-			return new Return(value);
 		}
 
 		internal function get tasks():Vector.<ITask>

@@ -1,5 +1,7 @@
 package com.epolyakov.async.core
 {
+	import flash.events.ErrorEvent;
+
 	/**
 	 * @author Evgeniy Polyakov
 	 */
@@ -7,7 +9,7 @@ package com.epolyakov.async.core
 	{
 		private var _callback:Boolean;
 
-		internal function launch(task:ITask, args:Object):void
+		internal final function launch(task:ITask, args:Object):void
 		{
 			if (task is IReliable)
 			{
@@ -42,6 +44,23 @@ package com.epolyakov.async.core
 		public function onThrow(error:Object, target:ITask = null):void
 		{
 			_callback = true;
+		}
+
+		protected final function toTask(value:Object):ITask
+		{
+			if (value is ITask)
+			{
+				return value as ITask;
+			}
+			if (value is Function)
+			{
+				return new Func(value as Function);
+			}
+			if (value is Error || value is ErrorEvent)
+			{
+				return new Throw(value);
+			}
+			return new Return(value);
 		}
 	}
 }
