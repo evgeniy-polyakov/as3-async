@@ -3,16 +3,20 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Disjunction extends Launcher implements ITask, IReliable
+	internal class Disjunction extends Launcher implements IAsyncDisjunction, IReliable
 	{
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;
 		private var _active:Boolean;
 		private var _activating:Boolean;
 
-		public function Disjunction(task:ITask)
+		public function Disjunction(task:Object)
 		{
-			_tasks = new <ITask>[task];
+			_tasks = new <ITask>[];
+			if (task != null)
+			{
+				_tasks.push(toTask(task));
+			}
 		}
 
 		internal function get tasks():Vector.<ITask>
@@ -109,7 +113,7 @@ package com.epolyakov.async.core
 			if (_active && _tasks.length > 0)
 			{
 				super.onThrow(error, target);
-				
+
 				var index:int = _tasks.indexOf(target);
 				if (index >= 0)
 				{
@@ -137,12 +141,17 @@ package com.epolyakov.async.core
 			}
 		}
 
-		internal function add(task:ITask):void
+		public function or(task:Object):IAsyncDisjunction
 		{
-			if (!_active && _tasks.indexOf(task) < 0)
+			if (!_active && task != null)
 			{
-				_tasks.push(task);
+				var t:ITask = toTask(task);
+				if (_tasks.indexOf(t) < 0)
+				{
+					_tasks.push(t);
+				}
 			}
+			return this;
 		}
 	}
 }
