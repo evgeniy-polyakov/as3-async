@@ -9,6 +9,7 @@ package com.epolyakov.async.core
 		private var _result:IResult;
 		private var _active:Boolean;
 		private var _activating:Boolean;
+		private var _args:Object;
 
 		public function Disjunction(task:Object)
 		{
@@ -46,6 +47,7 @@ package com.epolyakov.async.core
 					}
 					_active = true;
 					_result = result;
+					_args = args;
 
 					_activating = true;
 					var tasks:Vector.<ITask> = _tasks.slice();
@@ -73,6 +75,7 @@ package com.epolyakov.async.core
 				Cache.remove(this);
 				_active = false;
 				_result = null;
+				_args = null;
 
 				if (_tasks.length > 0)
 				{
@@ -97,6 +100,7 @@ package com.epolyakov.async.core
 				{
 					Cache.remove(this);
 					_active = false;
+					_args = null;
 
 					var tasks:Vector.<ITask> = _tasks.slice();
 					_tasks.splice(0, _tasks.length);
@@ -128,6 +132,7 @@ package com.epolyakov.async.core
 				{
 					Cache.remove(this);
 					_active = false;
+					_args = null;
 
 					var tasks:Vector.<ITask> = _tasks.slice();
 					_tasks.splice(0, _tasks.length);
@@ -154,12 +159,16 @@ package com.epolyakov.async.core
 
 		public function or(task:Object):IAsyncDisjunction
 		{
-			if (!_active && task != null)
+			if (task != null)
 			{
 				var t:ITask = toTask(task);
 				if (_tasks.indexOf(t) < 0)
 				{
 					_tasks.push(t);
+				}
+				if (_active)
+				{
+					launch(t, _args);
 				}
 			}
 			return this;

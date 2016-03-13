@@ -9,6 +9,7 @@ package com.epolyakov.async.core
 		private var _result:IResult;
 		private var _active:Boolean;
 		private var _activating:Boolean;
+		private var _args:Object;
 		private var _out:Array;
 
 		public function Conjunction(task:Object)
@@ -47,6 +48,7 @@ package com.epolyakov.async.core
 					}
 					_active = true;
 					_result = result;
+					_args = args;
 					_out = [];
 
 					_activating = true;
@@ -75,6 +77,7 @@ package com.epolyakov.async.core
 				Cache.remove(this);
 				_active = false;
 				_result = null;
+				_args = null;
 				_out = null;
 
 				if (_tasks.length > 0)
@@ -104,6 +107,7 @@ package com.epolyakov.async.core
 					{
 						Cache.remove(this);
 						_active = false;
+						_args = null;
 
 						if (_result)
 						{
@@ -129,6 +133,7 @@ package com.epolyakov.async.core
 				{
 					Cache.remove(this);
 					_active = false;
+					_args = null;
 					_out = null;
 
 					var tasks:Vector.<ITask> = _tasks.slice();
@@ -142,9 +147,9 @@ package com.epolyakov.async.core
 					}
 					if (_result)
 					{
-						var async:IResult = _result;
+						var result:IResult = _result;
 						_result = null;
-						async.onThrow(error, this);
+						result.onThrow(error, this);
 					}
 					else
 					{
@@ -156,12 +161,16 @@ package com.epolyakov.async.core
 
 		public function and(task:Object):IAsyncConjunction
 		{
-			if (!_active && task != null)
+			if (task != null)
 			{
 				var t:ITask = toTask(task);
 				if (_tasks.indexOf(t) < 0)
 				{
 					_tasks.push(t);
+				}
+				if (_active)
+				{
+					launch(t, _args);
 				}
 			}
 			return this;

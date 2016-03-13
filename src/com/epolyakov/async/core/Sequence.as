@@ -133,27 +133,24 @@ package com.epolyakov.async.core
 
 		public function then(task:Object, onError:Object = null):IAsync
 		{
-			if (!_active)
+			if (task != null && onError == null)
 			{
-				if (task != null && onError == null)
-				{
-					_tasks.push(toTask(task));
-				}
-				else if (task != null && onError != null)
-				{
-					_tasks.push(new Fork(toTask(task), toTask(onError)));
-				}
-				else if (onError != null)
-				{
-					_tasks.push(new Fork(null, toTask(onError)));
-				}
+				_tasks.push(toTask(task));
+			}
+			else if (task != null && onError != null)
+			{
+				_tasks.push(new Fork(toTask(task), toTask(onError)));
+			}
+			else if (onError != null)
+			{
+				_tasks.push(new Fork(null, toTask(onError)));
 			}
 			return this;
 		}
 
 		public function except(task:Object):IAsync
 		{
-			if (!_active && task != null)
+			if (task != null)
 			{
 				_tasks.push(new Fork(null, toTask(task)));
 			}

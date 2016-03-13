@@ -168,16 +168,23 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function and_ShouldNotAddTaskWhenActive():void
+		public function and_ActiveConjunction_ShouldAddAndStartTask():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
+			var args:Object = {};
 			var conjunction:Conjunction = new Conjunction(task);
-			conjunction.await();
+
+			conjunction.await(args);
 			conjunction.and(task1);
 
-			assertEquals(1, conjunction.tasks.length);
+			assertEquals(2, conjunction.tasks.length);
 			assertEquals(task, conjunction.tasks[0]);
+			assertEquals(task1, conjunction.tasks[1]);
+
+			Mock.verify().that(task.await(args, conjunction))
+					.verify().that(task1.await(args, conjunction))
+					.verify().total(2);
 		}
 
 		[Test]

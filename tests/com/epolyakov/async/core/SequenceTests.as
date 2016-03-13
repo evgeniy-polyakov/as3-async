@@ -704,16 +704,21 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function then_ActiveSequence_ShouldNotAddTask():void
+		public function then_ActiveSequence_ShouldAddTask():void
 		{
 			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
 			var sequence:Sequence = new Sequence(task);
 
 			sequence.await();
-			sequence.then(new MockTask());
+			sequence.then(task1);
 
-			assertEquals(sequence.tasks.length, 1);
+			assertEquals(sequence.tasks.length, 2);
 			assertEquals(sequence.tasks[0], task);
+			assertEquals(sequence.tasks[1], task1);
+
+			Mock.verify().that(task.await(null, sequence))
+					.verify().total(1);
 
 			sequence.cancel();
 		}
@@ -777,16 +782,24 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function then_ActiveSequence_ShouldNotAddFork():void
+		public function then_ActiveSequence_ShouldAddFork():void
 		{
 			var task:MockTask = new MockTask();
+			var task1:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
 			var sequence:Sequence = new Sequence(task);
 
 			sequence.await();
-			sequence.then(new MockTask(), new MockTask());
+			sequence.then(task1, task2);
 
-			assertEquals(sequence.tasks.length, 1);
+			assertEquals(sequence.tasks.length, 2);
 			assertEquals(sequence.tasks[0], task);
+			assertTrue(sequence.tasks[1] is Fork);
+			assertEquals(task1, Fork(sequence.tasks[1]).task1);
+			assertEquals(task2, Fork(sequence.tasks[1]).task2);
+
+			Mock.verify().that(task.await(null, sequence))
+					.verify().total(1);
 
 			sequence.cancel();
 		}
@@ -873,16 +886,22 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function except_ActiveSequence_ShouldNotAddFork():void
+		public function except_ActiveSequence_ShouldAddFork():void
 		{
 			var task:MockTask = new MockTask();
+			var task2:MockTask = new MockTask();
 			var sequence:Sequence = new Sequence(task);
 
 			sequence.await();
-			sequence.except(new MockTask());
+			sequence.except(task2);
 
-			assertEquals(sequence.tasks.length, 1);
+			assertEquals(sequence.tasks.length, 2);
 			assertEquals(sequence.tasks[0], task);
+			assertTrue(sequence.tasks[1] is Fork);
+			assertEquals(task2, Fork(sequence.tasks[1]).task2);
+
+			Mock.verify().that(task.await(null, sequence))
+					.verify().total(1);
 
 			sequence.cancel();
 		}

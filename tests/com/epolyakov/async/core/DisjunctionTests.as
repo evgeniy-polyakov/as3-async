@@ -167,16 +167,23 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function or_ShouldNotAddTaskWhenActive():void
+		public function or_ActiveDisjunction_ShouldAddAndStartTask():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
+			var args:Object = {};
 			var disjunction:Disjunction = new Disjunction(task);
-			disjunction.await();
+
+			disjunction.await(args);
 			disjunction.or(task1);
 
-			assertEquals(1, disjunction.tasks.length);
+			assertEquals(2, disjunction.tasks.length);
 			assertEquals(task, disjunction.tasks[0]);
+			assertEquals(task1, disjunction.tasks[1]);
+
+			Mock.verify().that(task.await(args, disjunction))
+					.verify().that(task1.await(args, disjunction))
+					.verify().total(2);
 		}
 
 		[Test]
