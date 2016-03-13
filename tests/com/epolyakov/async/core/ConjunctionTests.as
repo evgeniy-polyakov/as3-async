@@ -7,6 +7,7 @@ package com.epolyakov.async.core
 	import com.epolyakov.mock.Times;
 
 	import flash.errors.IOError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.utils.setTimeout;
 
@@ -28,7 +29,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function constructor_ShouldSetTask():void
+		public function Conjunction_ShouldAddTask():void
 		{
 			var task:MockTask = new MockTask();
 			var conjunction:Conjunction = new Conjunction(task);
@@ -38,6 +39,93 @@ package com.epolyakov.async.core
 			assertFalse(conjunction.active);
 			assertNull(conjunction.result);
 			Mock.verify().total(0);
+		}
+
+		[Test]
+		public function Conjunction_ShouldNotAddNullTask():void
+		{
+			var conjunction:Conjunction = new Conjunction(null);
+
+			assertEquals(0, conjunction.tasks.length);
+		}
+
+		[Test]
+		public function Conjunction_Shortcuts_ShouldAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Function = function ():void
+			{
+			};
+			var data:Object = {};
+			var error:Error = new Error();
+			var errorEvent:ErrorEvent = new ErrorEvent("test");
+
+			var conjunction:Conjunction;
+
+			conjunction = new Conjunction(task);
+			assertEquals(conjunction.tasks[0], task);
+
+			conjunction = new Conjunction(func);
+			assertEquals(Func(conjunction.tasks[0]).func, func);
+
+			conjunction = new Conjunction(data);
+			assertEquals(Return(conjunction.tasks[0]).value, data);
+
+			conjunction = new Conjunction(error);
+			assertEquals(Throw(conjunction.tasks[0]).value, error);
+
+			conjunction = new Conjunction(errorEvent);
+			assertEquals(Throw(conjunction.tasks[0]).value, errorEvent);
+		}
+
+		[Test]
+		public function and_Shortcuts_ShouldAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Function = function ():void
+			{
+			};
+			var data:Object = {};
+			var error:Error = new Error();
+			var errorEvent:ErrorEvent = new ErrorEvent("test");
+
+			var conjunction:Conjunction;
+
+			conjunction = new Conjunction({});
+			conjunction.and(task);
+			assertEquals(conjunction.tasks[1], task);
+
+			conjunction = new Conjunction({});
+			conjunction.and(func);
+			assertEquals(Func(conjunction.tasks[1]).func, func);
+
+			conjunction = new Conjunction({});
+			conjunction.and(data);
+			assertEquals(Return(conjunction.tasks[1]).value, data);
+
+			conjunction = new Conjunction({});
+			conjunction.and(error);
+			assertEquals(Throw(conjunction.tasks[1]).value, error);
+
+			conjunction = new Conjunction({});
+			conjunction.and(errorEvent);
+			assertEquals(Throw(conjunction.tasks[1]).value, errorEvent);
+		}
+
+		[Test]
+		public function and_ShouldReturnConjunction():void
+		{
+			var conjunction:Conjunction = new Conjunction({});
+			assertEquals(conjunction, conjunction.and({}));
+		}
+
+		[Test]
+		public function and_ShouldNotAddNUllTask():void
+		{
+			var conjunction:Conjunction = new Conjunction({});
+			assertEquals(1, conjunction.tasks.length);
+			conjunction.and(null);
+			assertEquals(1, conjunction.tasks.length);
 		}
 
 		[Test]

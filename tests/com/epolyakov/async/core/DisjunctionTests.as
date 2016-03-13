@@ -6,6 +6,7 @@ package com.epolyakov.async.core
 	import com.epolyakov.mock.Times;
 
 	import flash.errors.IOError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.utils.setTimeout;
 
@@ -27,7 +28,7 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function constructor_ShouldSetTask():void
+		public function Disjunction_ShouldAddTask():void
 		{
 			var task:MockTask = new MockTask();
 			var disjunction:Disjunction = new Disjunction(task);
@@ -37,6 +38,93 @@ package com.epolyakov.async.core
 			assertFalse(disjunction.active);
 			assertNull(disjunction.result);
 			Mock.verify().total(0);
+		}
+
+		[Test]
+		public function Disjunction_ShouldNotAddNullTask():void
+		{
+			var disjunction:Disjunction = new Disjunction(null);
+
+			assertEquals(0, disjunction.tasks.length);
+		}
+
+		[Test]
+		public function Disjunction_Shortcuts_ShouldAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Function = function ():void
+			{
+			};
+			var data:Object = {};
+			var error:Error = new Error();
+			var errorEvent:ErrorEvent = new ErrorEvent("test");
+
+			var disjunction:Disjunction;
+
+			disjunction = new Disjunction(task);
+			assertEquals(disjunction.tasks[0], task);
+
+			disjunction = new Disjunction(func);
+			assertEquals(Func(disjunction.tasks[0]).func, func);
+
+			disjunction = new Disjunction(data);
+			assertEquals(Return(disjunction.tasks[0]).value, data);
+
+			disjunction = new Disjunction(error);
+			assertEquals(Throw(disjunction.tasks[0]).value, error);
+
+			disjunction = new Disjunction(errorEvent);
+			assertEquals(Throw(disjunction.tasks[0]).value, errorEvent);
+		}
+
+		[Test]
+		public function or_Shortcuts_ShouldAddTask():void
+		{
+			var task:MockTask = new MockTask();
+			var func:Function = function ():void
+			{
+			};
+			var data:Object = {};
+			var error:Error = new Error();
+			var errorEvent:ErrorEvent = new ErrorEvent("test");
+
+			var disjunction:Disjunction;
+
+			disjunction = new Disjunction({});
+			disjunction.or(task);
+			assertEquals(disjunction.tasks[1], task);
+
+			disjunction = new Disjunction({});
+			disjunction.or(func);
+			assertEquals(Func(disjunction.tasks[1]).func, func);
+
+			disjunction = new Disjunction({});
+			disjunction.or(data);
+			assertEquals(Return(disjunction.tasks[1]).value, data);
+
+			disjunction = new Disjunction({});
+			disjunction.or(error);
+			assertEquals(Throw(disjunction.tasks[1]).value, error);
+
+			disjunction = new Disjunction({});
+			disjunction.or(errorEvent);
+			assertEquals(Throw(disjunction.tasks[1]).value, errorEvent);
+		}
+
+		[Test]
+		public function or_ShouldReturnDisjunction():void
+		{
+			var disjunction:Disjunction = new Disjunction({});
+			assertEquals(disjunction, disjunction.or({}));
+		}
+
+		[Test]
+		public function or_ShouldNotAddNUllTask():void
+		{
+			var disjunction:Disjunction = new Disjunction({});
+			assertEquals(1, disjunction.tasks.length);
+			disjunction.or(null);
+			assertEquals(1, disjunction.tasks.length);
 		}
 
 		[Test]
