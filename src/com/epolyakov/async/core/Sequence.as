@@ -39,7 +39,10 @@ package com.epolyakov.async.core
 			{
 				if (_tasks.length > 0)
 				{
-					Cache.add(this);
+					if (!(result is IReliable))
+					{
+						Cache.add(this);
+					}
 					_active = true;
 					_result = result;
 					launch(_tasks[0], args);

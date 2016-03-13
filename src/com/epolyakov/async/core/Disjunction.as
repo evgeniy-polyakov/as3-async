@@ -40,8 +40,13 @@ package com.epolyakov.async.core
 			{
 				if (_tasks.length > 0)
 				{
+					if (!(result is IReliable))
+					{
+						Cache.add(this);
+					}
 					_active = true;
 					_result = result;
+
 					_activating = true;
 					var tasks:Vector.<ITask> = _tasks.slice();
 					for (var i:int = 0, n:int = tasks.length; i < n; i++)
@@ -65,8 +70,10 @@ package com.epolyakov.async.core
 		{
 			if (_active)
 			{
+				Cache.remove(this);
 				_active = false;
 				_result = null;
+
 				if (_tasks.length > 0)
 				{
 					var tasks:Vector.<ITask> = _tasks.slice();
@@ -88,7 +95,9 @@ package com.epolyakov.async.core
 				var index:int = _tasks.indexOf(target);
 				if (index >= 0)
 				{
+					Cache.remove(this);
 					_active = false;
+
 					var tasks:Vector.<ITask> = _tasks.slice();
 					_tasks.splice(0, _tasks.length);
 					for (var i:int = 0, n:int = _activating ? index : tasks.length; i < n; i++)
@@ -117,7 +126,9 @@ package com.epolyakov.async.core
 				var index:int = _tasks.indexOf(target);
 				if (index >= 0)
 				{
+					Cache.remove(this);
 					_active = false;
+
 					var tasks:Vector.<ITask> = _tasks.slice();
 					_tasks.splice(0, _tasks.length);
 					for (var i:int = 0, n:int = _activating ? index : tasks.length; i < n; i++)

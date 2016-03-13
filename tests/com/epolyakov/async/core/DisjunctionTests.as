@@ -25,6 +25,7 @@ package com.epolyakov.async.core
 		public function Before():void
 		{
 			Mock.clear();
+			Cache.clear();
 		}
 
 		[Test]
@@ -176,6 +177,67 @@ package com.epolyakov.async.core
 
 			assertEquals(1, disjunction.tasks.length);
 			assertEquals(task, disjunction.tasks[0]);
+		}
+
+		[Test]
+		public function await_ShouldKeepInstance():void
+		{
+			var task:MockTask = new MockTask();
+			var disjunction:Disjunction = new Disjunction(task);
+
+			assertEquals(Cache.instances.length, 0);
+
+			disjunction.await();
+
+			assertEquals(Cache.instances.length, 1);
+			assertEquals(Cache.instances[0], disjunction);
+
+			disjunction.cancel();
+
+			assertEquals(Cache.instances.length, 0);
+		}
+
+		[Test]
+		public function await_ReliableResult_ShouldNotKeepInstance():void
+		{
+			var task:MockTask = new MockTask();
+			var disjunction:Disjunction = new Disjunction(task);
+
+			assertEquals(Cache.instances.length, 0);
+
+			disjunction.await(null, new Disjunction(null));
+
+			assertEquals(Cache.instances.length, 0);
+
+			disjunction.cancel();
+		}
+
+		[Test]
+		public function await_ShouldClearInstanceOnReturn():void
+		{
+			var task:Task = new Task();
+			var disjunction:Disjunction = new Disjunction(task);
+
+			disjunction.await({}, new MockResult());
+			assertEquals(Cache.instances.length, 1);
+			assertEquals(Cache.instances[0], disjunction);
+
+			task.onReturn({});
+			assertEquals(Cache.instances.length, 0);
+		}
+
+		[Test]
+		public function await_ShouldClearInstanceOnThrow():void
+		{
+			var task:Task = new Task();
+			var disjunction:Disjunction = new Disjunction(task);
+
+			disjunction.await({}, new MockResult());
+			assertEquals(Cache.instances.length, 1);
+			assertEquals(Cache.instances[0], disjunction);
+
+			task.onThrow({});
+			assertEquals(Cache.instances.length, 0);
 		}
 
 		[Test]

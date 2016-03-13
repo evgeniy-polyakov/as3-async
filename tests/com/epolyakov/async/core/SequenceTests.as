@@ -167,6 +167,39 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
+		public function await_ShouldKeepInstance():void
+		{
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+
+			assertEquals(Cache.instances.length, 0);
+
+			sequence.await();
+
+			assertEquals(Cache.instances.length, 1);
+			assertEquals(Cache.instances[0], sequence);
+
+			sequence.cancel();
+
+			assertEquals(Cache.instances.length, 0);
+		}
+
+		[Test]
+		public function await_ReliableResult_ShouldNotKeepInstance():void
+		{
+			var task:MockTask = new MockTask();
+			var sequence:Sequence = new Sequence(task);
+
+			assertEquals(Cache.instances.length, 0);
+
+			sequence.await(null, new Sequence(null));
+
+			assertEquals(Cache.instances.length, 0);
+
+			sequence.cancel();
+		}
+
+		[Test]
 		public function await_ShouldClearInstanceOnReturn():void
 		{
 			var task:Task = new Task();
@@ -232,24 +265,6 @@ package com.epolyakov.async.core
 			assertEquals(task1, Fork(sequence.tasks[0]).task2);
 
 			sequence.cancel();
-		}
-
-		[Test]
-		public function await_ShouldKeepInstance():void
-		{
-			var task:MockTask = new MockTask();
-			var sequence:Sequence = new Sequence(task);
-
-			assertEquals(Cache.instances.length, 0);
-
-			sequence.await();
-
-			assertEquals(Cache.instances.length, 1);
-			assertEquals(Cache.instances[0], sequence);
-
-			sequence.cancel();
-
-			assertEquals(Cache.instances.length, 0);
 		}
 
 		[Test]
