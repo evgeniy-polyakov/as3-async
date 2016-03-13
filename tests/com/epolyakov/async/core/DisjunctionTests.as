@@ -40,14 +40,14 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function add_ShouldAddTask():void
+		public function or_ShouldAddTask():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var task2:MockTask = new MockTask();
 			var disjunction:Disjunction = new Disjunction(task);
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 
 			assertEquals(3, disjunction.tasks.length);
 			assertEquals(task, disjunction.tasks[0]);
@@ -59,15 +59,15 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function add_ShouldNotAddTaskAgain():void
+		public function or_ShouldNotAddTaskAgain():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var disjunction:Disjunction = new Disjunction(task);
-			disjunction.add(task);
-			disjunction.add(task);
-			disjunction.add(task1);
-			disjunction.add(task1);
+			disjunction.or(task);
+			disjunction.or(task);
+			disjunction.or(task1);
+			disjunction.or(task1);
 
 			assertEquals(2, disjunction.tasks.length);
 			assertEquals(task, disjunction.tasks[0]);
@@ -78,13 +78,13 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function add_ShouldNotAddTaskWhenActive():void
+		public function or_ShouldNotAddTaskWhenActive():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var disjunction:Disjunction = new Disjunction(task);
 			disjunction.await();
-			disjunction.add(task1);
+			disjunction.or(task1);
 
 			assertEquals(1, disjunction.tasks.length);
 			assertEquals(task, disjunction.tasks[0]);
@@ -111,8 +111,8 @@ package com.epolyakov.async.core
 			var result:MockResult = new MockResult();
 			var args:Object = {};
 			var disjunction:Disjunction = new Disjunction(task);
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 			disjunction.await(args, result);
 
 			Mock.verify().that(task.await(args, disjunction))
@@ -151,8 +151,8 @@ package com.epolyakov.async.core
 				result.onReturn(out, this as ITask);
 			});
 
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 			disjunction.await(args, result);
 
 			Mock.verify().that(task.await(args, disjunction))
@@ -177,8 +177,8 @@ package com.epolyakov.async.core
 			var args:Object = {};
 			var error:Object = {};
 			var disjunction:Disjunction = new Disjunction(task);
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 
 			Mock.setup().that(task1.await(args, disjunction)).returns(function (args:Object, result:IResult):void
 			{
@@ -208,8 +208,8 @@ package com.epolyakov.async.core
 			var args:Object = {};
 			var error:Object = {};
 			var disjunction:Disjunction = new Disjunction(task);
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 
 			Mock.setup().that(task1.await(args, disjunction)).throws(error);
 			disjunction.await(args, result);
@@ -276,8 +276,8 @@ package com.epolyakov.async.core
 				setTimeout(result.onReturn, 300, 30, this as ITask);
 			});
 
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 			disjunction.await(args, result);
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
@@ -321,8 +321,8 @@ package com.epolyakov.async.core
 				setTimeout(result.onReturn, 300, 30, this as ITask);
 			});
 
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 			disjunction.await(args, result);
 
 			Async.handleEvent(this, result, Event.CANCEL, function (...rest):void
@@ -354,8 +354,8 @@ package com.epolyakov.async.core
 			var out:Object = {};
 			var disjunction:Disjunction = new Disjunction(task);
 
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 			disjunction.await(args, result);
 
 			setTimeout(function ():void
@@ -403,8 +403,8 @@ package com.epolyakov.async.core
 			var args:Object = {};
 			var result:MockResult = new MockResult();
 			var disjunction:Disjunction = new Disjunction(task);
-			disjunction.add(task1);
-			disjunction.add(task2);
+			disjunction.or(task1);
+			disjunction.or(task2);
 
 			disjunction.await(args, result);
 			disjunction.cancel();

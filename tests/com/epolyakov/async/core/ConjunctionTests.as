@@ -41,14 +41,14 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function add_ShouldAddTask():void
+		public function and_ShouldAddTask():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var task2:MockTask = new MockTask();
 			var conjunction:Conjunction = new Conjunction(task);
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 
 			assertEquals(3, conjunction.tasks.length);
 			assertEquals(task, conjunction.tasks[0]);
@@ -60,15 +60,15 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function add_ShouldNotAddTaskAgain():void
+		public function and_ShouldNotAddTaskAgain():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var conjunction:Conjunction = new Conjunction(task);
-			conjunction.add(task);
-			conjunction.add(task);
-			conjunction.add(task1);
-			conjunction.add(task1);
+			conjunction.and(task);
+			conjunction.and(task);
+			conjunction.and(task1);
+			conjunction.and(task1);
 
 			assertEquals(2, conjunction.tasks.length);
 			assertEquals(task, conjunction.tasks[0]);
@@ -79,13 +79,13 @@ package com.epolyakov.async.core
 		}
 
 		[Test]
-		public function add_ShouldNotAddTaskWhenActive():void
+		public function and_ShouldNotAddTaskWhenActive():void
 		{
 			var task:MockTask = new MockTask();
 			var task1:MockTask = new MockTask();
 			var conjunction:Conjunction = new Conjunction(task);
 			conjunction.await();
-			conjunction.add(task1);
+			conjunction.and(task1);
 
 			assertEquals(1, conjunction.tasks.length);
 			assertEquals(task, conjunction.tasks[0]);
@@ -112,8 +112,8 @@ package com.epolyakov.async.core
 			var result:MockResult = new MockResult();
 			var args:Object = {};
 			var conjunction:Conjunction = new Conjunction(task);
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 			conjunction.await(args, result);
 
 			Mock.verify().that(task.await(args, conjunction))
@@ -159,8 +159,8 @@ package com.epolyakov.async.core
 				result.onReturn(30, this as ITask);
 			});
 
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 			conjunction.await(args, result);
 
 			Mock.verify().that(result.onReturn(It.match(function (value:Object):Boolean
@@ -182,8 +182,8 @@ package com.epolyakov.async.core
 			var result:MockResult = new MockResult();
 			var args:Object = {};
 			var conjunction:Conjunction = new Conjunction(task);
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 			conjunction.await(args, result);
 
 			task1.onReturn(10);
@@ -208,8 +208,8 @@ package com.epolyakov.async.core
 			var args:Object = {};
 			var error:Object = {};
 			var conjunction:Conjunction = new Conjunction(task);
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 
 			Mock.setup().that(task1.await(args, conjunction)).returns(function (args:Object, result:IResult):void
 			{
@@ -239,8 +239,8 @@ package com.epolyakov.async.core
 			var args:Object = {};
 			var error:Object = {};
 			var conjunction:Conjunction = new Conjunction(task);
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 
 			Mock.setup().that(task1.await(args, conjunction)).throws(error);
 			conjunction.await(args, result);
@@ -307,8 +307,8 @@ package com.epolyakov.async.core
 				setTimeout(result.onReturn, 300, 30, this as ITask);
 			});
 
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 			conjunction.await(args, result);
 
 			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
@@ -354,8 +354,8 @@ package com.epolyakov.async.core
 				setTimeout(result.onReturn, 300, 30, this as ITask);
 			});
 
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 			conjunction.await(args, result);
 
 			Async.handleEvent(this, result, Event.CANCEL, function (...rest):void
@@ -390,8 +390,8 @@ package com.epolyakov.async.core
 				setTimeout(result.onReturn, 100, out, this as ITask);
 			});
 
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 			conjunction.await(args, result);
 
 			setTimeout(function ():void
@@ -439,8 +439,8 @@ package com.epolyakov.async.core
 			var args:Object = {};
 			var result:MockResult = new MockResult();
 			var conjunction:Conjunction = new Conjunction(task);
-			conjunction.add(task1);
-			conjunction.add(task2);
+			conjunction.and(task1);
+			conjunction.and(task2);
 
 			Mock.setup().that(task1.await(args, conjunction)).returns(function (args:Object, result:IResult):void
 			{
