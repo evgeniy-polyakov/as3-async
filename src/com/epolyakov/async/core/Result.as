@@ -5,7 +5,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author Evgeniy Polyakov
 	 */
-	internal class Launcher implements IResult
+	internal class Result implements IResult
 	{
 		private var _callback:Boolean;
 

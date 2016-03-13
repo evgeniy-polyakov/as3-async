@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	public class Task extends Launcher implements ITask
+	public class Task extends Result implements ITask
 	{
 		private var _args:Object;
 		private var _target:ITask;

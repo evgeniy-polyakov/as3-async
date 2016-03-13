@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Sequence extends Launcher implements IAsync, IReliable
+	internal class Sequence extends Result implements IAsync, IReliable
 	{
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;

@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Func extends Launcher implements ITask, IReliable
+	internal class Func extends Result implements ITask, IReliable
 	{
 		private var _func:Function;
 		private var _task:ITask;

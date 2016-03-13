@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Conjunction extends Launcher implements IAsyncConjunction, IReliable
+	internal class Conjunction extends Result implements IAsyncConjunction, IReliable
 	{
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;

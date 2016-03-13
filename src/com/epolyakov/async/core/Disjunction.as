@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Disjunction extends Launcher implements IAsyncDisjunction, IReliable
+	internal class Disjunction extends Result implements IAsyncDisjunction, IReliable
 	{
 		private var _tasks:Vector.<ITask>;
 		private var _result:IResult;

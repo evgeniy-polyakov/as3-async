@@ -3,7 +3,7 @@ package com.epolyakov.async.core
 	/**
 	 * @author epolyakov
 	 */
-	internal class Fork extends Launcher implements ITask, IReliable
+	internal class Fork extends Result implements ITask, IReliable
 	{
 		private var _state:int;
 		private var _result:IResult;

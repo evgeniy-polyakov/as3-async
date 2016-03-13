@@ -17,7 +17,7 @@ package com.epolyakov.async.core
 			assertTrue(new Disjunction(new MockTask()) is IReliable);
 			assertTrue(new Fork(new MockTask(), new MockTask()) is IReliable);
 			assertTrue(new Func(function ():void {}) is IReliable);
-			assertFalse(new Launcher() is IReliable);
+			assertFalse(new Result() is IReliable);
 			assertTrue(new Return({}) is IReliable);
 			assertTrue(new Sequence(new MockTask()) is IReliable);
 			assertFalse(new Task() is IReliable);
