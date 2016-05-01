@@ -10,7 +10,7 @@ package com.epolyakov.async.core
 	public class AsyncAllTests
 	{
 		[Test]
-		public function async_ShouldReturnConjunctionWithTheGivenTasks():void
+		public function asyncAll_ShouldReturnConjunctionWithTheGivenTasks():void
 		{
 			var task:Task = new Task();
 			var task1:Task = new Task();

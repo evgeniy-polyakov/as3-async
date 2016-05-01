@@ -10,7 +10,7 @@ package com.epolyakov.async.core
 	public class AsyncAnyTests
 	{
 		[Test]
-		public function async_ShouldReturnDisjunctionWithTheGivenTasks():void
+		public function asyncAny_ShouldReturnDisjunctionWithTheGivenTasks():void
 		{
 			var task:Task = new Task();
 			var task1:Task = new Task();
