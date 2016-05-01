@@ -320,12 +320,9 @@ package com.epolyakov.async.core
 			conjunction.and(task2);
 			conjunction.await(args, result);
 
-			Mock.verify().that(result.onReturn(It.match(function (value:Object):Boolean
-					{
-						return value is Array && (value as Array).length == 3
-								&& value[0] == 10 && value[1] == 20 && value[2] == 30;
-					}), conjunction))
-					.verify().total(4);
+			Mock.verify().that(result.onReturn(It.isLike([10, 20, 30]), conjunction));
+			Mock.verify().that(result.onReturn(It.isOfType(Array), conjunction));
+			Mock.verify().total(4);
 
 			assertEquals(conjunction.tasks.length, 0);
 		}
@@ -347,12 +344,9 @@ package com.epolyakov.async.core
 			task2.onReturn(20);
 			task.onReturn(0);
 
-			Mock.verify().that(result.onReturn(It.match(function (value:Object):Boolean
-					{
-						return value is Array && (value as Array).length == 3
-								&& value[0] == 10 && value[1] == 20 && value[2] == 0;
-					}), conjunction))
-					.verify().total(1);
+			Mock.verify().that(result.onReturn(It.isLike([10, 20, 0]), conjunction));
+			Mock.verify().that(result.onReturn(It.isOfType(Array), conjunction));
+			Mock.verify().total(1);
 		}
 
 		[Test]
@@ -473,11 +467,7 @@ package com.epolyakov.async.core
 				Mock.verify().that(task.await(args, conjunction))
 						.verify().that(task1.await(args, conjunction))
 						.verify().that(task2.await(args, conjunction))
-						.verify().that(result.onReturn(It.match(function (value:Object):Boolean
-						{
-							return value is Array && (value as Array).length == 3
-									&& value[0] == 20 && value[1] == 10 && value[2] == 30;
-						}), conjunction))
+						.verify().that(result.onReturn(It.isLike([20, 10, 30]), conjunction))
 						.verify().total(4);
 
 				assertNull(conjunction.result);
