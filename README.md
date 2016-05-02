@@ -136,7 +136,30 @@ public class Queue {
 }
 ```
 
-## Flash API implementation
+## Flash API wrappers
+
+### LoaderTask
+The task uses [Loader](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/Loader.html) object to load a flash movie from the given url, `URLRequest`, `ByteArray` object or class.
+- Constructor `LoaderTask(source:*, context:LoaderContext = null)`
+- Returns `Loader` object
+- Throws `IOErrorEvent`, `SecurityErrorEvent`, errors thrown by `Loader.load()`and `Loader.loadBytes()`
+
+### URLLoaderTask
+The task uses [URLLoader](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/net/URLLoader.html) to load a file from the given url or `URLRequest`.
+- Constructor `URLLoaderTask(source:Object, format:String = "text")`
+- Returns `URLLoader` object
+- Throws `IOErrorEvent`, `SecurityErrorEvent`, errors thrown by `URLLoader.load()`
+
+### Timout tasks
+1. `TimeoutTask(milliseconds=0)` waits for the given number of milliseconds.
+2. `FramesTask(frames=0)` waits for the given number of frames.
+
+### File reference tasks
+The following tasks use [FileReference](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/net/FileReference.html) to browse, download or upload files:
+- `BrowseFileTask` returns `FileReference` with the selected file or throws `Event.CANCEL` if no file is selected.
+- `DownloadFileTask` returns `FileReference` with the downloaded file or throws `Event.CANCEL`, `IOErrorEvent`, `SecurityErrorEvent`.
+- `UploadFileTask` gets `FileReference` as argument and uploads it to the given url, must be called after `BrowseFileTask`.
+- `LoadFileTask` gets `FileReference` as argument and loads file content, must be called after `BrowseFileTask`.
 
 ## Task definition
 1. Subsequent `async`
