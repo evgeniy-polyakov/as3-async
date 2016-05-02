@@ -1,7 +1,7 @@
 # as3-async
 Asynchronous AS3 tasks are intended to simplify event flow usually in loading or animation sequences.
- 1. Asyncronous tasks are very close to [JS Promises](https://www.promisejs.org/) however they are written in more object oriented style.
- 2. There are provides wrappers for commonly used Flash API.
+ 1. Asynchronous tasks are very close to [JS Promises](https://www.promisejs.org/) however they are written in more object oriented style.
+ 2. There are wrappers for commonly used Flash API.
  3. No events are created and dispatched, we use direct callbacks because they are more fast.
  4. Error handling is provided.
  5. Synchronous functions can be used as asynchronous tasks.
@@ -55,7 +55,7 @@ async(new LoaderTask("some.swf"))
 ```
 
 ### Handling errors
-The task can complete successfully or not (like fullfil and reject in promises). If it is not successfull it "throws" an error and no further tasks are executed until an error handler is found. The error handler is a task passed to method `except`. For example single error handler for all tasks (note that `URLLoaderTask` is not executed if `URLLoaderTask` fails):
+The task can complete successfully or not (like fulfill and reject in promises). If it is not successful it "throws" an error and no further tasks are executed until an error handler is found. The error handler is a task passed to method `except`. For example single error handler for all tasks (note that `URLLoaderTask` is not executed if `URLLoaderTask` fails):
 ```actionscript
 async(new LoaderTask("some.swf"))
 .then(new URLLoaderTask("some.xml"))
@@ -88,7 +88,7 @@ async(new LoaderTask("some.swf"))
 ```
 
 ### Branching
-Branching is similar to error handling. When you need a task to be executed only if the previous tasks are successfull you can use branching. The following example loads one or another xml depending on success of `URLLoaderTask`:
+When you need a task to be executed only if the previous tasks are successful you can use branching. The following example loads one or another xml depending on success of `URLLoaderTask`:
 ```actionscript
 async(new LoaderTask("some.swf"))
 .then(new URLLoaderTask("success.xml"),
@@ -116,13 +116,13 @@ setTimeout(function() {s.cancel();}, 100);
 ```
 
 ### Adding new tasks
-When your sequence is already running you can stil add new tasks to it. Those new tasks will be executed as usual:
+When your sequence is already running you can still add new tasks to it. Those new tasks will be executed as usual:
 ```actionscript
 var s:IAsync = async(new LoaderTask("some.swf"))
 s.await();
 s.then(new URLLoaderTask("some.xml"));
 ```
-> Be carefull with this feature. First of all don't add error handlers to the running sequence because you can get error before adding the handler. Also call `await` after adding new tasks to make sure the sequence continues if it is already complete.
+> Be careful with this feature. First of all don't add error handlers to the running sequence because you can get error before adding the handler. Also call `await` after adding new tasks to make sure the sequence continues if it is already complete.
 
 This feature can be usefull when implementing asynchronous queue that executes tasks one after another:
 ```actionscript
@@ -136,7 +136,7 @@ public class Queue {
 }
 ```
 
-## Flash API implemetation
+## Flash API implementation
 
 ## Task definition
 1. Subsequent `async`
