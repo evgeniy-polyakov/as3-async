@@ -151,8 +151,8 @@ The task uses [URLLoader](http://help.adobe.com/en_US/FlashPlatform/reference/ac
 - Throws `IOErrorEvent`, `SecurityErrorEvent`, errors thrown by `URLLoader.load()`
 
 ### Timout tasks
-1. `TimeoutTask(milliseconds=0)` waits for the given number of milliseconds.
-2. `FramesTask(frames=0)` waits for the given number of frames.
+- `TimeoutTask(milliseconds=0)` waits for the given number of milliseconds.
+- `FramesTask(frames=0)` waits for the given number of frames.
 
 ### File reference tasks
 The following tasks use [FileReference](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/net/FileReference.html) to browse, download or upload files:
