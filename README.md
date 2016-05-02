@@ -1,10 +1,10 @@
 # as3-async
 Asynchronous AS3 tasks are intended to simplify event flow usually in loading or animation sequences.
-1. Asyncronous tasks very close to [JS Promises](https://www.promisejs.org/) however they are written in more object oriented style.
-2. The library provides wrappers for commonly used Flash API.
-3. No events are created and dispatched, the library uses direct callbacks because they are more fast.
-4. Error handling is provided.
-5. Synchronous functions can be used as asynchronous tasks.
+ 1. Asyncronous tasks are very close to [JS Promises](https://www.promisejs.org/) however they are written in more object oriented style.
+ 2. There are provides wrappers for commonly used Flash API.
+ 3. No events are created and dispatched, we use direct callbacks because they are more fast.
+ 4. Error handling is provided.
+ 5. Synchronous functions can be used as asynchronous tasks.
 
 ## Getting started
 
