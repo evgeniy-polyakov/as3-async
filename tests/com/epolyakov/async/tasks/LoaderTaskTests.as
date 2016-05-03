@@ -1,6 +1,6 @@
 package com.epolyakov.async.tasks
 {
-	import com.epolyakov.async.core.mocks.MockResult;
+	import com.epolyakov.async.mocks.MockResult;
 	import com.epolyakov.async.tasks.mocks.MockLoader;
 	import com.epolyakov.mock.It;
 	import com.epolyakov.mock.Mock;

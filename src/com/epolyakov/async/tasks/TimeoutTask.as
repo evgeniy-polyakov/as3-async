@@ -1,6 +1,6 @@
 package com.epolyakov.async.tasks
 {
-	import com.epolyakov.async.core.Task;
+	import com.epolyakov.async.Task;
 
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;

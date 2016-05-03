@@ -1,6 +1,6 @@
 package com.epolyakov.async.tasks
 {
-	import com.epolyakov.async.core.Task;
+	import com.epolyakov.async.Task;
 
 	import flash.events.DataEvent;
 	import flash.events.Event;
