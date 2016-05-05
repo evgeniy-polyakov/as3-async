@@ -3,14 +3,20 @@ package com.epolyakov.async
 	import com.epolyakov.async.mocks.MockResult;
 	import com.epolyakov.async.mocks.MockTask;
 	import com.epolyakov.async.mocks.MockTaskExtension;
+	import com.epolyakov.async.tasks.TimeoutTask;
+	import com.epolyakov.async.tasks.mocks.SampleITaskImplementation;
+	import com.epolyakov.async.tasks.mocks.SampleTaskExtension;
 	import com.epolyakov.mock.Mock;
 
 	import flash.errors.IOError;
+	import flash.events.Event;
+	import flash.utils.setTimeout;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertTrue;
+	import org.flexunit.async.Async;
 
 	/**
 	 * @author Evgeniy Polyakov
@@ -248,6 +254,104 @@ package com.epolyakov.async
 
 			task.await({});
 			task.onThrow(new IOError());
+		}
+
+		[Test(async, timeout=500)]
+		public function timeoutImplementation_TimeoutTask_ShouldReturn():void
+		{
+			var result:MockResult = new MockResult();
+			var arg:Object = {};
+			var out:Object = {};
+
+			var task:ITask = async(new TimeoutTask(100)).then(out);
+			task.await(arg, result);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(result.onReturn(out, task))
+						.verify().total(1);
+			}, 300);
+			Async.failOnEvent(this, result, Event.CANCEL, 400);
+		}
+
+		[Test(async, timeout=500)]
+		public function timeoutImplementation_Closure_ShouldReturn():void
+		{
+			var result:MockResult = new MockResult();
+			var arg:Object = {};
+			var out:Object = {};
+
+			var task:ITask = async(function (a:Object):ITask
+			{
+				var t:Task = new Task();
+				setTimeout(a == arg ? t.onReturn : t.onThrow, 100, out);
+				return t;
+			});
+			task.await(arg, result);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(result.onReturn(out, task))
+						.verify().total(1);
+			}, 300);
+			Async.failOnEvent(this, result, Event.CANCEL, 400);
+		}
+
+		[Test(async, timeout=500)]
+		public function timeoutImplementation_Wrapper_ShouldReturn():void
+		{
+			var result:MockResult = new MockResult();
+			var arg:Object = {};
+			var out:Object = {};
+
+			var task:ITask = async(new Task(new TimeoutTask(100))).then(out);
+			task.await(arg, result);
+			task.await(arg, result);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(result.onReturn(out, task))
+						.verify().total(1);
+			}, 300);
+			Async.failOnEvent(this, result, Event.CANCEL, 400);
+		}
+
+		[Test(async, timeout=500)]
+		public function timeoutImplementation_ExtendTask_ShouldReturn():void
+		{
+			var result:MockResult = new MockResult();
+			var arg:Object = {};
+			var out:Object = {};
+
+			var task:ITask = new SampleTaskExtension(100, arg, out);
+			task.await(arg, result);
+			task.await(arg, result);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(result.onReturn(out, task))
+						.verify().total(1);
+			}, 300);
+			Async.failOnEvent(this, result, Event.CANCEL, 400);
+		}
+
+		[Test(async, timeout=500)]
+		public function timeoutImplementation_ImplementITask_ShouldReturn():void
+		{
+			var result:MockResult = new MockResult();
+			var arg:Object = {};
+			var out:Object = {};
+
+			var task:ITask = new SampleITaskImplementation(100, arg, out);
+			task.await(arg, result);
+			task.await(arg, result);
+
+			Async.handleEvent(this, result, Event.COMPLETE, function (...rest):void
+			{
+				Mock.verify().that(result.onReturn(out, task))
+						.verify().total(1);
+			}, 300);
+			Async.failOnEvent(this, result, Event.CANCEL, 400);
 		}
 	}
 }
