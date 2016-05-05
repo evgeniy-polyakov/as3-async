@@ -183,6 +183,26 @@ package com.epolyakov.async
 		}
 
 		[Test]
+		public function onReturn_ShouldCallResultOnReturnIfTargetSetInConstructor():void
+		{
+			var target:MockTask = new MockTask();
+			var task:Task = new Task(target);
+			var result:MockResult = new MockResult();
+			var arg:Object = {};
+			var out:Object = {};
+
+			Mock.setup().that(target.await(arg, task)).returns(function (a:Object, r:IResult):void
+			{
+				r.onReturn(out, this as ITask);
+			});
+
+			task.await(arg, result);
+
+			Mock.verify().that(result.onReturn(out, task))
+					.verify().total(2);
+		}
+
+		[Test]
 		public function onThrow_ShouldSetActiveAndArgs():void
 		{
 			var task:Task = new Task();

@@ -80,7 +80,11 @@ package com.epolyakov.async
 				{
 					var result:IResult = _result;
 					_result = null;
-					result.onReturn(value, target || this);
+					// Result depends on usage scenario:
+					// - task in closure (promise style) (_target == null && target == null): this returns
+					// - task as wrapper for async (_target != null && _target == target): this returns
+					// - task in implementation of ITask (_target == null && target != null) target returns
+					result.onReturn(value, _target == target ? this : target);
 				}
 			}
 		}
