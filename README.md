@@ -185,7 +185,7 @@ Using factory function you can keep an instance of `Task` in closure and return 
 ```actionscript
 async(new URLLoaderTask("config.txt"))
 .then(function(loader:URLLoader):ITask {
-  var task:ITask = new Task();
+  var task:Task = new Task();
   if (loader.data == "ok") {
     setTimeout(function():void {task.onReturn("Success");}, 100);
   } else {
@@ -199,6 +199,42 @@ async(new URLLoaderTask("config.txt"))
 ```
 
 ###Extending `Task`
+If you want to implement completely custom task it could be done by extending `Task` class. Then you will be able to use that task in a sequence, await and cancel it like any other task. The following example defines a task that waits for 100 ms and returns or throws based on the given arguments:
+```actionscript
+public class MyTask extends Task {
+  private var _timeoutId;
+  override public function onAwait():void {
+    if (args == "ok") {
+      _timeoutId = setTimeout(function():void {onReturn("Success");}, 100);
+    } else {
+      _timeoutId = setTimeout(function():void {onThrow(new Error());}, 100);
+    }
+  }
+  override public function onCancel():void {
+    clearTimeout(_timeoutId);
+  }
+}
+```
+
 ###Implementing `ITask`
+If you want to implement a custom task that extends your base class you can implement `ITask` interface and use inner `Task` object. The following example defines a task that waits for 100 ms and returns or throws based on the given arguments:
+```actionscript
+public class MyTask extends MyBaseClass implements ITask {
+  private var _innerTask:Task = new Task();
+  private var _timeoutId;
+  public function await(args:Object = null, result:IResult = null):void {
+    _innerTask.await(args, result);
+    if (args == "ok") {
+      _timeoutId = setTimeout(function():void {_innerTask.onReturn("Success", this);}, 100);
+    } else {
+      _timeoutId = setTimeout(function():void {_innerTask.onThrow(new Error(), this);}, 100);
+    }
+  }
+  public function cancel():void {
+    _innerTask.cancel();
+    clearTimeout(_timeoutId);
+  }
+}
+```
 
 ## Asynchronous concurrence
