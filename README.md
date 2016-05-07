@@ -203,14 +203,14 @@ If you want to implement completely custom task it could be done by extending `T
 ```actionscript
 public class MyTask extends Task {
   private var _timeoutId;
-  override public function onAwait():void {
+  override protected function onAwait():void {
     if (args == "ok") {
       _timeoutId = setTimeout(function():void {onReturn("Success");}, 100);
     } else {
       _timeoutId = setTimeout(function():void {onThrow(new Error());}, 100);
     }
   }
-  override public function onCancel():void {
+  override protected function onCancel():void {
     clearTimeout(_timeoutId);
   }
 }
@@ -238,3 +238,26 @@ public class MyTask extends MyBaseClass implements ITask {
 ```
 
 ## Asynchronous concurrence
+Sometimes we need to execute asynchronous tasks together and continue when all or any of them are complete.
+
+### Continue when all complete
+`asyncAll` function allows to define asynchronous concurrence that ends when _all_ of the given tasks are complete. It returns an array of values _in order of completion of child tasks_.
+```actionscript
+async(asyncAll(async(new TimeoutTask(200)
+              .then("second")))
+      .and(async(new TimeoutTask(100)
+          .then("first"))));
+.then(function(args:*):void {trace(args);}) // first, second 
+.await();
+```
+
+### Continue when any complete
+`asyncAny` function allows to define asynchronous concurrence that ends when _any_ of the given tasks is complete. It returns the value of the first complete task. Other child tasks are _canceled_.
+```actionscript
+async(asyncAny(async(new TimeoutTask(200)
+              .then("second")))
+      .and(async(new TimeoutTask(100)
+          .then("first"))));
+.then(function(args:*):void {trace(args);}) // first
+.await();
+```
