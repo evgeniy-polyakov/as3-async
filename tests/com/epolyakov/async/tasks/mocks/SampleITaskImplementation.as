@@ -24,9 +24,9 @@ package com.epolyakov.async.tasks.mocks
 
 		public function await(args:Object = null, result:IResult = null):void
 		{
-			var t:Task = new Task(this);
-			setTimeout(args == _arg ? t.onReturn : t.onThrow, _time, _out);
-			t.await(args);
+			var t:Task = new Task();
+			setTimeout(args == _arg ? t.onReturn : t.onThrow, _time, _out, this);
+			t.await(args, result);
 		}
 
 		public function cancel():void
