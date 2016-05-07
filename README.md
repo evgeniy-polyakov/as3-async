@@ -112,7 +112,7 @@ Execution of asynchronous sequence can be interrupted at any moment. But you nee
 var s:IAsync = async(new LoaderTask("some.swf"))
 .then(new URLLoaderTask("some.xml"));
 s.await();
-setTimeout(function() {s.cancel();}, 100);
+setTimeout(function():void {s.cancel();}, 100);
 ```
 
 ### Adding new tasks
@@ -154,10 +154,51 @@ The following tasks use [FileReference](http://help.adobe.com/en_US/FlashPlatfor
 - `LoadFileTask()` gets `FileReference` as argument and loads file content, must be called after `BrowseFileTask`.
 
 ## Task definition
-1. Subsequent `async`
-2. Factory function
-3. Extending `Task`
-4. Implementing `ITask`
-5. Promise style
+### Nested `async`
+`async` function itself returns a task so you can simply pass one `async` into another. This is useful in case of complex error handling and branching. For example we can load two files sequentially if the main task fails:
+```actionscript
+async(new LoaderTask("some.swf"))
+.except(async(new URLLoaderTask("file1.xml"))
+        .then(new URLLoaderTask("file2.xml")))
+.then(function():void {trace("complete");});
+.await();
+```
+
+###Factory function
+Factory function allows to define a task based on result of the previous task. The function should return `ITask`. For example load xml or json files based on config value:
+```actionscript
+async(new URLLoaderTask("config.txt"))
+.then(function(loader:URLLoader):ITask {
+  if (loader.data == "load-xml") {
+    return async(new URLLoaderTask("file1.xml"))
+           .then(new URLLoaderTask("file2.xml"));
+  } else {
+    return new URLLoaderTask("file.json");
+  }
+})
+.then(function():void {trace("complete");});
+.await();
+```
+
+###Promise style
+Using factory function you can keep an instance of `Task` in closure and return or throw depending of the result of your asynchronous method. The following example waits for 100 ms and returns or throws based on config value:
+```actionscript
+async(new URLLoaderTask("config.txt"))
+.then(function(loader:URLLoader):ITask {
+  var task:ITask = new Task();
+  if (loader.data == "ok") {
+    setTimeout(function():void {task.onReturn("Success");}, 100);
+  } else {
+    setTimeout(function():void {task.onThrow(new Error());}, 100);
+  }
+  return task;
+})
+.except(function(error:*):void {trace(error);}) // Error
+.then(function(value:*):void {trace(value);}); // Success
+.await();
+```
+
+###Extending `Task`
+###Implementing `ITask`
 
 ## Asynchronous concurrence
