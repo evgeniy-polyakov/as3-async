@@ -246,7 +246,7 @@ Sometimes we need to execute asynchronous tasks together and continue when all o
 async(asyncAll(async(new TimeoutTask(200)
               .then("second")))
       .and(async(new TimeoutTask(100)
-          .then("first"))));
+           .then("first"))));
 .then(function(args:*):void {trace(args);}) // first, second 
 .await();
 ```
@@ -256,7 +256,7 @@ async(asyncAll(async(new TimeoutTask(200)
 ```actionscript
 async(asyncAny(async(new TimeoutTask(200)
               .then("second")))
-      .and(async(new TimeoutTask(100)
+      .or(async(new TimeoutTask(100)
           .then("first"))));
 .then(function(args:*):void {trace(args);}) // first
 .await();
