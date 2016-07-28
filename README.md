@@ -13,7 +13,7 @@ Asynchronous operations in AS3.
   + [Adding new tasks](#adding-new-tasks)
 * [Flash API wrappers](#flash-api-wrappers)
   + [Loader tasks](#loader-tasks)
-  + [Timout tasks](#timout-tasks)
+  + [Timeout tasks](#timeout-tasks)
   + [File reference tasks](#file-reference-tasks)
 * [Task definition](#task-definition)
   + [Nested `async`](#nested-async)
@@ -166,7 +166,7 @@ public class Queue {
 - `LoaderTask(source:*, context:LoaderContext = null)` uses [Loader](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/Loader.html) object to load a flash movie from the given url, `URLRequest`, `ByteArray` object or class; returns `Loader` object; throws `IOErrorEvent`, `SecurityErrorEvent`.
 - `URLLoaderTask(source:Object, format:String = "text")` uses [URLLoader](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/net/URLLoader.html) to load a file from the given url or `URLRequest`; returns `URLLoader` object; throws `IOErrorEvent`, `SecurityErrorEvent`.
 
-### Timout tasks
+### Timeout tasks
 - `TimeoutTask(milliseconds=0)` waits for the given number of milliseconds.
 - `FramesTask(frames=0)` waits for the given number of frames.
 
