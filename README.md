@@ -1,4 +1,28 @@
 # as3-async
+
+Asynchronous operations in AS3.
+
+* [About](#about)
+* [Getting started](#getting-started)
+  + [Define asynchronous sequence](#define-asynchronous-sequence)
+  + [Run asynchronous sequence](#run-asynchronous-sequence)
+  + [Passing arguments](#passing-arguments)
+  + [Handling errors](#handling-errors)
+  + [Branching](#branching)
+  + [Canceling execution](#canceling-execution)
+  + [Adding new tasks](#adding-new-tasks)
+* [Flash API wrappers](#flash-api-wrappers)
+  + [Loader tasks](#loader-tasks)
+  + [Timout tasks](#timout-tasks)
+  + [File reference tasks](#file-reference-tasks)
+* [Task definition](#task-definition)
+  + [Nested `async`](#nested-async)
+* [Asynchronous concurrence](#asynchronous-concurrence)
+  + [Continue when all complete](#continue-when-all-complete)
+  + [Continue when any complete](#continue-when-any-complete)
+
+##About
+
 Asynchronous AS3 tasks are intended to simplify event flow usually in loading or animation sequences.
  1. Asynchronous tasks are very close to [JS Promises](https://www.promisejs.org/) however they are written in more object oriented style.
  2. There are wrappers for commonly used Flash API.
