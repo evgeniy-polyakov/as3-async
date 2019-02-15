@@ -188,7 +188,7 @@ async(new LoaderTask("some.swf"))
 .await();
 ```
 
-###Factory function
+### Factory function
 Factory function allows to define a task based on result of the previous task. The function should return `ITask`. For example load xml or json files based on config value:
 ```actionscript
 async(new URLLoaderTask("config.txt"))
@@ -204,7 +204,7 @@ async(new URLLoaderTask("config.txt"))
 .await();
 ```
 
-###Promise style
+### Promise style
 Using factory function you can keep an instance of `Task` in closure and return or throw depending of the result of your asynchronous method. The following example waits for 100 ms and returns or throws based on config value:
 ```actionscript
 async(new URLLoaderTask("config.txt"))
@@ -222,7 +222,7 @@ async(new URLLoaderTask("config.txt"))
 .await();
 ```
 
-###Extending `Task`
+### Extending `Task`
 If you want to implement completely custom task it could be done by extending `Task` class. Then you will be able to use that task in a sequence, await and cancel it like any other task. The following example defines a task that waits for 100 ms and returns or throws based on the given arguments:
 ```actionscript
 public class MyTask extends Task {
@@ -240,7 +240,7 @@ public class MyTask extends Task {
 }
 ```
 
-###Implementing `ITask`
+### Implementing `ITask`
 If you want to implement a custom task that extends your base class you can implement `ITask` interface and use inner `Task` object. The following example defines a task that waits for 100 ms and returns or throws based on the given arguments:
 ```actionscript
 public class MyTask extends MyBaseClass implements ITask {
